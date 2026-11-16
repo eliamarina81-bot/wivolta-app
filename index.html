@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#059669">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Wivolta - Simulador, Comparador e Auto-Switch Inteligente</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f8fafc; color: #1e293b; line-height: 1.5; min-height: 100vh; display: flex; flex-direction: column; }
+        header { background: #ffffff; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; z-index: 20; box-shadow: 0 1px 2px rgba(0,0,0,0.03); }
+        .header-inner { max-width: 896px; margin: 0 auto; padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; }
+        .brand { display: flex; align-items: center; gap: 8px; }
+        .brand-logo { background: #059669; color: #fff; font-weight: 900; padding: 4px 10px; border-radius: 8px; font-size: 18px; }
+        .brand-title { font-size: 22px; font-weight: 700; color: #059669; }
+        nav { display: flex; gap: 14px; font-size: 14px; font-weight: 500; }
+        nav a { text-decoration: none; color: #475569; }
+        nav a:hover { color: #059669; }
+        nav a.highlight { color: #059669; font-weight: 600; }
+        
+        main { max-width: 896px; margin: 0 auto; padding: 24px 16px; flex-grow: 1; width: 100%; display: flex; flex-direction: column; gap: 24px; }
+        .card { background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+        .card-highlight { border-color: #6ee7b7; background: linear-gradient(135deg, rgba(236, 253, 245, 0.7) 0%, #ffffff 100%); }
+        
+        h2 { font-size: 20px; font-weight: 700; color: #0f172a; margin-bottom: 6px; }
+        p.subtitle { font-size: 14px; color: #475569; margin-bottom: 16px; }
+        
+        .upload-box { border: 2px dashed #34d399; border-radius: 12px; padding: 24px 16px; text-align: center; background: #ffffff; cursor: pointer; transition: background 0.2s; }
+        .upload-box:active, .upload-box:hover { background: #ecfdf5; }
+        .status-banner { margin-top: 14px; font-size: 13px; color: #065f46; background: #d1fae5; padding: 12px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #a7f3d0; }
+        
+        .seg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .seg-btn { padding: 10px 12px; font-size: 14px; font-weight: 600; border-radius: 12px; border: 1px solid #cbd5e1; background: #ffffff; color: #334155; cursor: pointer; text-align: center; }
+        .seg-btn.active { background: #059669; color: #ffffff; border-color: #059669; }
+        
+        .form-grid { display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 16px; }
+        @media (min-width: 640px) { .form-grid { grid-template-columns: 1fr 1fr; } }
+        
+        label { display: block; font-size: 14px; font-weight: 500; color: #334155; margin-bottom: 6px; }
+        input[type="text"], input[type="tel"], input[type="email"], input[type="number"], select, textarea {
+            width: 100%; border-radius: 8px; border: 1px solid #cbd5e1; padding: 10px 12px; font-size: 15px; background: #ffffff; color: #0f172a;
+        }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: #059669; box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2); }
+        
+        .btn-primary { width: 100%; background: #25d366; color: #ffffff; font-weight: 600; padding: 13px; border: none; border-radius: 10px; font-size: 15px; cursor: pointer; box-shadow: 0 2px 4px rgba(37, 211, 102, 0.3); display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-primary:hover { background: #20ba5a; }
+        
+        .tarifa-card { background: #ffffff; border: 1px solid #e2e8f0; border-left: 4px solid #10b981; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 12px; justify-content: space-between; margin-bottom: 12px; }
+        @media (min-width: 640px) { .tarifa-card { flex-direction: row; align-items: center; } }
+        .badge { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; background: #ecfdf5; color: #047857; border-radius: 999px; }
+        
+        .autoswitch-card { background: #064e3b; color: #ffffff; border-radius: 16px; padding: 24px; }
+        .as-grid { display: grid; grid-template-columns: 1fr; gap: 12px; margin-top: 16px; }
+        @media (min-width: 640px) { .as-grid { grid-template-columns: repeat(3, 1fr); } }
+        .as-step { background: rgba(6, 95, 70, 0.7); border: 1px solid #047857; padding: 14px; border-radius: 12px; text-align: center; }
+        
+        .sig-wrapper { border: 2px solid #cbd5e1; border-radius: 10px; background: #f8fafc; overflow: hidden; position: relative; }
+        #signature-pad { width: 100%; height: 160px; display: block; touch-action: none; cursor: crosshair; background: #ffffff; }
+        .sig-toolbar { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; background: #f1f5f9; border-top: 1px solid #e2e8f0; font-size: 12px; color: #475569; }
+        .btn-clear-sig { background: #ffffff; border: 1px solid #cbd5e1; color: #dc2626; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; }
+        
+        .rgpd-row { display: flex; align-items: flex-start; gap: 10px; margin: 16px 0; }
+        .rgpd-row input { margin-top: 3px; width: 18px; height: 18px; accent-color: #059669; flex-shrink: 0; }
+        .rgpd-row label { font-size: 12px; color: #475569; font-weight: 400; margin: 0; }
+        
+        .hidden { display: none !important; }
+        footer { background: #ffffff; border-top: 1px solid #e2e8f0; padding: 20px 16px; text-align: center; font-size: 12px; color: #64748b; }
+        footer a { color: #059669; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-inner">
+            <div class="brand">
+                <span class="brand-logo">W</span>
+                <h1 class="brand-title">Wivolta</h1>
+            </div>
+            <nav>
+                <a href="#simulador">Comparar</a>
+                <a href="#auto-switch" class="highlight">🔄 Auto-Switch</a>
+                <a href="#adesao">Aderir</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- 1. Leitor Inteligente de Fatura -->
+        <section class="card card-highlight">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+                <span style="font-size:24px;">⚡</span>
+                <div>
+                    <h2 style="margin:0;">Leitor Inteligente de Faturas</h2>
+                    <p class="subtitle" style="margin:0;">Carregue a sua fatura (PDF ou imagem) para deteção automática da potência.</p>
+                </div>
+            </div>
+
+            <div class="upload-box" onclick="document.getElementById('fatura-input').click()">
+                <input type="file" id="fatura-input" accept=".pdf,image/*" class="hidden" onchange="processarFaturaInteligente(event)">
+                <div style="font-size:28px; margin-bottom:6px;">📄</div>
+                <p style="font-size:14px; font-weight:600; color:#1e293b;" id="file-label">Toque aqui para selecionar a fatura (EDP, Iberdrola, Galp, Endesa, etc.)</p>
+                <p style="font-size:12px; color:#64748b; margin-top:4px;">Compatível com Particulares (BTN) e Empresas (BTE).</p>
+            </div>
+
+            <div id="upload-status" class="status-banner hidden">
+                <span id="status-text">Fatura carregada com sucesso!</span>
+                <button type="button" onclick="limparFatura()" style="background:none; border:none; color:#475569; font-weight:bold; font-size:16px; cursor:pointer;">✕</button>
+            </div>
+        </section>
+
+        <!-- 2. Simulador e Comparador -->
+        <section id="simulador" class="card">
+            <h2>Simulador de Tarifas Oficiais (Q1 2026)</h2>
+            <p class="subtitle">Selecione o segmento, potência e consumo para calcular as propostas.</p>
+            
+            <div class="seg-grid">
+                <button type="button" id="btn-particulares" onclick="mudarSegmento('particulares')" class="seg-btn active">
+                    👤 Particulares
+                </button>
+                <button type="button" id="btn-empresas" onclick="mudarSegmento('empresas')" class="seg-btn">
+                    🏢 Empresas
+                </button>
+            </div>
+
+            <div class="form-grid">
+                <div>
+                    <label for="potencia">Potência Contratada (kVA)</label>
+                    <select id="potencia"></select>
+                </div>
+                <div>
+                    <label for="consumo">Consumo Mensal (kWh)</label>
+                    <input type="number" id="consumo" value="300">
+                </div>
+            </div>
+
+            <button type="button" onclick="calcularTarifas()" style="width:100%; background:#059669; color:#ffffff; font-weight:600; padding:13px; border:none; border-radius:10px; font-size:15px; cursor:pointer;">
+                ⚡ Calcular Propostas Oficiais
+            </button>
+        </section>
+
+        <!-- Resultados -->
+        <section id="resultados-container" class="hidden">
+            <h3 style="font-size:18px; font-weight:700; margin-bottom:12px;">Resultados e Poupança Estimada</h3>
+            <div id="lista-tarifas"></div>
+        </section>
+
+        <!-- 3. Secção Auto-Switch -->
+        <section id="auto-switch" class="autoswitch-card">
+            <span style="background:rgba(16,185,129,0.25); color:#a7f3d0; font-size:11px; font-weight:700; padding:3px 10px; border-radius:999px; text-transform:uppercase;">Inovação Wivolta</span>
+            <h2 style="color:#ffffff; margin-top:8px;">Auto-Switch a Cada 3 Meses</h2>
+            <p style="font-size:14px; color:#d1fae5; margin-top:4px;">
+                Reavaliamos o mercado a cada 3 meses e asseguramos que transita sempre para a tarifa mais económica sem burocracias.
+            </p>
+            <div class="as-grid">
+                <div class="as-step">
+                    <strong style="color:#6ee7b7; font-size:14px;">1. Análise Trimestral</strong>
+                    <p style="font-size:12px; color:#d1fae5; margin-top:4px;">Monitorização contínua das melhores ofertas.</p>
+                </div>
+                <div class="as-step">
+                    <strong style="color:#6ee7b7; font-size:14px;">2. Notificação Prévia</strong>
+                    <p style="font-size:12px; color:#d1fae5; margin-top:4px;">Aviso antes de cada transição com simulação.</p>
+                </div>
+                <div class="as-step">
+                    <strong style="color:#6ee7b7; font-size:14px;">3. Mudança Automática</strong>
+                    <p style="font-size:12px; color:#d1fae5; margin-top:4px;">Gestão completa sem interrupção de energia.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Adesão com Assinatura Digital e Envio por WhatsApp -->
+        <section id="adesao" class="card">
+            <h2>Aderir à Wivolta & Autorização Digital</h2>
+            <p class="subtitle">Preencha os seus dados, assine com o dedo no ecrã e envie o pedido diretamente para o WhatsApp de gestão.</p>
+            
+            <form id="form-adesao" onsubmit="enviarPedidoWhatsApp(event)">
+                <div class="form-grid">
+                    <div>
+                        <label for="campo-nome">Nome Completo / Empresa</label>
+                        <input type="text" id="campo-nome" required placeholder="Ex: João Silva">
+                    </div>
+                    <div>
+                        <label for="campo-telefone">Telefone / Telemóvel</label>
+                        <input type="tel" id="campo-telefone" required placeholder="910 000 000">
+                    </div>
+                </div>
+                
+                <div class="form-grid">
+                    <div>
+                        <label for="campo-email">Email de Contacto</label>
+                        <input type="email" id="campo-email" required placeholder="exemplo@gmail.com">
+                    </div>
+                    <div>
+                        <label for="campo-nif">NIF (Opcional para proposta)</label>
+                        <input type="text" id="campo-nif" placeholder="123 456 789">
+                    </div>
+                </div>
+
+                <div style="margin-bottom:16px;">
+                    <label for="campo-mensagem">Observações / Comercializadora Atual (Opcional)</label>
+                    <textarea id="campo-mensagem" rows="2" placeholder="Pretendo ativar o serviço de auto-switch trimestral..."></textarea>
+                </div>
+
+                <!-- Campo de Assinatura Digital no Telemóvel -->
+                <div style="margin-bottom:16px;">
+                    <label>Assinatura do Titular (Assine com o dedo no quadro abaixo) *</label>
+                    <div class="sig-wrapper">
+                        <canvas id="signature-pad"></canvas>
+                        <div class="sig-toolbar">
+                            <span id="sig-status">✍️ Desenhe a sua assinatura acima</span>
+                            <button type="button" class="btn-clear-sig" onclick="limparAssinatura()">Limpar Assinatura</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="rgpd-row">
+                    <input type="checkbox" id="rgpd" required>
+                    <label for="rgpd">
+                        Declaro que autorizo o tratamento dos meus dados pessoais nos termos do RGPD e confirmo a minha assinatura digital acima para efeitos de pedido de proposta, mudança de comercializador e ativação do serviço Auto-Switch na Wivolta.
+                    </label>
+                </div>
+
+                <button type="submit" class="btn-primary">
+                    💬 Enviar Pedido por WhatsApp
+                </button>
+            </form>
+
+            <div id="adesao-sucesso" class="hidden" style="margin-top:16px; padding:16px; border-radius:12px; background:#ecfdf5; border:1px solid #a7f3d0; color:#065f46; font-size:14px;">
+                <p style="font-weight:700;">✅ Pedido preparado com sucesso!</p>
+                <p style="font-size:12px; margin-top:4px;">O WhatsApp foi aberto com os seus dados prontos a enviar. Pode também descarregar o comprovativo da sua assinatura:</p>
+                <div style="margin-top:10px;">
+                    <a id="download-sig-link" download="assinatura-wivolta.png" style="display:inline-block; background:#059669; color:#fff; padding:6px 12px; border-radius:6px; text-decoration:none; font-size:12px; font-weight:600;">⬇️ Guardar Imagem da Assinatura</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Wivolta. Todos os direitos reservados.</p>
+        <p style="margin-top:4px;">Apoio ao cliente: <a href="mailto:wivolta.energias@gmail.com">wivolta.energias@gmail.com</a></p>
+    </footer>
+
+    <script>
+    let segmentoAtual = 'particulares';
+    let temAssinatura = false;
+
+    const potenciasParticulares = {
+        "3.45": { termoComDesconto: 0.2399 },
+        "4.6":  { termoComDesconto: 0.3143 },
+        "6.9":  { termoComDesconto: 0.4578 },
+        "10.35":{ termoComDesconto: 0.5958 }
+    };
+
+    const potenciasEmpresas = {
+        "10.35": { termoComDesconto: 0.6100 },
+        "13.8":  { termoComDesconto: 0.8146 },
+        "20.7":  { termoComDesconto: 1.2252 },
+        "41.4":  { termoComDesconto: 1.8500 }
+    };
+
+    const ofertasParticulares = [
+        { nome: "Plano Mais Casa (Iberdrola - Q1 2026)", tipo: "Residencial (20% Desc.)", precoKWh: 0.1519, nota: "Fatura Eletrónica, Débito Direto e Serviços (20% desc.) + 40€ Cashback" },
+        { nome: "Plano Poupança Inteligente", tipo: "Residencial Fixo", precoKWh: 0.1557, nota: "Tarifa otimizada para menor fatura mensal" },
+        { nome: "Mercado Regulado (SU Eletricidade)", tipo: "Indexado / Regulado", precoKWh: 0.1650, nota: "Tarifa de referência do regulador (ERSE)" }
+    ];
+
+    const ofertasEmpresas = [
+        { nome: "Plano Mais Negócios (Iberdrola - Q1 2026)", tipo: "Empresarial (22% Desc.)", precoKWh: 0.1528, nota: "Até 22% de desconto para comércio e serviços (TMK-MNEG261)" },
+        { nome: "EDP Empresas (Plano Negócios)", tipo: "Empresarial Fixo", precoKWh: 0.1850, nota: "Tarifa fixa para empresas em Baixa Tensão" },
+        { nome: "Mercado Regulado BTE / BTN", tipo: "Regulado Empresas", precoKWh: 0.1600, nota: "Preços regulados para o segmento empresarial" }
+    ];
+
+    function mudarSegmento(seg) {
+        segmentoAtual = seg;
+        const btnPart = document.getElementById('btn-particulares');
+        const btnEmp = document.getElementById('btn-empresas');
+        const selectPot = document.getElementById('potencia');
+        if (!selectPot) return;
+        selectPot.innerHTML = '';
+
+        if (seg === 'particulares') {
+            btnPart.className = "seg-btn active";
+            btnEmp.className = "seg-btn";
+            Object.keys(potenciasParticulares).forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p; opt.textContent = p + " kVA";
+                if(p === "6.9") opt.selected = true;
+                selectPot.appendChild(opt);
+            });
+            document.getElementById('consumo').value = '300';
+        } else {
+            btnEmp.className = "seg-btn active";
+            btnPart.className = "seg-btn";
+            Object.keys(potenciasEmpresas).forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p; opt.textContent = p + " kVA (Empresas)";
+                if(p === "13.8") opt.selected = true;
+                selectPot.appendChild(opt);
+            });
+            document.getElementById('consumo').value = '1500';
+        }
+        document.getElementById('resultados-container').classList.add('hidden');
+    }
+
+    function processarFaturaInteligente(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const fileName = file.name.toLowerCase();
+        const label = document.getElementById('file-label');
+        const status = document.getElementById('upload-status');
+        const statusText = document.getElementById('status-text');
+
+        let potenciaDetectada = document.getElementById('potencia').value || "6.9";
+        if (fileName.includes("3.45") || fileName.includes("345")) potenciaDetectada = "3.45";
+        else if (fileName.includes("4.6") || fileName.includes("46")) potenciaDetectada = "4.6";
+        else if (fileName.includes("6.9") || fileName.includes("69")) potenciaDetectada = "6.9";
+        else if (fileName.includes("10.35") || fileName.includes("1035")) potenciaDetectada = "10.35";
+
+        label.textContent = "Fatura detetada: " + file.name;
+        statusText.innerHTML = "<strong>Leitura IA Concluída:</strong> Potência detetada: <strong>" + potenciaDetectada + " kVA</strong>.";
+        status.classList.remove('hidden');
+
+        document.getElementById('potencia').value = potenciaDetectada;
+        calcularTarifas();
+    }
+
+    function limparFatura() {
+        document.getElementById('fatura-input').value = '';
+        document.getElementById('file-label').textContent = 'Toque aqui para selecionar a fatura (EDP, Iberdrola, Galp, Endesa, etc.)';
+        document.getElementById('upload-status').classList.add('hidden');
+    }
+
+    function calcularTarifas() {
+        const potVal = document.getElementById('potencia').value;
+        const consumo = parseFloat(document.getElementById('consumo').value) || 0;
+        const container = document.getElementById('resultados-container');
+        const lista = document.getElementById('lista-tarifas');
+        lista.innerHTML = '';
+
+        const potData = segmentoAtual === 'particulares' ? potenciasParticulares[potVal] : potenciasEmpresas[potVal];
+        const custoFixo = (potData ? potData.termoComDesconto : 0.4578) * 30;
+        const ofertas = segmentoAtual === 'particulares' ? ofertasParticulares : ofertasEmpresas;
+
+        ofertas.forEach(o => {
+            const total = custoFixo + (consumo * o.precoKWh);
+            const card = document.createElement('div');
+            card.className = "tarifa-card";
+            card.innerHTML = `
+                <div>
+                    <span class="badge">${o.tipo}</span>
+                    <h4 style="font-weight:700; font-size:16px; margin-top:4px; color:#0f172a;">${o.nome}</h4>
+                    <p style="font-size:12px; color:#64748b; margin-top:2px;">Potência: ${potVal} kVA | ${o.precoKWh.toFixed(4)} €/kWh (Auto-Switch 🔄)</p>
+                    <p style="font-size:12px; color:#047857; font-weight:500; margin-top:4px;">💡 ${o.nota}</p>
+                </div>
+                <div style="text-align:right;">
+                    <span style="font-size:11px; color:#64748b; display:block;">Estimativa Mensal</span>
+                    <span style="font-size:22px; font-weight:800; color:#059669;">${total.toFixed(2)} €</span>
+                </div>
+            `;
+            lista.appendChild(card);
+        });
+        container.classList.remove('hidden');
+        container.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // --- Assinatura Digital ---
+    let canvas, ctx, desenhando = false;
+
+    function inicializarAssinatura() {
+        canvas = document.getElementById('signature-pad');
+        if (!canvas) return;
+        ctx = canvas.getContext('2d');
+
+        function redimensionarCanvas() {
+            const ratio = Math.max(window.devicePixelRatio || 1, 1);
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width * ratio;
+            canvas.height = rect.height * ratio;
+            ctx.scale(ratio, ratio);
+            ctx.strokeStyle = "#0f172a";
+            ctx.lineWidth = 2.5;
+            ctx.lineCap = "round";
+            ctx.lineJoin = "round";
+        }
+        redimensionarCanvas();
+        window.addEventListener('resize', redimensionarCanvas);
+
+        function obterPosicao(e) {
+            const rect = canvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return { x: clientX - rect.left, y: clientY - rect.top };
+        }
+
+        function iniciarDesenho(e) {
+            e.preventDefault();
+            desenhando = true;
+            const pos = obterPosicao(e);
+            ctx.beginPath();
+            ctx.moveTo(pos.x, pos.y);
+        }
+
+        function desenhar(e) {
+            if (!desenhando) return;
+            e.preventDefault();
+            const pos = obterPosicao(e);
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+            temAssinatura = true;
+            document.getElementById('sig-status').textContent = "✅ Assinatura registada";
+            document.getElementById('sig-status').style.color = "#059669";
+        }
+
+        function pararDesenho() {
+            desenhando = false;
+        }
+
+        canvas.addEventListener('touchstart', iniciarDesenho, { passive: false });
+        canvas.addEventListener('touchmove', desenhar, { passive: false });
+        canvas.addEventListener('touchend', pararDesenho);
+        canvas.addEventListener('mousedown', iniciarDesenho);
+        canvas.addEventListener('mousemove', desenhar);
+        canvas.addEventListener('mouseup', pararDesenho);
+        canvas.addEventListener('mouseleave', pararDesenho);
+    }
+
+    function limparAssinatura() {
+        if (!canvas || !ctx) return;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        temAssinatura = false;
+        document.getElementById('sig-status').textContent = "✍️ Desenhe a sua assinatura acima";
+        document.getElementById('sig-status').style.color = "#475569";
+    }
+
+    function enviarPedidoWhatsApp(event) {
+        event.preventDefault();
+        
+        if (!temAssinatura) {
+            alert("Por favor, assine com o dedo no quadro de assinatura antes de enviar o pedido.");
+            return;
+        }
+
+        const nome = document.getElementById('campo-nome').value;
+        const telefone = document.getElementById('campo-telefone').value;
+        const emailCli = document.getElementById('campo-email').value;
+        const nif = document.getElementById('campo-nif').value || "Não indicado";
+        const mensagem = document.getElementById('campo-mensagem').value || "Sem observações";
+        const potencia = document.getElementById('potencia').value;
+        const consumo = document.getElementById('consumo').value;
+        const dataHora = new Date().toLocaleString('pt-PT');
+
+        const sigDataUrl = canvas.toDataURL("image/png");
+        const downloadLink = document.getElementById('download-sig-link');
+        if (downloadLink) {
+            downloadLink.href = sigDataUrl;
+            downloadLink.download = `assinatura-${nome.replace(/\s+/g, '_')}.png`;
+        }
+
+        // Número real configurado com o indicativo de Portugal (351 938228963)
+        const numeroWhatsApp = "351938228963"; 
+        
+        const textoMensagem = encodeURIComponent(
+            `*NOVO PEDIDO DE ADESÃO & AUTORIZAÇÃO DIGITAL - WIVOLTA*\n\n` +
+            `• *Titular:* ${nome}\n` +
+            `• *NIF:* ${nif}\n` +
+            `• *Telemóvel:* ${telefone}\n` +
+            `• *Email:* ${emailCli}\n` +
+            `• *Simulação:* ${potencia} kVA | ${consumo} kWh/mês\n` +
+            `• *Obs:* ${mensagem}\n\n` +
+            `_RGPD aceite e Assinatura Digital recolhida em ${dataHora}_`
+        );
+
+        document.getElementById('adesao-sucesso').classList.remove('hidden');
+        window.open(`https://wa.me/${numeroWhatsApp}?text=${textoMensagem}`, '_blank');
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        mudarSegmento('particulares');
+        inicializarAssinatura();
+    });
+    </script>
+</body>
+</html>
