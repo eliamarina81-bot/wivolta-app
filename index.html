@@ -124,7 +124,7 @@ async function pdfOcrText(file){
  if(!window.pdfjsLib||!window.Tesseract)throw new Error('As bibliotecas de leitura não carregaram. Verifique a ligação à internet.');
  const pdf=await pdfjsLib.getDocument({data:await file.arrayBuffer()}).promise;
  const worker=await Tesseract.createWorker('por');let all='';
- try{for(let p=1;p<=Math.min(pdf.numPages,4);p++){const page=await pdf.getPage(p),vp=page.getViewport({scale:2}),cv=document.createElement('canvas');cv.width=vp.width;cv.height=vp.height;await page.render({canvasContext:cv.getContext('2d'),viewport:vp}).promise;const result=await worker.recognize(cv);all+='\\n'+result.data.text;}}
+ try{for(let p=1;p<=Math.min(pdf.numPages,4);p++){const page=await pdf.getPage(p),vp=page.getViewport({scale:2}),cv=document.createElement('canvas');cv.width=vp.width;cv.height=vp.height;await page.render({canvasContext:cv.getContext('2d'),viewport:vp}).promise;const result=await worker.recognize(cv);all+='\n'+result.data.text;}}
  finally{await worker.terminate();}
  return all;
 }
@@ -138,7 +138,7 @@ async function readInvoice(file){
  try{
   let raw;if(file.type==='application/pdf'||file.name.toLowerCase().endsWith('.pdf'))raw=await pdfText(file);else if(file.type.startsWith('image/'))raw=await imageText(file);else throw new Error('Formato não suportado. Escolha PDF, JPG ou PNG.');
   let d=parseInvoice(raw);
-  if((file.type==='application/pdf'||file.name.toLowerCase().endsWith('.pdf'))&&detectedCount(d)<5){showStatus('A leitura do PDF encontrou poucos dados. A tentar reconhecimento visual das páginas…');const visual=await pdfOcrText(file);const vd=parseInvoice(visual);if(detectedCount(vd)>detectedCount(d)){raw+='\\n'+visual;d=vd;}else raw+='\\n'+visual;}
+  if((file.type==='application/pdf'||file.name.toLowerCase().endsWith('.pdf'))&&detectedCount(d)<5){showStatus('A leitura do PDF encontrou poucos dados. A tentar reconhecimento visual das páginas…');const visual=await pdfOcrText(file);const vd=parseInvoice(visual);if(detectedCount(vd)>detectedCount(d)){raw+='\n'+visual;d=vd;}else raw+='\\n'+visual;}
   fill('supplier',d.supplier);fill('nif',d.nif);fill('cpe',d.cpe);fill('power',d.power);fill('meterTariff',d.tariff);fill('kwhSimple',d.simple);fill('kwhPeak',d.peak);fill('kwhFlat',d.flat);fill('kwhOff',d.off);fill('gasKwh',d.gas);fill('invoiceTotal',d.total);
   
   $('detected').classList.remove('hidden');
