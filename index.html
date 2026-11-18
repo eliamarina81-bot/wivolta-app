@@ -113,7 +113,27 @@ function parseInvoice(raw){
 async async function pdfText(file){
  if(!window.pdfjsLib)throw new Error('A biblioteca de leitura de PDF não carregou. Verifique a ligação à internet e tente novamente.');
  const data=await file.arrayBuffer(),pdf=await pdfjsLib.getDocument({data}).promise;let all='';
- for(let p=1;p<=Math.min(pdf.numPages,5);p++){const page=await pdf.getPage(p),content=await page.getTextContent();all+=content.items.map(x=>x.str).join('\n')+'\n';}
+ for(let p=1;p<=Math.min(pdf.numPages,5);p++){
+  const page=await pdf.getPage(p),content=await page.getTextContent();
+  const lines=[];
+  for(const item of content.items){
+   if(!item.str||!item.str.trim())continue;
+   const y=Math.round(item.transform?.[5]||0);
+   let line=lines.find(row=>Math.abs(row.y-y)<=2.5);
+   if(!line){line={y,items:[]};lines.push(line);}
+   line.items.push({x:item.transform?.[4]||0,str:item.str,hasEOL:item.hasEOL});
+  }
+  lines.sort((a,b)=>b.y-a.y);
+  for(const line of lines){
+   line.items.sort((a,b)=>a.x-b.x);
+   let value='';
+   for(const part of line.items){
+    if(value&&!/\\s$/.test(value)&&!/^\\s/.test(part.str))value+=' ';
+    value+=part.str;
+   }
+   all+=value+'\\n';
+  }
+ }
  if(all.replace(/\s/g,'').length<60){
    if(!window.Tesseract)throw new Error('PDF digitalizado: a biblioteca OCR não carregou. Tente novamente com internet.');
    for(let p=1;p<=Math.min(pdf.numPages,3);p++){const page=await pdf.getPage(p),vp=page.getViewport({scale:1.7}),canvas=document.createElement('canvas');canvas.width=vp.width;canvas.height=vp.height;await page.render({canvasContext:canvas.getContext('2d'),viewport:vp}).promise;const worker=await Tesseract.createWorker('por');const result=await worker.recognize(canvas);all+='\n'+result.data.text;await worker.terminate();}
