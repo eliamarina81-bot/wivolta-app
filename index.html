@@ -105,8 +105,7 @@ function parseInvoice(raw){
  out.flat=findKwh(['cheias','horas cheias']);
  out.off=findKwh(['vazio','fora de vazio','horas de vazio']);
  out.gas=findKwh(['consumo de gas','energia gas','gas natural']);
- const simpleLines=text.split(/\r?\n/).filter(line=>/Energia\s+Simples\s*\(medida\)/i.test(line));
- const simpleValues=simpleLines.map(line=>{const m=line.match(/(\d{1,6}(?:[.,]\d{1,3})?)\s*kWh/i);return m?Number(numValue(m[1])):0;}).filter(v=>v>0);
+ const simpleValues=[...text.matchAll(/Energia\\s+Simples\\s*\\(medida\\)[\\s\\S]{0,180}?(\\d{1,6}(?:[.,]\\d{1,3})?)\\s*kWh/gi)].map(m=>Number(numValue(m[1]))).filter(v=>v>0);
  if(out.tariff==='simples'&&simpleValues.length)out.simple=simpleValues.reduce((a,b)=>a+b,0).toFixed(2);
  out.total=findOne(text,[/(?:total a pagar|total da fatura|valor total)\D{0,25}(\d{1,4}[,.]\d{2})\s*€/i,/€\s*(\d{1,4}[,.]\d{2})\s*(?:\n|$)/i]);
  return out;
