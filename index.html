@@ -96,7 +96,7 @@ function parseInvoice(raw){
  const suppliers=['EDP','Iberdrola','Galp','Endesa','Goldenergy','Gold Energy','Repsol','SU Eletricidade','Plenitude','MEO Energia','Coopérnico'];
  out.supplier=suppliers.find(x=>n.includes(norm(x)))||'';
  out.nif=findOne(text,[/(?:NIF|N\.I\.F\.?|Contribuinte|NIPC)\s*[:nº.]?\s*(\d{9})/i,/\b(\d{9})\b/]);
- out.cpe=findOne(text,[/\b(PT\s*\d{20,24}[A-Z]{0,3})\b/i,/\b(PT\d{16,27})\b/i]);
+ out.cpe=findOne(text,[/\b(PT\s*\d{4,20}[A-Z]{0,3})\b/i,/\b(PT\d{16,24})\b/i]);
  out.power=findOne(text,[/(?:pot[eê]ncia\s+contratada|pot[eê]ncia)\D{0,30}(\d{1,2}[,.]\d{1,2})\s*kVA/i,/(\d{1,2}[,.]\d{1,2})\s*kVA/i]);
  const bi=/bi[- ]?hor[aá]ri|fora.?vazio|\bvazio\b/.test(n), tri=/tri[- ]?hor[aá]ri|\bponta\b/.test(n);
  out.tariff=tri?'tri':bi?'bi':'simples';
@@ -105,9 +105,9 @@ function parseInvoice(raw){
  out.flat=findKwh(['cheias','horas cheias']);
  out.off=findKwh(['vazio','fora de vazio','horas de vazio']);
  out.gas=findKwh(['consumo de gas','energia gas','gas natural']);
- const values=[...text.matchAll(/(\d{1,6}(?:[.,]\d{1,3})?)\s*kWh/gi)].map(m=>numValue(m[1])).filter(Boolean);
- if(out.tariff==='simples'&&values.length)out.simple=values.reduce((a,b)=>a+Number(b),0).toFixed(2);
- else if(out.tariff!=='simples'){const sum=[out.peak,out.flat,out.off].filter(Boolean).reduce((a,b)=>a+Number(b),0);if(sum)out.simple='';}
+ const simpleLines=text.split(/\r?\n/).filter(line=>/Energia\s+Simples\s*\(medida\)/i.test(line));
+ const simpleValues=simpleLines.map(line=>{const m=line.match(/(\d{1,6}(?:[.,]\d{1,3})?)\s*kWh/i);return m?Number(numValue(m[1])):0;}).filter(v=>v>0);
+ if(out.tariff==='simples'&&simpleValues.length)out.simple=simpleValues.reduce((a,b)=>a+b,0).toFixed(2);
  out.total=findOne(text,[/(?:total a pagar|total da fatura|valor total)\D{0,25}(\d{1,4}[,.]\d{2})\s*€/i,/€\s*(\d{1,4}[,.]\d{2})\s*(?:\n|$)/i]);
  return out;
 }
