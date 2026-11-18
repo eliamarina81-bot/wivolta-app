@@ -155,7 +155,11 @@ async function pdfOcrText(file){
 function detectedCount(d){return [d.supplier,d.nif,d.cpe,d.power,d.simple,d.peak,d.flat,d.off,d.gas,d.total].filter(Boolean).length;}
 async function imageText(file){if(!window.Tesseract)throw new Error('A biblioteca OCR não carregou. Verifique a ligação à internet.');const worker=await Tesseract.createWorker('por');try{const r=await worker.recognize(file);return r.data.text;}finally{await worker.terminate();}}
 function fill(id,value){if(value!==undefined&&value!==null&&value!==''&&$(id))$(id).value=value;}
-function updateBillSummary(){const total=Number($('invoiceTotal').value),kwh=['kwhSimple','kwhPeak','kwhFlat','kwhOff'].reduce((s,id)=>s+(Number($(id).value)||0),0);const supplier=$('supplier').value||'Não identificado';const tariff=$('meterTariff').selectedOptions[0]?.text||'Não identificado';const power=$('power').value||'Não identificada';const money=Number.isFinite(total)&&total>0?total.toLocaleString('pt-PT',{style:'currency',currency:'EUR'}):'Por confirmar';$('billSummary').innerHTML='';const rows=[['Comercializador atual',supplier],['Total da fatura',money],['Consumo identificado',kwh>0?kwh.toLocaleString('pt-PT')+' kWh':'Por confirmar'],['Tarifário',tariff],['Potência contratada',power+' kVA'],['CPE', $('cpe').value||'Por confirmar'],['CUI', $('cui').value||'Por confirmar']];for(const [label,value] of rows){const d=document.createElement('div');d.className='result';d.innerHTML='<strong>'+label+'</strong><br>'+value;$('billSummary').appendChild(d);}
+function updateBillSummary(){
+ const total=Number($('invoiceTotal').value),kwh=['kwhSimple','kwhPeak','kwhFlat','kwhOff'].reduce((s,id)=>s+(Number($(id).value)||0),0);
+ const rows=[['Comercializador atual',$('supplier').value||'Não identificado'],['Total da fatura',Number.isFinite(total)&&total>0?total.toLocaleString('pt-PT',{style:'currency',currency:'EUR'}):'Por confirmar'],['Consumo identificado',kwh>0?kwh.toLocaleString('pt-PT')+' kWh':'Por confirmar'],['Tarifário',$('meterTariff').selectedOptions[0]?.text||'Não identificado'],['Potência contratada',($('power').value||'Não identificada')+' kVA'],['CPE',$('cpe').value||'Por confirmar'],['CUI',$('cui').value||'Por confirmar']];
+ const root=$('billSummary');root.replaceChildren();
+ for(const [label,value] of rows){const d=document.createElement('div');d.className='result';const strong=document.createElement('strong');strong.textContent=label;const br=document.createElement('br');d.append(strong,br,document.createTextNode(value));root.appendChild(d);}
 }
 async function readInvoice(file){
  if(!file)return;
@@ -184,12 +188,10 @@ canvas.addEventListener('pointerup',()=>drawing=false);canvas.addEventListener('
 $('clearSig').addEventListener('click',()=>{ctx.clearRect(0,0,canvas.width,canvas.height);signatureDirty=false;$('sigLabel').textContent='Assine com o dedo ou rato';});
 $('downloadSig').addEventListener('click',()=>{if(!signatureDirty){alert('Ainda não existe assinatura.');return;}const a=document.createElement('a');a.href=canvas.toDataURL('image/png');a.download='assinatura-wivolta.png';a.click();});
 $('whatsappBtn').addEventListener('click',()=>{
- const name=$('clientName').value.trim(),phone=$('clientPhone').value.trim();
- if(!name||!phone){alert('Preencha pelo menos o nome e o telefone.');return;}
  if(!$('privacy').checked){alert('É necessário aceitar a informação de privacidade para enviar o pedido.');return;}
- const data=['NOVO PEDIDO WIVOLTA','Nome: '+name,'Telefone: '+phone,'Email: '+($('clientEmail').value||'Não indicado'),'NIF/NIPC: '+($('clientNif').value||$('nif').value||'Não indicado'),'Tipo: '+$('supplyType').value,'Comercializador atual: '+($('supplier').value||'Não identificado'),'Comercializador pretendido: '+($('destination').value||'A definir'),'CPE: '+($('cpe').value||'Não identificado'),'CUI: '+($('cui').value||'Não identificado'),'Potência: '+($('power').value||'Não identificada')+' kVA','Tarifário: '+$('meterTariff').selectedOptions[0].text,'Consumos kWh — simples: '+($('kwhSimple').value||'-')+'; ponta: '+($('kwhPeak').value||'-')+'; cheias: '+($('kwhFlat').value||'-')+'; vazio: '+($('kwhOff').value||'-'),'Total fatura: '+($('invoiceTotal').value||'-')+' €','Observações: '+($('notes').value||'Nenhuma'),'Assinatura desenhada: '+(signatureDirty?'Sim — guardar e anexar separadamente':'Não'),'Consentimento para contacto: aceite','Nota: pedido de análise, não é uma ordem automática de mudança.'].join('\n');
- $('sendStatus').textContent='A abrir o WhatsApp. Anexe manualmente a fatura e, se aplicável, a imagem da assinatura.';$('sendStatus').className='status warn';
- window.open('https://wa.me/351938228963?text='+encodeURIComponent(data),'_blank','noopener');
+ const message='Olá, quero contactar a Wivolta para pedir uma análise da minha fatura. Vou anexar o documento manualmente nesta conversa.';
+ $('sendStatus').textContent='A abrir o WhatsApp. Anexe manualmente a fatura. Nenhum NIF, CPE, CUI, telefone, email ou dado de consumo será colocado no link.';$('sendStatus').className='status warn';
+ window.open('https://wa.me/351938228963?text='+encodeURIComponent(message),'_blank','noopener');
 });
 window.addEventListener('resize',resizeCanvas);resizeCanvas();
 if('serviceWorker' in navigator && location.protocol.startsWith('http')){window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(err=>console.warn('PWA indisponível:',err)));}
