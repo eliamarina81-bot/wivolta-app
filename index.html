@@ -50,17 +50,11 @@ header{background:white;border-bottom:1px solid var(--line);position:sticky;top:
 </section>
 
 <section class="card" id="comparar">
-<h2>2. Comparação transparente</h2><p class="sub">Não mostramos preços inventados nem dizemos que são ofertas oficiais. Introduza os preços de duas propostas para comparar em condições equivalentes.</p>
-<div class="grid">
-<div class="field"><label for="currentEnergy">Preço atual energia (€/kWh)</label><input id="currentEnergy" type="number" min="0" step="0.0001" placeholder="Ex.: 0,16"></div>
-<div class="field"><label for="newEnergy">Preço da nova proposta (€/kWh)</label><input id="newEnergy" type="number" min="0" step="0.0001" placeholder="Ex.: 0,14"></div>
-<div class="field"><label for="currentDaily">Termo potência atual (€/dia)</label><input id="currentDaily" type="number" min="0" step="0.0001" placeholder="Opcional"></div>
-<div class="field"><label for="newDaily">Termo potência nova (€/dia)</label><input id="newDaily" type="number" min="0" step="0.0001" placeholder="Opcional"></div>
-<div class="field"><label for="compareKwh">Consumo mensal total (kWh)</label><input id="compareKwh" type="number" min="0" step="0.01" placeholder="Preenchido pela leitura"></div>
-<div class="field"><label for="compareDays">Dias de faturação</label><input id="compareDays" type="number" min="1" value="30"></div>
-</div>
-<div class="actions"><button class="btn" id="compareBtn" type="button">Calcular diferença estimada</button></div><div id="compareResult" class="results" aria-live="polite"></div>
-<p class="muted">Estimativa simplificada: não inclui impostos, taxas, descontos condicionais, serviços adicionais, gás ou diferenças de escalões. Confirme sempre a ficha contratual completa.</p>
+<h2>2. Preparar comparação</h2><p class="sub">Não precisa de saber o preço por kWh nem de fazer contas. A Wivolta usa os dados da fatura para preparar a análise.</p>
+<div class="notice"><strong>O que será considerado:</strong> total da fatura, período faturado, consumo por horário, potência contratada e tarifário. A comparação só apresentará alternativas quando existirem preços e condições comerciais confirmados.</div>
+<div id="billSummary" class="results" aria-live="polite"><div class="result">Depois de carregar e confirmar a fatura, verá aqui o resumo dos seus custos e consumos.</div></div>
+<div class="actions"><button class="btn" id="compareBtn" type="button">Atualizar resumo da fatura</button></div>
+<p class="muted">Nesta versão ainda não existe ligação automática às tabelas de preços dos comercializadores. Por isso, não vamos inventar uma poupança nem pedir-lhe que adivinhe preços. A análise de propostas será feita com valores comerciais confirmados pela Wivolta.</p>
 </section>
 
 <section class="card" id="adesao">
@@ -98,7 +92,7 @@ function numValue(v){if(!v)return '';const n=String(v).replace(/\s/g,'').replace
 function parseInvoice(raw){
  const text=raw.replace(/\u00a0/g,' ').replace(/[ \t]+/g,' ').replace(/\r/g,'\n');
  const n=norm(text);
- const out={supplier:'',nif:'',cpe:'',power:'',tariff:'unknown',simple:'',peak:'',flat:'',off:'',gas:'',total:''};
+ const out={supplier:'',nif:'',cpe:'',power:'',tariff:'unknown',simple:'',peak:'',flat:'',off:'',gas:'',total:'',period:''};
  const suppliers=['EDP','Iberdrola','Galp','Endesa','Goldenergy','Gold Energy','Repsol','SU Eletricidade','Plenitude','MEO Energia','Coopérnico'];
  out.supplier=suppliers.find(x=>n.includes(norm(x)))||'';
  out.nif=findOne(text,[/(?:NIF|N\.I\.F\.?|Contribuinte|NIPC)\s*[:nº.]?\s*(\d{9})/i,/\b(\d{9})\b/]);
@@ -127,7 +121,8 @@ async function pdfText(file){
  return all;
 }
 async function imageText(file){if(!window.Tesseract)throw new Error('A biblioteca OCR não carregou. Verifique a ligação à internet.');const worker=await Tesseract.createWorker('por');try{const r=await worker.recognize(file);return r.data.text;}finally{await worker.terminate();}}
-function fill(id,value){if(value!==undefined&&value!==null&&value!=='')$(id).value=value;}
+function fill(id,value){if(value!==undefined&&value!==null&&value!==''&&$(id))$(id).value=value;}
+function updateBillSummary(){const total=Number($('invoiceTotal').value),kwh=['kwhSimple','kwhPeak','kwhFlat','kwhOff'].reduce((s,id)=>s+(Number($(id).value)||0),0);const supplier=$('supplier').value||'Não identificado';const tariff=$('meterTariff').selectedOptions[0]?.text||'Não identificado';const power=$('power').value||'Não identificada';const money=Number.isFinite(total)&&total>0?total.toLocaleString('pt-PT',{style:'currency',currency:'EUR'}):'Por confirmar';$('billSummary').innerHTML='';const rows=[['Comercializador atual',supplier],['Total da fatura',money],['Consumo identificado',kwh>0?kwh.toLocaleString('pt-PT')+' kWh':'Por confirmar'],['Tarifário',tariff],['Potência contratada',power+' kVA']];for(const [label,value] of rows){const d=document.createElement('div');d.className='result';d.innerHTML='<strong>'+label+'</strong><br>'+value;$('billSummary').appendChild(d);}}
 async function readInvoice(file){
  if(!file)return;
  $('detected').classList.add('hidden');showStatus('A ler a fatura… O documento permanece neste dispositivo.');
@@ -137,18 +132,14 @@ async function readInvoice(file){
   const total=[d.simple,d.peak,d.flat,d.off].filter(Boolean).reduce((a,b)=>a+Number(b),0);if(total)$('compareKwh').value=total.toFixed(2);
   $('detected').classList.remove('hidden');
   const count=[d.supplier,d.nif,d.cpe,d.power,d.simple,d.peak,d.flat,d.off,d.total].filter(Boolean).length;
+  updateBillSummary();
   showStatus('Leitura terminada. Foram identificados '+count+' campos possíveis. Confirme ou corrija todos os dados antes de os utilizar.',count>=4?'':'warn');
   $('readNotes').textContent='A leitura encontrou '+count+' campos. Texto extraído: '+raw.length+' caracteres. Campos não detetados devem ser preenchidos manualmente.';
  }catch(e){showStatus(e.message||'Não foi possível ler este documento. Preencha os campos manualmente.', 'error');$('detected').classList.remove('hidden');}
 }
 $('invoice').addEventListener('change',e=>readInvoice(e.target.files[0]));
-$('compareBtn').addEventListener('click',()=>{
- const a=Number($('currentEnergy').value),b=Number($('newEnergy').value),k=Number($('compareKwh').value),days=Number($('compareDays').value)||30;
- const ca=Number($('currentDaily').value)||0,cb=Number($('newDaily').value)||0,res=$('compareResult');res.innerHTML='';
- if(!Number.isFinite(a)||!Number.isFinite(b)||!k||a<0||b<0){res.textContent='Indique os dois preços por kWh e o consumo mensal para calcular.';return;}
- const oldCost=a*k+ca*days,newCost=b*k+cb*days,diff=oldCost-newCost;
- const box=document.createElement('div');box.className='result';box.innerHTML='<strong>Estimativa mensal (sem impostos e outros encargos)</strong><br>Condições atuais: '+oldCost.toFixed(2)+' €<br>Nova proposta: '+newCost.toFixed(2)+' €<br><strong>Diferença estimada: '+(diff>=0?'poupança de ':'custo adicional de ')+Math.abs(diff).toFixed(2)+' €/mês</strong>';res.appendChild(box);
-});
+$('compareBtn').addEventListener('click',updateBillSummary);
+['supplier','power','meterTariff','kwhSimple','kwhPeak','kwhFlat','kwhOff','invoiceTotal'].forEach(id=>$(id)?.addEventListener('input',updateBillSummary));
 const canvas=$('signature');function resizeCanvas(){const ratio=Math.max(devicePixelRatio||1,1),r=canvas.getBoundingClientRect();const saved=signatureDirty?canvas.toDataURL():null;canvas.width=r.width*ratio;canvas.height=150*ratio;ctx=canvas.getContext('2d');ctx.scale(ratio,ratio);ctx.lineWidth=2.4;ctx.lineCap='round';ctx.strokeStyle='#102a43';if(saved){const img=new Image();img.onload=()=>ctx.drawImage(img,0,0,r.width,150);img.src=saved;}}
 function point(e){const r=canvas.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top};}
 canvas.addEventListener('pointerdown',e=>{drawing=true;canvas.setPointerCapture(e.pointerId);const p=point(e);ctx.beginPath();ctx.moveTo(p.x,p.y);e.preventDefault();});
