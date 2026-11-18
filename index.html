@@ -36,6 +36,7 @@ header{background:white;border-bottom:1px solid var(--line);position:sticky;top:
 <div class="field"><label for="supplier">Comercializador atual</label><input id="supplier" placeholder="Ex.: Galp"></div>
 <div class="field"><label for="nif">NIF</label><input id="nif" inputmode="numeric" placeholder="9 dígitos"></div>
 <div class="field full"><label for="cpe">CPE (eletricidade)</label><input id="cpe" placeholder="PT000..."></div>
+<div class="field full"><label for="cui">CUI (gás), se aplicável</label><input id="cui" placeholder="Código da instalação de gás"></div>
 <div class="field"><label for="power">Potência contratada (kVA)</label><input id="power" placeholder="Ex.: 6,9"></div>
 <div class="field"><label for="meterTariff">Tarifário</label><select id="meterTariff"><option value="simples">Simples</option><option value="bi">Bi-horário</option><option value="tri">Tri-horário</option><option value="unknown">Não identificado</option></select></div>
 <div class="field"><label for="kwhSimple">Consumo simples (kWh)</label><input id="kwhSimple" type="number" min="0" step="0.01"></div>
@@ -45,7 +46,7 @@ header{background:white;border-bottom:1px solid var(--line);position:sticky;top:
 <div class="field"><label for="gasKwh">Consumo de gás (kWh), se aplicável</label><input id="gasKwh" type="number" min="0" step="0.01"></div>
 <div class="field"><label for="invoiceTotal">Total da fatura (€)</label><input id="invoiceTotal" type="number" min="0" step="0.01"></div>
 </div>
-<p class="muted" id="readNotes">Os campos podem ser corrigidos manualmente. A leitura automática pode falhar em documentos digitalizados ou formatos diferentes.</p>
+<p class="muted" id="readNotes">Os campos podem ser corrigidos manualmente. O CPE e o CUI só são aceites quando identificados junto do respetivo rótulo; confirme sempre os códigos na fatura.</p>
 </div>
 </section>
 
@@ -92,9 +93,10 @@ function numValue(v){if(!v)return '';const n=String(v).replace(/\s/g,'').replace
 function parseInvoice(raw){
  const text=raw.replace(/\u00a0/g,' ').replace(/[ \t]+/g,' ').replace(/\r/g,'\n');
  const n=norm(text);
- const out={supplier:'',nif:'',cpe:'',power:'',tariff:'unknown',simple:'',peak:'',flat:'',off:'',gas:'',total:'',period:''};
- const suppliers=['EDP','Iberdrola','Galp','Endesa','Goldenergy','Gold Energy','Repsol','SU Eletricidade','Plenitude','MEO Energia','Coopérnico'];
- out.supplier=suppliers.find(x=>n.includes(norm(x)))||'';
+ const out={supplier:'',nif:'',cpe:'',cui:'',power:'',tariff:'unknown',simple:'',peak:'',flat:'',off:'',gas:'',total:'',period:''};
+ const suppliers=['SU Eletricidade','MEO Energia','Gold Energy','Goldenergy','Iberdrola','Coopérnico','Plenitude','Repsol','Endesa','Galp','EDP'];
+ out.supplier=suppliers.find(x=>new RegExp('(?:^|\\n|\\s)'+norm(x).replace(/[.*+?^${}()|[\\]\\\\]/g,'\\\\const suppliers=['EDP','Iberdrola','Galp','Endesa','Goldenergy','Gold Energy','Repsol','SU Eletricidade','Plenitude','MEO Energia','Coopérnico'];
+ out.supplier=suppliers.find(x=>n.includes(norm(x)))||'';')+'(?:$|\\s|\\n)','i').test(n))||'';
  out.nif=findOne(text,[/(?:NIF|N\.I\.F\.?|Contribuinte|NIPC)\s*[:nº.]?\s*(\d{9})/i]);
  out.cpe=findOne(text,[/\b(PT\s*\d{4,20}[A-Z]{0,3})\b/i,/\b(PT\d{16,24})\b/i]);
  out.power=findOne(text,[/(?:pot[eê]ncia\s+contratada|pot[eê]ncia)\D{0,30}(\d{1,2}[,.]\d{1,2})\s*kVA/i,/(\d{1,2}[,.]\d{1,2})\s*kVA/i]);
@@ -103,9 +105,9 @@ function parseInvoice(raw){
  const tri=/tri[- ]?horario/.test(tariffNorm), bi=/bi[- ]?horario/.test(tariffNorm);
  out.tariff=tri?'tri':bi?'bi':tariffLine?'simples':'unknown';
  const findKwh=(labels)=>{for(const label of labels){const re=new RegExp(label+'[^\n]{0,90}?(\\d{1,6}(?:[.,]\\d{1,3})?)\s*kWh','i');const m=text.match(re);if(m)return numValue(m[1]);}return '';};
- out.peak=findKwh(['ponta','horas de ponta']);
- out.flat=findKwh(['cheias','horas cheias']);
- out.off=findKwh(['vazio','fora de vazio','horas de vazio']);
+ out.peak=findKwh(['consumo em ponta','energia ativa ponta','ponta','horas de ponta']);
+ out.flat=findKwh(['consumo em cheias','energia ativa cheias','cheias','horas cheias']);
+ out.off=findKwh(['consumo em vazio','energia ativa vazio','fora de vazio','horas de vazio','vazio']);
  out.gas=findKwh(['consumo de gas','energia gas','gas natural']);
  const simpleValues=[...text.matchAll(/Energia\s+Simples\s*\(medida\)[\s\S]{0,180}?(\d{1,6}(?:[.,]\d{1,3})?)\s*kWh/gi)].map(m=>Number(numValue(m[1]))).filter(v=>v>0);
  if(out.tariff==='simples'&&simpleValues.length)out.simple=simpleValues.reduce((a,b)=>a+b,0).toFixed(2);
@@ -157,7 +159,7 @@ async function pdfOcrText(file){
 function detectedCount(d){return [d.supplier,d.nif,d.cpe,d.power,d.simple,d.peak,d.flat,d.off,d.gas,d.total].filter(Boolean).length;}
 async function imageText(file){if(!window.Tesseract)throw new Error('A biblioteca OCR não carregou. Verifique a ligação à internet.');const worker=await Tesseract.createWorker('por');try{const r=await worker.recognize(file);return r.data.text;}finally{await worker.terminate();}}
 function fill(id,value){if(value!==undefined&&value!==null&&value!==''&&$(id))$(id).value=value;}
-function updateBillSummary(){const total=Number($('invoiceTotal').value),kwh=['kwhSimple','kwhPeak','kwhFlat','kwhOff'].reduce((s,id)=>s+(Number($(id).value)||0),0);const supplier=$('supplier').value||'Não identificado';const tariff=$('meterTariff').selectedOptions[0]?.text||'Não identificado';const power=$('power').value||'Não identificada';const money=Number.isFinite(total)&&total>0?total.toLocaleString('pt-PT',{style:'currency',currency:'EUR'}):'Por confirmar';$('billSummary').innerHTML='';const rows=[['Comercializador atual',supplier],['Total da fatura',money],['Consumo identificado',kwh>0?kwh.toLocaleString('pt-PT')+' kWh':'Por confirmar'],['Tarifário',tariff],['Potência contratada',power+' kVA']];for(const [label,value] of rows){const d=document.createElement('div');d.className='result';d.innerHTML='<strong>'+label+'</strong><br>'+value;$('billSummary').appendChild(d);}
+function updateBillSummary(){const total=Number($('invoiceTotal').value),kwh=['kwhSimple','kwhPeak','kwhFlat','kwhOff'].reduce((s,id)=>s+(Number($(id).value)||0),0);const supplier=$('supplier').value||'Não identificado';const tariff=$('meterTariff').selectedOptions[0]?.text||'Não identificado';const power=$('power').value||'Não identificada';const money=Number.isFinite(total)&&total>0?total.toLocaleString('pt-PT',{style:'currency',currency:'EUR'}):'Por confirmar';$('billSummary').innerHTML='';const rows=[['Comercializador atual',supplier],['Total da fatura',money],['Consumo identificado',kwh>0?kwh.toLocaleString('pt-PT')+' kWh':'Por confirmar'],['Tarifário',tariff],['Potência contratada',power+' kVA'],['CPE', $('cpe').value||'Por confirmar'],['CUI', $('cui').value||'Por confirmar']];for(const [label,value] of rows){const d=document.createElement('div');d.className='result';d.innerHTML='<strong>'+label+'</strong><br>'+value;$('billSummary').appendChild(d);}
 }
 async function readInvoice(file){
  if(!file)return;
@@ -166,7 +168,7 @@ async function readInvoice(file){
   let raw;if(file.type==='application/pdf'||file.name.toLowerCase().endsWith('.pdf'))raw=await pdfText(file);else if(file.type.startsWith('image/'))raw=await imageText(file);else throw new Error('Formato não suportado. Escolha PDF, JPG ou PNG.');
   let d=parseInvoice(raw);
   if((file.type==='application/pdf'||file.name.toLowerCase().endsWith('.pdf'))&&detectedCount(d)<7){showStatus('A leitura do PDF encontrou poucos dados. A tentar reconhecimento visual das páginas…');const visual=await pdfOcrText(file);const vd=parseInvoice(visual);if(detectedCount(vd)>detectedCount(d)){raw+='\n'+visual;d=vd;}else raw+='\n'+visual;}
-  fill('supplier',d.supplier);fill('nif',d.nif);fill('cpe',d.cpe);fill('power',d.power);fill('meterTariff',d.tariff);fill('kwhSimple',d.simple);fill('kwhPeak',d.peak);fill('kwhFlat',d.flat);fill('kwhOff',d.off);fill('gasKwh',d.gas);fill('invoiceTotal',d.total);
+  fill('supplier',d.supplier);fill('nif',d.nif);fill('cpe',d.cpe);fill('cui',d.cui);fill('power',d.power);fill('meterTariff',d.tariff);fill('kwhSimple',d.simple);fill('kwhPeak',d.peak);fill('kwhFlat',d.flat);fill('kwhOff',d.off);fill('gasKwh',d.gas);fill('invoiceTotal',d.total);
   
   $('detected').classList.remove('hidden');
   const count=detectedCount(d);
@@ -177,7 +179,7 @@ async function readInvoice(file){
 }
 $('invoice').addEventListener('change',e=>readInvoice(e.target.files[0]));
 $('compareBtn').addEventListener('click',updateBillSummary);
-['supplier','power','meterTariff','kwhSimple','kwhPeak','kwhFlat','kwhOff','invoiceTotal','galpDiscount'].forEach(id=>$(id)?.addEventListener('input',updateBillSummary));
+['supplier','cui','power','meterTariff','kwhSimple','kwhPeak','kwhFlat','kwhOff','invoiceTotal','galpDiscount'].forEach(id=>$(id)?.addEventListener('input',updateBillSummary));
 const canvas=$('signature');function resizeCanvas(){const ratio=Math.max(devicePixelRatio||1,1),r=canvas.getBoundingClientRect();const saved=signatureDirty?canvas.toDataURL():null;canvas.width=r.width*ratio;canvas.height=150*ratio;ctx=canvas.getContext('2d');ctx.scale(ratio,ratio);ctx.lineWidth=2.4;ctx.lineCap='round';ctx.strokeStyle='#102a43';if(saved){const img=new Image();img.onload=()=>ctx.drawImage(img,0,0,r.width,150);img.src=saved;}}
 function point(e){const r=canvas.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top};}
 canvas.addEventListener('pointerdown',e=>{drawing=true;canvas.setPointerCapture(e.pointerId);const p=point(e);ctx.beginPath();ctx.moveTo(p.x,p.y);e.preventDefault();});
@@ -189,7 +191,7 @@ $('whatsappBtn').addEventListener('click',()=>{
  const name=$('clientName').value.trim(),phone=$('clientPhone').value.trim();
  if(!name||!phone){alert('Preencha pelo menos o nome e o telefone.');return;}
  if(!$('privacy').checked){alert('É necessário aceitar a informação de privacidade para enviar o pedido.');return;}
- const data=['NOVO PEDIDO WIVOLTA','Nome: '+name,'Telefone: '+phone,'Email: '+($('clientEmail').value||'Não indicado'),'NIF/NIPC: '+($('clientNif').value||$('nif').value||'Não indicado'),'Tipo: '+$('supplyType').value,'Comercializador atual: '+($('supplier').value||'Não identificado'),'Comercializador pretendido: '+($('destination').value||'A definir'),'CPE: '+($('cpe').value||'Não identificado'),'Potência: '+($('power').value||'Não identificada')+' kVA','Tarifário: '+$('meterTariff').selectedOptions[0].text,'Consumos kWh — simples: '+($('kwhSimple').value||'-')+'; ponta: '+($('kwhPeak').value||'-')+'; cheias: '+($('kwhFlat').value||'-')+'; vazio: '+($('kwhOff').value||'-'),'Total fatura: '+($('invoiceTotal').value||'-')+' €','Observações: '+($('notes').value||'Nenhuma'),'Assinatura desenhada: '+(signatureDirty?'Sim — guardar e anexar separadamente':'Não'),'Consentimento para contacto: aceite','Nota: pedido de análise, não é uma ordem automática de mudança.'].join('\n');
+ const data=['NOVO PEDIDO WIVOLTA','Nome: '+name,'Telefone: '+phone,'Email: '+($('clientEmail').value||'Não indicado'),'NIF/NIPC: '+($('clientNif').value||$('nif').value||'Não indicado'),'Tipo: '+$('supplyType').value,'Comercializador atual: '+($('supplier').value||'Não identificado'),'Comercializador pretendido: '+($('destination').value||'A definir'),'CPE: '+($('cpe').value||'Não identificado'),'CUI: '+($('cui').value||'Não identificado'),'Potência: '+($('power').value||'Não identificada')+' kVA','Tarifário: '+$('meterTariff').selectedOptions[0].text,'Consumos kWh — simples: '+($('kwhSimple').value||'-')+'; ponta: '+($('kwhPeak').value||'-')+'; cheias: '+($('kwhFlat').value||'-')+'; vazio: '+($('kwhOff').value||'-'),'Total fatura: '+($('invoiceTotal').value||'-')+' €','Observações: '+($('notes').value||'Nenhuma'),'Assinatura desenhada: '+(signatureDirty?'Sim — guardar e anexar separadamente':'Não'),'Consentimento para contacto: aceite','Nota: pedido de análise, não é uma ordem automática de mudança.'].join('\n');
  $('sendStatus').textContent='A abrir o WhatsApp. Anexe manualmente a fatura e, se aplicável, a imagem da assinatura.';$('sendStatus').className='status warn';
  window.open('https://wa.me/351938228963?text='+encodeURIComponent(data),'_blank','noopener');
 });
