@@ -1,0 +1,21 @@
+{
+  "id": "/",
+  "name": "Wivolta | Energia sem complicações",
+  "short_name": "Wivolta",
+  "description": "Comparação e acompanhamento de energia para particulares e empresas em Portugal.",
+  "lang": "pt-PT",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f4f7fa",
+  "theme_color": "#102a43",
+  "icons": [
+    {
+      "src": "/logo-wivolta.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
