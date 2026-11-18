@@ -102,7 +102,7 @@ function parseInvoice(raw){
  const tariffNorm=norm(tariffLine);
  const tri=/tri[- ]?horario/.test(tariffNorm), bi=/bi[- ]?horario/.test(tariffNorm);
  out.tariff=tri?'tri':bi?'bi':tariffLine?'simples':'unknown';
- const findKwh=(labels)=>{for(const label of labels){const re=new RegExp(label+'[^\\n]{0,90}?(\\d{1,6}(?:[.,]\\d{1,3})?)\s*kWh','i');const m=text.match(re);if(m)return numValue(m[1]);}return '';};
+ const findKwh=(labels)=>{for(const label of labels){const re=new RegExp(label+'[^\\n]{0,90}?(\\d{1,6}(?:[.,]\\d{1,3})?)\\s*kWh','i');const m=text.match(re);if(m)return numValue(m[1]);}return '';};
  out.peak=findKwh(['ponta','horas de ponta']);
  out.flat=findKwh(['cheias','horas cheias']);
  out.off=findKwh(['vazio','fora de vazio','horas de vazio']);
