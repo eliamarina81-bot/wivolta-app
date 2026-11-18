@@ -107,19 +107,28 @@ function parseInvoice(raw){
  out.gas=findKwh(['consumo de gas','energia gas','gas natural']);
  const simpleValues=[...text.matchAll(/Energia\s+Simples\s*\(medida\)[\s\S]{0,180}?(\d{1,6}(?:[.,]\d{1,3})?)\s*kWh/gi)].map(m=>Number(numValue(m[1]))).filter(v=>v>0);
  if(out.tariff==='simples'&&simpleValues.length)out.simple=simpleValues.reduce((a,b)=>a+b,0).toFixed(2);
- out.total=findOne(text,[/(?:total\\s+a\\s+pagar|total\\s+da\\s+fatura|valor\\s+total|total\\s+fatura|montante\\s+a\\s+pagar)\\D{0,45}(\\d{1,4}(?:[ .]\\d{3})*[,.]\\d{2})\\s*€/i,/(?:total\\s+a\\s+pagar|valor\\s+total)\\D{0,45}€\\s*(\\d{1,4}(?:[ .]\\d{3})*[,.]\\d{2})/i]);
+ out.total=findOne(text,[/(?:total\\s+a\\s+pagar|total\\s+da\\s+fatura|valor\\s+total|total\\s+fatura|montante\\s+a\\s+pagar)\\D{0,60}(\\d{1,4}(?:[ .]\\d{3})*[,.]\\d{2})\\s*€/i,/(?:total\\s+a\\s+pagar|valor\\s+total)\\D{0,60}€\\s*(\\d{1,4}(?:[ .]\\d{3})*[,.]\\d{2})/i]);
  return out;
 }
 async function pdfText(file){
  if(!window.pdfjsLib)throw new Error('A biblioteca de leitura de PDF não carregou. Verifique a ligação à internet e tente novamente.');
  const data=await file.arrayBuffer(),pdf=await pdfjsLib.getDocument({data}).promise;let all='';
- for(let p=1;p<=Math.min(pdf.numPages,5);p++){const page=await pdf.getPage(p),content=await page.getTextContent();all+=content.items.map(x=>x.str).join(' ')+'\n';}
+ for(let p=1;p<=Math.min(pdf.numPages,5);p++){const page=await pdf.getPage(p),content=await page.getTextContent();all+=content.items.map(x=>x.str).join('\n')+'\n';}
  if(all.replace(/\s/g,'').length<60){
    if(!window.Tesseract)throw new Error('PDF digitalizado: a biblioteca OCR não carregou. Tente novamente com internet.');
    for(let p=1;p<=Math.min(pdf.numPages,3);p++){const page=await pdf.getPage(p),vp=page.getViewport({scale:1.7}),canvas=document.createElement('canvas');canvas.width=vp.width;canvas.height=vp.height;await page.render({canvasContext:canvas.getContext('2d'),viewport:vp}).promise;const worker=await Tesseract.createWorker('por');const result=await worker.recognize(canvas);all+='\n'+result.data.text;await worker.terminate();}
  }
  return all;
 }
+async function pdfOcrText(file){
+ if(!window.pdfjsLib||!window.Tesseract)throw new Error('As bibliotecas de leitura não carregaram. Verifique a ligação à internet.');
+ const pdf=await pdfjsLib.getDocument({data:await file.arrayBuffer()}).promise;
+ const worker=await Tesseract.createWorker('por');let all='';
+ try{for(let p=1;p<=Math.min(pdf.numPages,4);p++){const page=await pdf.getPage(p),vp=page.getViewport({scale:2}),cv=document.createElement('canvas');cv.width=vp.width;cv.height=vp.height;await page.render({canvasContext:cv.getContext('2d'),viewport:vp}).promise;const result=await worker.recognize(cv);all+='\\n'+result.data.text;}}
+ finally{await worker.terminate();}
+ return all;
+}
+function detectedCount(d){return [d.supplier,d.nif,d.cpe,d.power,d.simple,d.peak,d.flat,d.off,d.gas,d.total].filter(Boolean).length;}
 async function imageText(file){if(!window.Tesseract)throw new Error('A biblioteca OCR não carregou. Verifique a ligação à internet.');const worker=await Tesseract.createWorker('por');try{const r=await worker.recognize(file);return r.data.text;}finally{await worker.terminate();}}
 function fill(id,value){if(value!==undefined&&value!==null&&value!==''&&$(id))$(id).value=value;}
 function updateBillSummary(){const total=Number($('invoiceTotal').value),kwh=['kwhSimple','kwhPeak','kwhFlat','kwhOff'].reduce((s,id)=>s+(Number($(id).value)||0),0);const supplier=$('supplier').value||'Não identificado';const tariff=$('meterTariff').selectedOptions[0]?.text||'Não identificado';const power=$('power').value||'Não identificada';const money=Number.isFinite(total)&&total>0?total.toLocaleString('pt-PT',{style:'currency',currency:'EUR'}):'Por confirmar';$('billSummary').innerHTML='';const rows=[['Comercializador atual',supplier],['Total da fatura',money],['Consumo identificado',kwh>0?kwh.toLocaleString('pt-PT')+' kWh':'Por confirmar'],['Tarifário',tariff],['Potência contratada',power+' kVA']];for(const [label,value] of rows){const d=document.createElement('div');d.className='result';d.innerHTML='<strong>'+label+'</strong><br>'+value;$('billSummary').appendChild(d);}}
@@ -128,10 +137,12 @@ async function readInvoice(file){
  $('detected').classList.add('hidden');showStatus('A ler a fatura… O documento permanece neste dispositivo.');
  try{
   let raw;if(file.type==='application/pdf'||file.name.toLowerCase().endsWith('.pdf'))raw=await pdfText(file);else if(file.type.startsWith('image/'))raw=await imageText(file);else throw new Error('Formato não suportado. Escolha PDF, JPG ou PNG.');
-  const d=parseInvoice(raw);fill('supplier',d.supplier);fill('nif',d.nif);fill('cpe',d.cpe);fill('power',d.power);fill('meterTariff',d.tariff);fill('kwhSimple',d.simple);fill('kwhPeak',d.peak);fill('kwhFlat',d.flat);fill('kwhOff',d.off);fill('gasKwh',d.gas);fill('invoiceTotal',d.total);
+  let d=parseInvoice(raw);
+  if((file.type==='application/pdf'||file.name.toLowerCase().endsWith('.pdf'))&&detectedCount(d)<5){showStatus('A leitura do PDF encontrou poucos dados. A tentar reconhecimento visual das páginas…');const visual=await pdfOcrText(file);const vd=parseInvoice(visual);if(detectedCount(vd)>detectedCount(d)){raw+='\\n'+visual;d=vd;}else raw+='\\n'+visual;}
+  fill('supplier',d.supplier);fill('nif',d.nif);fill('cpe',d.cpe);fill('power',d.power);fill('meterTariff',d.tariff);fill('kwhSimple',d.simple);fill('kwhPeak',d.peak);fill('kwhFlat',d.flat);fill('kwhOff',d.off);fill('gasKwh',d.gas);fill('invoiceTotal',d.total);
   
   $('detected').classList.remove('hidden');
-  const count=[d.supplier,d.nif,d.cpe,d.power,d.simple,d.peak,d.flat,d.off,d.total].filter(Boolean).length;
+  const count=detectedCount(d);
   updateBillSummary();
   showStatus('Leitura terminada. Foram identificados '+count+' campos possíveis. Confirme ou corrija todos os dados antes de os utilizar.',count>=4?'':'warn');
   $('readNotes').textContent='A leitura encontrou '+count+' campos. Texto extraído: '+raw.length+' caracteres. Campos não detetados devem ser preenchidos manualmente.';
