@@ -4,6 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#102a43">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Wivolta">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" type="image/svg+xml" href="/logo-wivolta.svg">
+<link rel="apple-touch-icon" href="/logo-wivolta.svg">
 <meta name="description" content="Wivolta — comparação e acompanhamento de energia para particulares e empresas em Portugal.">
 <title>Wivolta | Energia sem complicações</title>
 <style>
@@ -16,7 +22,7 @@ header{background:white;border-bottom:1px solid var(--line);position:sticky;top:
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 </head>
 <body>
-<header><div class="head"><div class="brand"><span class="logo">W</span>Wivolta</div><nav><a href="#fatura">Ler fatura</a><a href="#comparar">Comparar</a><a href="#adesao">Pedir acompanhamento</a></nav></div></header>
+<header><div class="head"><div class="brand"><span class="logo" aria-hidden="true"><svg viewBox="0 0 48 48" width="31" height="31"><path d="M5 9h8l5 20 6-14 6 14 5-20h8L34 40h-7l-3-8-3 8h-7z" fill="none" stroke="#fff" stroke-width="4" stroke-linejoin="round"/><path d="M29 3 18 23h8l-3 12 12-21h-8z" fill="#5eead4"/></svg></span>Wivolta</div><nav><a href="#fatura">Ler fatura</a><a href="#comparar">Comparar</a><a href="#adesao">Pedir acompanhamento</a></nav></div></header>
 <main>
 <section class="hero"><h1>Energia mais clara.<br>Poupança com acompanhamento.</h1><p>Envie a sua fatura, confirme os dados e receba apoio para comparar propostas de eletricidade e gás. Sem promessas escondidas.</p></section>
 
@@ -105,7 +111,7 @@ function parseInvoice(raw){
  out.flat=findKwh(['cheias','horas cheias']);
  out.off=findKwh(['vazio','fora de vazio','horas de vazio']);
  out.gas=findKwh(['consumo de gas','energia gas','gas natural']);
- const simpleValues=[...text.matchAll(/Energia\\s+Simples\\s*\\(medida\\)[\\s\\S]{0,180}?(\\d{1,6}(?:[.,]\\d{1,3})?)\\s*kWh/gi)].map(m=>Number(numValue(m[1]))).filter(v=>v>0);
+ const simpleValues=[...text.matchAll(/Energia\s+Simples\s*\(medida\)[\s\S]{0,180}?(\d{1,6}(?:[.,]\d{1,3})?)\s*kWh/gi)].map(m=>Number(numValue(m[1]))).filter(v=>v>0);
  if(out.tariff==='simples'&&simpleValues.length)out.simple=simpleValues.reduce((a,b)=>a+b,0).toFixed(2);
  out.total=findOne(text,[/(?:total a pagar|total da fatura|valor total)\D{0,25}(\d{1,4}[,.]\d{2})\s*€/i,/€\s*(\d{1,4}[,.]\d{2})\s*(?:\n|$)/i]);
  return out;
@@ -159,5 +165,6 @@ $('whatsappBtn').addEventListener('click',()=>{
  window.open('https://wa.me/351938228963?text='+encodeURIComponent(data),'_blank','noopener');
 });
 window.addEventListener('resize',resizeCanvas);resizeCanvas();
+if('serviceWorker' in navigator && location.protocol.startsWith('http')){window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(err=>console.warn('PWA indisponível:',err)));}
 </script>
 </body></html>
