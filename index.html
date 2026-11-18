@@ -110,9 +110,9 @@ function parseInvoice(raw){
  const simpleValues=[...text.matchAll(/Energia\s+Simples\s*\(medida\)[\s\S]{0,180}?(\d{1,6}(?:[.,]\d{1,3})?)\s*kWh/gi)].map(m=>Number(numValue(m[1]))).filter(v=>v>0);
  if(out.tariff==='simples'&&simpleValues.length)out.simple=simpleValues.reduce((a,b)=>a+b,0).toFixed(2);
  out.total=findOne(text,[
-  /o\s+valor\s+deste\s+documento\s+[eé]\s*(?:€\s*)?(\\d{1,4}(?:[ .]\\d{3})*[,.]\\d{2})\s*€?/i,
-  /pagamento\s+desta\s+fatura[^\n]{0,100}?montante:\s*(\\d{1,4}(?:[ .]\\d{3})*[,.]\\d{2})/i,
-  /\\bTOTAL\s+(\\d{1,4}(?:[ .]\\d{3})*[,.]\\d{2})\s*€/i
+  /o\s+valor\s+deste\s+documento\s+[eé]\s*(?:€\s*)?(\d{1,4}(?:[ .]\d{3})*[,.]\d{2})\s*€?/i,
+  /pagamento\s+desta\s+fatura[^\n]{0,100}?montante:\s*(\d{1,4}(?:[ .]\d{3})*[,.]\d{2})/i,
+  /\bTOTAL\s+(\d{1,4}(?:[ .]\d{3})*[,.]\d{2})\s*€/i
  ]);
  return out;
 }
