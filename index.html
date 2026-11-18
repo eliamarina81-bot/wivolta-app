@@ -107,7 +107,10 @@ function parseInvoice(raw){
  out.gas=findKwh(['consumo de gas','energia gas','gas natural']);
  const simpleValues=[...text.matchAll(/Energia\s+Simples\s*\(medida\)[\s\S]{0,180}?(\d{1,6}(?:[.,]\d{1,3})?)\s*kWh/gi)].map(m=>Number(numValue(m[1]))).filter(v=>v>0);
  if(out.tariff==='simples'&&simpleValues.length)out.simple=simpleValues.reduce((a,b)=>a+b,0).toFixed(2);
- out.total=findOne(text,[/(?:total\s+a\s+pagar|total\s+da\s+fatura|valor\s+total|total\s+fatura|montante\s+a\s+pagar)\D{0,60}(\d{1,4}(?:[ .]\d{3})*[,.]\d{2})\s*€/i,/(?:total\s+a\s+pagar|valor\s+total)\D{0,60}€\s*(\d{1,4}(?:[ .]\d{3})*[,.]\d{2})/i]);
+ out.total=findOne(text,[
+  /(?:TOTAL\s*(?:c\s*\/\s*IVA)?|total\s+a\s+pagar|total\s+da\s+fatura|valor\s+total|total\s+fatura|montante\s+a\s+pagar)[^\d€]{0,180}(?:€\s*)?(\d{1,4}(?:[ .]\d{3})*[,.]\d{2})\s*€?/i,
+  /(?:€\s*)(\d{1,4}(?:[ .]\d{3})*[,.]\d{2})\s*(?:€)?\s*(?=TOTAL)/i
+ ]);
  return out;
 }
 async async function pdfText(file){
