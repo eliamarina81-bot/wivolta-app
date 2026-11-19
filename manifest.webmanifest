@@ -8,8 +8,8 @@
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#fcf8fc",
-  "theme_color": "#743c98",
+  "background_color": "#fbf9ff",
+  "theme_color": "#9b82c7",
   "icons": [
     {
       "src": "/logo-wivolta.svg",
