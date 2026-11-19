@@ -92,31 +92,47 @@ if(window.pdfjsLib){pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudf
 function showStatus(message,type=''){const el=$('readStatus');el.className='status'+(type?' '+type:'');el.textContent=message;}
 function norm(t){return (t||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();}
 function findOne(text,patterns){for(const re of patterns){const m=text.match(re);if(m&&m[1])return m[1].trim();}return '';}
-function numValue(v){if(!v)return '';const n=String(v).replace(/\s/g,'').replace(',','.').match(/\d+(?:\.\d+)?/);return n?n[0]:'';}
+function numValue(v){
+ if(!v)return '';
+ let x=String(v).replace(/[^\\d,.-]/g,'');
+ if(x.includes(',')&&x.includes('.'))x=x.replace(/\\./g,'').replace(',','.');
+ else if(x.includes(','))x=x.replace(',','.');
+ else if((x.match(/\\./g)||[]).length>1)x=x.replace(/\\./g,'');
+ const n=Number(x);return Number.isFinite(n)?String(n):'';
+}
+
 function parseInvoice(raw){
- const text=raw.replace(/\u00a0/g,' ').replace(/[ \t]+/g,' ').replace(/\r/g,'\n');
- const n=norm(text), supplierArea=norm(text.split('\n').slice(0,35).join('\n'));
+ const text=(raw||'').replace(/\\u00a0/g,' ').replace(/[ \\t]+/g,' ').replace(/\\r/g,'\\n');
+ const lines=text.split('\\n').map(x=>x.trim()).filter(Boolean);
+ const supplierArea=norm(lines.slice(0,50).join(' '));
  const out={supplier:'',nif:'',cpe:'',cui:'',power:'',tariff:'unknown',simple:'',peak:'',flat:'',off:'',gas:'',total:'',period:''};
  const suppliers=['SU Eletricidade','MEO Energia','Gold Energy','Goldenergy','Iberdrola','Coopérnico','Plenitude','Repsol','Endesa','Galp','EDP'];
  out.supplier=suppliers.find(x=>supplierArea.includes(norm(x)))||'';
- out.nif=findOne(text,[/(?:NIF|N\.I\.F\.?|Contribuinte|NIPC)\s*[:nº.]?\s*(\d{9})/i]);
- out.cpe=findOne(text,[/(?:CPE|Código\s+do\s+Ponto\s+de\s+Entrega)\s*[:\-]?\s*(PT\s*[A-Z0-9]{16,24})/i]);
- out.cui=findOne(text,[/(?:CUI|Código\s+Universal\s+da\s+Instalação)\s*[:\-]?\s*(PT\s*[A-Z0-9]{16,24})/i]);
- out.power=findOne(text,[/(?:potência\s+contratada|potência)\D{0,30}(\d{1,2}[,.]\d{1,2})\s*kVA/i,/(\d{1,2}[,.]\d{1,2})\s*kVA/i]);
- const tariffLine=(text.match(/(?:tarifa(?:rio)?|ciclo\s+horário|períodos\s+horários)[^\n]{0,160}/i)||[])[0]||'';
- const tariffNorm=norm(tariffLine);
- const tri=/tri[- ]?horario|tres periodos/.test(tariffNorm),bi=/bi[- ]?horario|dois periodos/.test(tariffNorm);
- out.tariff=tri?'tri':bi?'bi':/simples/.test(tariffNorm)?'simples':'unknown';
- const findKwh=(labels)=>{for(const label of labels){const re=new RegExp(label+'[^\\n]{0,100}?(\\d{1,6}(?:[.,]\\d{1,3})?)\\s*kWh','i');const m=text.match(re);if(m)return numValue(m[1]);}return '';};
- out.peak=findKwh(['consumo em ponta','energia ativa ponta','ponta','horas de ponta']);
- out.flat=findKwh(['consumo em cheias','energia ativa cheias','cheias','horas cheias']);
- out.off=findKwh(['consumo em vazio','energia ativa vazio','fora de vazio','horas de vazio','vazio']);
- out.gas=findKwh(['consumo de gás','consumo de gas','energia gás','energia gas','gás natural','gas natural']);
- const simpleValues=[...new Set([...text.matchAll(/Energia\s+Simples\s*\(medida\)[\s\S]{0,180}?(\d{1,6}(?:[.,]\d{1,3})?)\s*kWh/gi)].map(m=>Number(numValue(m[1]))).filter(v=>v>0))];
- if(out.tariff==='simples'&&simpleValues.length)out.simple=simpleValues.reduce((a,b)=>a+b,0).toFixed(2);
- out.total=findOne(text,[/o\s+valor\s+deste\s+documento\s+[eé]\s*(?:€\s*)?(\d{1,4}(?:[ .]\d{3})*[,.]\d{2})\s*€?/i,/pagamento\s+desta\s+fatura[^\n]{0,100}?montante:\s*(\d{1,4}(?:[ .]\d{3})*[,.]\d{2})/i,/\bTOTAL\s+(\d{1,4}(?:[ .]\d{3})*[,.]\d{2})\s*€/i]);
+ out.nif=findOne(text,[/(?:NIF|N\\.I\\.F\\.?|Contribuinte|NIPC)\\s*[:nº.]?\\s*(\\d{9})/i]);
+ out.cpe=findOne(text,[/(?:CPE|Código\\s+do\\s+Ponto\\s+de\\s+Entrega)\\s*[:\\-]?\\s*(PT\\s*[A-Z0-9]{16,24})/i]);
+ out.cui=findOne(text,[/(?:CUI|Código\\s+Universal\\s+da\\s+Instalação)\\s*[:\\-]?\\s*(PT\\s*[A-Z0-9]{16,24})/i]);
+ out.power=findOne(text,[/(?:potência\\s+contratada|potência)\\D{0,35}(\\d{1,2}[,.]\\d{1,2})\\s*kVA/i,/(\\d{1,2}[,.]\\d{1,2})\\s*kVA/i]);
+ out.tariff=/tri[- ]?hor[aá]rio|tr[ií]hor[aá]rio|tr[eê]s per[ií]odos/i.test(text)?'tri':/bi[- ]?hor[aá]rio|dois per[ií]odos/i.test(text)?'bi':/tarifa(?:rio)?[^\\n]{0,70}simples|ciclo hor[aá]rio[^\\n]{0,70}simples/i.test(text)?'simples':'unknown';
+ const getConsumption=(labels)=>{
+  const wanted=labels.map(norm);
+  for(let i=0;i<lines.length;i++){
+   if(!wanted.some(label=>norm(lines[i]).includes(label)))continue;
+   const window=[lines[i],lines[i+1]||''].join(' ');
+   const m=window.match(/(\\d[\\d .]*(?:,\\d{1,3})?)\\s*kwh\\b/i)||window.match(/kwh\\s*[:=]?\\s*(\\d[\\d .]*(?:,\\d{1,3})?)/i);
+   if(m){const v=numValue(m[1]);if(v&&Number(v)<1000000)return v;}
+  }
+  return '';
+ };
+ out.peak=getConsumption(['consumo em ponta','energia ativa ponta','horas de ponta','ponta']);
+ out.flat=getConsumption(['consumo em cheias','energia ativa cheias','horas cheias','cheias']);
+ out.off=getConsumption(['consumo em vazio','energia ativa vazio','fora de vazio','horas de vazio','vazio']);
+ out.gas=getConsumption(['consumo de gás','consumo de gas','energia gás','energia gas','gás natural','gas natural']);
+ out.simple=getConsumption(['energia simples medida','consumo simples','energia ativa simples','consumo total eletricidade','consumo total electricidade']);
+ if(!out.simple&&out.tariff==='simples')out.simple=getConsumption(['energia ativa','eletricidade ativa','consumo de eletricidade']);
+ out.total=findOne(text,[/valor\\s+(?:total\\s+)?(?:a\\s+pagar|deste\\s+documento)[^\\d€]{0,35}(?:€\\s*)?(\\d{1,4}(?:[ .]\\d{3})*[,.]\\d{2})/i,/total\\s+da\\s+fatura[^\\d€]{0,25}(?:€\\s*)?(\\d{1,4}(?:[ .]\\d{3})*[,.]\\d{2})/i,/montante\\s+(?:a\\s+pagar)?[^\\d€]{0,25}(?:€\\s*)?(\\d{1,4}(?:[ .]\\d{3})*[,.]\\d{2})/i,/\\bTOTAL\\s+(\\d{1,4}(?:[ .]\\d{3})*[,.]\\d{2})\\s*€/i]);
  return out;
 }
+
 async function pdfText(file){
  if(!window.pdfjsLib)throw new Error('A biblioteca de leitura de PDF não carregou. Verifique a ligação à internet e tente novamente.');
  const data=await file.arrayBuffer(),pdf=await pdfjsLib.getDocument({data}).promise;let all='';
@@ -147,16 +163,35 @@ async function pdfText(file){
  }
  return all;
 }
+function makeOcrCanvas(source){
+ const scale=Math.min(2.2,2600/source.width,2.2);
+ const cv=document.createElement('canvas');cv.width=Math.round(source.width*scale);cv.height=Math.round(source.height*scale);
+ const c=cv.getContext('2d',{willReadFrequently:true});c.drawImage(source,0,0,cv.width,cv.height);
+ const img=c.getImageData(0,0,cv.width,cv.height),d=img.data;
+ for(let i=0;i<d.length;i+=4){const gray=.299*d[i]+.587*d[i+1]+.114*d[i+2];const contrast=Math.max(0,Math.min(255,(gray-150)*1.65+150));const v=contrast<178?0:255;d[i]=d[i+1]=d[i+2]=v;}
+ c.putImageData(img,0,0);return cv;
+}
+async function runOcr(worker,source){
+ const prepared=makeOcrCanvas(source);
+ try{await worker.setParameters({tessedit_pageseg_mode:'6',preserve_interword_spaces:'1'});}catch(e){}
+ const result=await worker.recognize(prepared);return result.data.text||'';
+}
 async function pdfOcrText(file){
  if(!window.pdfjsLib||!window.Tesseract)throw new Error('As bibliotecas de leitura não carregaram. Verifique a ligação à internet.');
- const pdf=await pdfjsLib.getDocument({data:await file.arrayBuffer()}).promise;
- const worker=await Tesseract.createWorker('por');let all='';
- try{for(let p=1;p<=Math.min(pdf.numPages,4);p++){const page=await pdf.getPage(p),vp=page.getViewport({scale:2}),cv=document.createElement('canvas');cv.width=vp.width;cv.height=vp.height;await page.render({canvasContext:cv.getContext('2d'),viewport:vp}).promise;const result=await worker.recognize(cv);all+='\n'+result.data.text;}}
+ const pdf=await pdfjsLib.getDocument({data:await file.arrayBuffer()}).promise,worker=await Tesseract.createWorker('por');let all='';
+ try{for(let p=1;p<=Math.min(pdf.numPages,5);p++){const page=await pdf.getPage(p),vp=page.getViewport({scale:2.35}),cv=document.createElement('canvas');cv.width=vp.width;cv.height=vp.height;await page.render({canvasContext:cv.getContext('2d'),viewport:vp}).promise;all+='\\n'+await runOcr(worker,cv);}}
  finally{await worker.terminate();}
  return all;
 }
+
 function detectedCount(d){return [d.supplier,d.nif,d.cpe,d.cui,d.power,d.tariff!=='unknown'?d.tariff:'',d.simple,d.peak,d.flat,d.off,d.gas,d.total].filter(Boolean).length;}
-async function imageText(file){if(!window.Tesseract)throw new Error('A biblioteca OCR não carregou. Verifique a ligação à internet.');const worker=await Tesseract.createWorker('por');try{const r=await worker.recognize(file);return r.data.text;}finally{await worker.terminate();}}
+async function imageText(file){
+ if(!window.Tesseract)throw new Error('A biblioteca OCR não carregou. Verifique a ligação à internet.');
+ const worker=await Tesseract.createWorker('por');
+ try{const bitmap=await createImageBitmap(file);return await runOcr(worker,bitmap);}
+ finally{await worker.terminate();}
+}
+
 function fill(id,value){if(value!==undefined&&value!==null&&value!==''&&$(id))$(id).value=value;}
 function updateBillSummary(){
  const total=Number($('invoiceTotal').value),kwh=['kwhSimple','kwhPeak','kwhFlat','kwhOff'].reduce((s,id)=>s+(Number($(id).value)||0),0);
@@ -168,21 +203,26 @@ async function readInvoice(file){
  if(!file)return;
  $('detected').classList.add('hidden');showStatus('A ler a fatura… O documento permanece neste dispositivo.');
  try{
-  let raw;if(file.type==='application/pdf'||file.name.toLowerCase().endsWith('.pdf'))raw=await pdfText(file);else if(file.type.startsWith('image/'))raw=await imageText(file);else throw new Error('Formato não suportado. Escolha PDF, JPG ou PNG.');
-  let d=parseInvoice(raw);
-  if((file.type==='application/pdf'||file.name.toLowerCase().endsWith('.pdf'))&&detectedCount(d)<7){showStatus('A leitura do PDF encontrou poucos dados. A tentar reconhecimento visual das páginas…');const visual=await pdfOcrText(file);const vd=parseInvoice(visual);if(detectedCount(vd)>detectedCount(d)){raw+='\n'+visual;d=vd;}else raw+='\n'+visual;}
-  fill('supplier',d.supplier);fill('nif',d.nif);fill('cpe',d.cpe);fill('cui',d.cui);fill('power',d.power);fill('meterTariff',d.tariff);fill('kwhSimple',d.simple);fill('kwhPeak',d.peak);fill('kwhFlat',d.flat);fill('kwhOff',d.off);fill('gasKwh',d.gas);fill('invoiceTotal',d.total);
-  
-  $('detected').classList.remove('hidden');
-  const count=detectedCount(d);
-  updateBillSummary();
-  showStatus('Leitura terminada. Foram identificados '+count+' campos possíveis. Confirme ou corrija todos os dados antes de os utilizar.',count>=4?'':'warn');
-  $('readNotes').textContent='A leitura encontrou '+count+' campos. Texto extraído: '+raw.length+' caracteres. Campos não detetados devem ser preenchidos manualmente.';
- }catch(e){showStatus(e.message||'Não foi possível ler este documento. Preencha os campos manualmente.', 'error');$('detected').classList.remove('hidden');}
+  let raw;
+  if(file.type==='application/pdf'||file.name.toLowerCase().endsWith('.pdf'))raw=await pdfText(file);
+  else if(file.type.startsWith('image/'))raw=await imageText(file);
+  else throw new Error('Formato não suportado. Escolha PDF, JPG ou PNG.');
+  if(file.type==='application/pdf'||file.name.toLowerCase().endsWith('.pdf')){
+   showStatus('A cruzar o texto do PDF com reconhecimento visual melhorado…');
+   const visual=await pdfOcrText(file);raw+='\\n'+visual;
+  }
+  const d=parseInvoice(raw);
+  fill('supplier',d.supplier);fill('nif',d.nif);fill('cpe',d.cpe);fill('cui',d.cui);fill('power',d.power);fill('meterTariff',d.tariff);
+  fill('kwhSimple',d.simple);fill('kwhPeak',d.peak);fill('kwhFlat',d.flat);fill('kwhOff',d.off);fill('gasKwh',d.gas);fill('invoiceTotal',d.total);
+  $('detected').classList.remove('hidden');const count=detectedCount(d);updateBillSummary();
+  showStatus('Leitura terminada. Foram identificados '+count+' campos possíveis. Confirme todos os valores; os dados duvidosos devem ser corrigidos manualmente.',count>=4?'':'warn');
+  $('readNotes').textContent='Leitura combinada de texto PDF e OCR visual. Foram encontrados '+count+' campos possíveis em '+raw.length+' caracteres. Confirme especialmente os consumos e os códigos antes de continuar.';
+ }catch(e){showStatus(e.message||'Não foi possível ler este documento. Preencha os campos manualmente.','error');$('detected').classList.remove('hidden');}
 }
+
 $('invoice').addEventListener('change',e=>readInvoice(e.target.files[0]));
 $('compareBtn').addEventListener('click',updateBillSummary);
-['supplier','cui','power','meterTariff','kwhSimple','kwhPeak','kwhFlat','kwhOff','invoiceTotal','galpDiscount'].forEach(id=>$(id)?.addEventListener('input',updateBillSummary));
+['supplier','nif','cpe','cui','power','meterTariff','kwhSimple','kwhPeak','kwhFlat','kwhOff','gasKwh','invoiceTotal'].forEach(id=>$(id)?.addEventListener('input',updateBillSummary));
 const canvas=$('signature');function resizeCanvas(){const ratio=Math.max(devicePixelRatio||1,1),r=canvas.getBoundingClientRect();const saved=signatureDirty?canvas.toDataURL():null;canvas.width=r.width*ratio;canvas.height=150*ratio;ctx=canvas.getContext('2d');ctx.scale(ratio,ratio);ctx.lineWidth=2.4;ctx.lineCap='round';ctx.strokeStyle='#102a43';if(saved){const img=new Image();img.onload=()=>ctx.drawImage(img,0,0,r.width,150);img.src=saved;}}
 function point(e){const r=canvas.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top};}
 canvas.addEventListener('pointerdown',e=>{drawing=true;canvas.setPointerCapture(e.pointerId);const p=point(e);ctx.beginPath();ctx.moveTo(p.x,p.y);e.preventDefault();});
