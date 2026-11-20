@@ -126,47 +126,67 @@ function numValue(v){
 function parseInvoice(raw){
  const text=(raw||'').replace(/\u00a0/g,' ').replace(/[ \t]+/g,' ').replace(/\r/g,'\n');
  const lines=text.split('\n').map(x=>x.trim()).filter(Boolean);
- const supplierArea=norm(lines.slice(0,50).join(' '));
+ const supplierArea=norm(lines.slice(0,60).join(' '));
  const out={name:'',address:'',postal:'',supplier:'',nif:'',cpe:'',cui:'',power:'',tariff:'unknown',simple:'',peak:'',flat:'',off:'',outside:'',gas:'',total:'',period:''};
  const suppliers=['SU Eletricidade','MEO Energia','Gold Energy','Goldenergy','Iberdrola','Coopérnico','Plenitude','Repsol','Endesa','Galp','EDP'];
  out.supplier=suppliers.find(x=>supplierArea.includes(norm(x)))||'';
- // Extração conservadora: só aceita nome/morada quando aparecem associados a rótulos da fatura.
- out.name=findOne(text,[/(?:titular(?:s+dos+contrato)?|nomes+dos+cliente|cliente)s*[:\-]\s*([^\n]{3,90})/i]);
- out.address=findOne(text,[/(?:moradas+des+fornecimento|moradas+des+consumo|locals+des+consumo|endereços+des+fornecimento|morada)s*[:\-]\s*([^\n]{6,120})/i]);
+ out.name=findOne(text,[/(?:titular(?:\s+do\s+contrato)?|nome\s+do\s+cliente|cliente)\s*[:\-]\s*([^\n]{3,90})/i]);
+ out.address=findOne(text,[/(?:morada\s+de\s+fornecimento|morada\s+de\s+consumo|local\s+de\s+consumo|endereço\s+de\s+fornecimento|morada)\s*[:\-]\s*([^\n]{6,120})/i]);
  out.postal=findOne(text,[/\b(\d{4}-\d{3}\s+[A-ZÀ-Ú][^\n,;]{1,45})/i]);
  if(out.name&&suppliers.some(x=>norm(out.name).includes(norm(x))))out.name='';
-
  out.nif=findOne(text,[/(?:NIF|N\.I\.F\.?|Contribuinte|NIPC)\s*[:nº.]?\s*(\d{9})/i]);
  out.cpe=findOne(text,[/(?:CPE|Código\s+do\s+Ponto\s+de\s+Entrega)\s*[:\-]?\s*(PT\s*[A-Z0-9]{16,24})/i]);
  out.cui=findOne(text,[/(?:CUI|Código\s+Universal\s+da\s+Instalação)\s*[:\-]?\s*(PT\s*[A-Z0-9]{16,24})/i]);
  out.power=findOne(text,[/(?:potência\s+contratada|potência)\D{0,35}(\d{1,2}[,.]\d{1,2})\s*kVA/i,/(\d{1,2}[,.]\d{1,2})\s*kVA/i]);
- out.tariff=/tri[- ]?hor[aá]rio|tr[ií]hor[aá]rio|tr[eê]s per[ií]odos/i.test(text)?'tri':/bi[- ]?hor[aá]rio|dois per[ií]odos/i.test(text)?'bi':/tarifa(?:rio)?[^\n]{0,70}simples|ciclo hor[aá]rio[^\n]{0,70}simples/i.test(text)?'simples':'unknown';
- const getConsumption=(labels)=>{
-  const wanted=labels.map(norm);
+ out.tariff=/tri[- ]?hor[aá]rio|tr[ií]hor[aá]rio|tr[eê]s\s+per[ií]odos/i.test(text)?'tri':/bi[- ]?hor[aá]rio|dois\s+per[ií]odos/i.test(text)?'bi':/tarifa(?:rio)?[^\n]{0,70}simples|ciclo\s+hor[aá]rio[^\n]{0,70}simples/i.test(text)?'simples':'unknown';
+
+ // Procura o valor associado ao período, sem confundir "fora de vazio" com "vazio".
+ // Aceita rótulo e valor na mesma linha ou em linhas consecutivas do PDF/OCR.
+ const valueAfterKwh=(str)=>{
+  const m=str.match(/(\d{1,3}(?:[ .]\d{3})*(?:[,.]\d{1,3})?|\d+(?:[,.]\d{1,3})?)\s*kwh\b/i)
+       ||str.match(/\bkwh\s*[:=]?\s*(\d{1,3}(?:[ .]\d{3})*(?:[,.]\d{1,3})?|\d+(?:[,.]\d{1,3})?)/i);
+  if(!m)return '';
+  const v=numValue(m[1]);return v!==''&&Number(v)<1000000?v:'';
+ };
+ const findPeriod=(kind)=>{
+  const patterns={
+   peak:[/\bponta\b/i],
+   flat:[/\bcheias\b/i],
+   off:[/\bvazio\b/i],
+   outside:[/fora\s+de\s+vazio/i],
+   gas:[/g[aá]s\s+natural|consumo\s+de\s+g[aá]s/i],
+   simple:[/simples/i]
+  }[kind];
   for(let i=0;i<lines.length;i++){
-   const normalizedLine=norm(lines[i]);
-   // "fora de vazio" contém a palavra "vazio"; não pode ser confundido com o período vazio.
-   if(wanted.includes('vazio')&&normalizedLine.includes('fora de vazio'))continue;
-   if(!wanted.some(label=>normalizedLine.includes(label)))continue;
-   const window=[lines[i],lines[i+1]||''].join(' ');
-   const m=window.match(/(\d[\d .]*(?:,\d{1,3})?)\s*kwh\b/i)||window.match(/kwh\s*[:=]?\s*(\d[\d .]*(?:,\d{1,3})?)/i);
-   if(m){const v=numValue(m[1]);if(v&&Number(v)<1000000)return v;}
+   const line=lines[i],n=norm(line);
+   if(kind==='off'&&/fora\s+de\s+vazio/i.test(n))continue;
+   const match=patterns.some(p=>p.test(line));
+   if(!match)continue;
+   // Não aceitar valores de preço (€/kWh); exige unidade kWh.
+   for(const candidate of [line,lines[i+1]||'',lines[i-1]||'']){
+    if(/€\s*\/?\s*kwh|eur\s*\/?\s*kwh/i.test(candidate))continue;
+    const v=valueAfterKwh(candidate);if(v!=='')return v;
+   }
+   // Algumas faturas apresentam "Ponta 123,4" sem repetir kWh na mesma linha.
+   const m=line.match(/(?:ponta|cheias|vazio|fora\s+de\s+vazio|simples)[^\d]{0,24}(\d{1,3}(?:[ .]\d{3})*(?:[,.]\d{1,3})?)/i);
+   if(m&&/kwh/i.test((lines[i+1]||'')+' '+line)){const v=numValue(m[1]);if(v!==''&&Number(v)<1000000)return v;}
   }
   return '';
  };
- out.peak=getConsumption(['consumo em ponta','energia ativa ponta','horas de ponta','ponta']);
- out.flat=getConsumption(['consumo em cheias','energia ativa cheias','horas cheias','cheias']);
- out.off=getConsumption(['consumo em vazio','energia ativa vazio','horas de vazio','vazio']);
- out.outside=getConsumption(['consumo fora de vazio','energia fora de vazio','fora de vazio']);
- out.gas=getConsumption(['consumo de gás','consumo de gas','energia gás','energia gas','gás natural','gas natural']);
- out.simple=getConsumption(['energia simples medida','consumo simples','energia ativa simples','consumo total eletricidade','consumo total electricidade']);
- if(!out.simple&&out.tariff==='simples')out.simple=getConsumption(['energia ativa','eletricidade ativa','consumo de eletricidade']);
- // Mantém o valor integral, incluindo casas decimais com vírgula (ex.: 123,45 kWh).
- // Dividir por vírgulas aqui corrompia o consumo e produzia um total falso.
+ out.outside=findPeriod('outside');
+ out.peak=findPeriod('peak');
+ out.flat=findPeriod('flat');
+ out.off=findPeriod('off');
+ out.gas=findPeriod('gas');
+ out.simple=findPeriod('simple');
+ if(!out.simple&&out.tariff==='simples'){
+  for(let i=0;i<lines.length;i++)if(/energia\s+ativa|consumo\s+eletricidade|consumo\s+el[eé]trico/i.test(lines[i])){
+   const v=valueAfterKwh(lines[i]+' '+(lines[i+1]||''));if(v!==''){out.simple=v;break;}
+  }
+ }
  out.total=findOne(text,[/valor\s+(?:total\s+)?(?:a\s+pagar|deste\s+documento)[^\d€]{0,35}(?:€\s*)?(\d{1,4}(?:[ .]\d{3})*[,.]\d{2})/i,/total\s+da\s+fatura[^\d€]{0,25}(?:€\s*)?(\d{1,4}(?:[ .]\d{3})*[,.]\d{2})/i,/montante\s+(?:a\s+pagar)?[^\d€]{0,25}(?:€\s*)?(\d{1,4}(?:[ .]\d{3})*[,.]\d{2})/i,/\bTOTAL\s+(\d{1,4}(?:[ .]\d{3})*[,.]\d{2})\s*€/i]);
  return out;
 }
-
 async function pdfText(file){
  if(!window.pdfjsLib)throw new Error('A biblioteca de leitura de PDF não carregou. Verifique a ligação à internet e tente novamente.');
  const data=await file.arrayBuffer(),pdf=await pdfjsLib.getDocument({data}).promise;let all='';
