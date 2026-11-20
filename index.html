@@ -40,7 +40,7 @@ header{background:white;border-bottom:1px solid var(--line);position:sticky;top:
 <div class="field full"><label for="cpe">CPE (eletricidade)</label><input id="cpe" placeholder="PT000..."></div>
 <div class="field full"><label for="cui">CUI (gás), se aplicável</label><input id="cui" placeholder="Código da instalação de gás"></div>
 <div class="field"><label for="power">Potência contratada (kVA)</label><input id="power" placeholder="Ex.: 6,9"></div>
-<div class="field"><label for="meterTariff">Tarifário</label><select id="meterTariff"><option value="simples">Simples</option><option value="bi">Bi-horário</option><option value="tri">Tri-horário</option><option value="unknown">Não identificado</option></select></div>
+<div class="field"><label for="meterTariff">Tarifário</label><select id="meterTariff"><option value="unknown" selected>Confirmar tarifário</option><option value="simples">Simples</option><option value="bi">Bi-horário</option><option value="tri">Tri-horário</option></select></div>
 <div class="field"><label for="kwhSimple">Consumo simples (kWh)</label><input id="kwhSimple" type="number" min="0" step="0.01"></div>
 <div class="field"><label for="kwhPeak">Consumo ponta (kWh)</label><input id="kwhPeak" type="number" min="0" step="0.01"></div>
 <div class="field"><label for="kwhFlat">Consumo cheias (kWh)</label><input id="kwhFlat" type="number" min="0" step="0.01"></div>
@@ -226,6 +226,8 @@ function runTariffComparison(){
  if(!['simples','bi'].includes(tariff))error.push('A tabela Repsol Viva consultada só fornece preços simples e bi-horários nesta ficha; não é possível calcular este tarifário.');
  if(!days||days<1||days>366)error.push('Indique os dias abrangidos pelos consumos da fatura.');
  if(!consumption||consumption<=0)error.push('Confirme os consumos em kWh do período faturado.');
+ if(tariff==='simples'&&$('kwhSimple').value==='')error.push('O consumo simples não foi confirmado.');
+ if(tariff==='bi'&&($('kwhOutside').value===''||$('kwhOff').value===''))error.push('Confirme separadamente os consumos fora de vazio e vazio; não basta ter apenas um dos períodos.');
  if(error.length){const box=document.createElement('div');box.className='result';box.innerHTML='<strong>Não é possível calcular com segurança</strong><ul>'+error.map(x=>'<li>'+x+'</li>').join('')+'</ul>';root.append(box);return;}
  const annualFactor=365/days;
  const p=REPSOL_VIVA_2026.powerDaily[power.toFixed(2)];
