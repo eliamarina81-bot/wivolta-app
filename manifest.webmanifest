@@ -9,7 +9,7 @@
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#fbf9ff",
-  "theme_color": "#9b82c7",
+  "theme_color": "#20213f",
   "icons": [
     {
       "src": "/logo-wivolta.svg",
