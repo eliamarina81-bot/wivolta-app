@@ -285,8 +285,11 @@ async function readInvoice(file){
   if(file.type==='application/pdf'||file.name.toLowerCase().endsWith('.pdf'))raw=await pdfText(file);
   else if(file.type.startsWith('image/'))raw=await imageText(file);
   else throw new Error('Formato não suportado. Escolha PDF, JPG ou PNG.');
-  if((file.type==='application/pdf'||file.name.toLowerCase().endsWith('.pdf'))&&raw.replace(/\s/g,'').length<180){showStatus('PDF pouco legível. A iniciar OCR visual…');const visual=await pdfOcrText(file);raw+='\n'+visual;}
-  const d=parseInvoice(raw);
+  let d=parseInvoice(raw);
+  if((file.type==='application/pdf'||file.name.toLowerCase().endsWith('.pdf'))&&detectedCount(d)<5){
+   showStatus('A leitura do PDF encontrou poucos dados. A tentar também OCR visual…');
+   const visual=await pdfOcrText(file);raw+='\n'+visual;d=parseInvoice(raw);
+  }
   fill('holderName',d.name);fill('holderAddress',d.address);fill('holderPostal',d.postal);fill('supplier',d.supplier);fill('nif',d.nif);fill('cpe',d.cpe);fill('cui',d.cui);fill('power',d.power);fill('meterTariff',d.tariff);
   fill('kwhSimple',d.simple);fill('kwhPeak',d.peak);fill('kwhFlat',d.flat);fill('kwhOff',d.off);fill('kwhOutside',d.outside);fill('gasKwh',d.gas);fill('invoiceTotal',d.total);
   $('detected').classList.remove('hidden');const count=detectedCount(d);updateBillSummary();
