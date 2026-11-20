@@ -82,7 +82,25 @@ header{background:white;border-bottom:1px solid var(--line);position:sticky;top:
 </section>
 
 
-<section class="card" id="autoswitch"><h2>4. Auto-Switch · acompanhamento trimestral</h2><p class="sub">Registe clientes para uma revisão a cada 90 dias. Esta agenda fica guardada apenas neste navegador e não altera contratos automaticamente.</p><div class="grid"><div class="field"><label for="reviewName">Nome do cliente</label><input id="reviewName"></div><div class="field"><label for="reviewPhone">WhatsApp do cliente</label><input id="reviewPhone" type="tel" placeholder="351..."></div><div class="field"><label for="reviewEmail">Email do cliente</label><input id="reviewEmail" type="email"></div><div class="field"><label for="reviewDate">Última análise</label><input id="reviewDate" type="date"></div></div><div class="checks"><input type="checkbox" id="reviewConsent"><label for="reviewConsent">Confirmo que tenho autorização do cliente para guardar estes dados de contacto neste dispositivo e para o contactar para uma revisão solicitada.</label></div><div class="actions"><button class="btn" id="saveReview" type="button">Guardar revisão</button></div><div id="reviewStatus" class="status hidden"></div><div id="reviewList" class="results"></div><p class="muted">A agenda calcula a data prevista (90 dias). Não envia alertas em segundo plano, emails ou mudanças automáticas; use os links de contacto para agir. Não registe dados de faturas, CPE, CUI ou NIF nesta agenda.</p></section>
+<section class="card" id="autoswitch">
+<h2>4. Auto-Switch · painel de acompanhamento</h2>
+<p class="sub">Organiza revisões, fim de descontos e fidelizações. Os casos que exigem atenção aparecem primeiro. Os dados continuam guardados apenas neste navegador.</p>
+<div class="grid">
+<div class="field"><label for="reviewName">Nome do cliente</label><input id="reviewName"></div>
+<div class="field"><label for="reviewPhone">WhatsApp do cliente</label><input id="reviewPhone" type="tel" placeholder="351..."></div>
+<div class="field"><label for="reviewEmail">Email do cliente</label><input id="reviewEmail" type="email"></div>
+<div class="field"><label for="reviewDate">Data da última análise</label><input id="reviewDate" type="date"></div>
+<div class="field"><label for="discountEnd">Fim do desconto / campanha</label><input id="discountEnd" type="date"></div>
+<div class="field"><label for="fidelityEnd">Fim da fidelização (se existir)</label><input id="fidelityEnd" type="date"></div>
+<div class="field"><label for="annualSaving">Poupança potencial validada (€/ano)</label><input id="annualSaving" type="number" min="0" step="1" placeholder="Ex.: 45"></div>
+</div>
+<div class="checks"><input type="checkbox" id="reviewConsent"><label for="reviewConsent">Confirmo que tenho autorização do cliente para guardar estes dados de contacto neste dispositivo e para o contactar para uma revisão solicitada.</label></div>
+<div class="actions"><button class="btn" id="saveReview" type="button">Guardar acompanhamento</button></div>
+<div id="reviewStatus" class="status hidden"></div>
+<div id="reviewSummary" class="results"></div>
+<div id="reviewList" class="results"></div>
+<p class="muted">Prioridade automática: desconto a terminar nos próximos 15 dias, revisão trimestral vencida ou fidelização a terminar. Só assinala poupanças potenciais de pelo menos 30 €/ano como oportunidade. Não envia alertas em segundo plano nem muda contratos; os contactos são preparados para validação humana. Não registe NIF, CPE, CUI ou dados de faturas nesta agenda.</p>
+</section>
 <section class="card"><h2>5. Limites do acompanhamento</h2><p class="sub">A Wivolta pode rever periodicamente as condições e contactar o cliente com alternativas. A revisão não altera o contrato automaticamente.</p><div class="notice">Qualquer mudança exige validação de preços, condições, fidelização e autorização específica do titular. A Wivolta não está ligada em tempo real aos sistemas dos comercializadores nesta versão.</div></section>
 </main>
 <a class="wa-secret" href="https://wa.me/351938228963?text=Ol%C3%A1%2C%20quero%20enviar%20documentos%20para%20a%20Wivolta." target="_blank" rel="noopener" aria-label="Enviar documentos à Wivolta pelo WhatsApp" title="WhatsApp Wivolta"><span>Enviar documentos à Wivolta pelo WhatsApp</span>✆</a>
@@ -288,12 +306,49 @@ $('whatsappBtn').addEventListener('click',()=>{
  window.open('https://wa.me/351938228963?text='+encodeURIComponent(message),'_blank','noopener');
 });
 
-const REVIEW_KEY='wivolta-review-list-v1';
+const REVIEW_KEY='wivolta-review-list-v2';
 function loadReviews(){try{return JSON.parse(localStorage.getItem(REVIEW_KEY)||'[]')}catch{return []}}
 function saveReviews(items){localStorage.setItem(REVIEW_KEY,JSON.stringify(items));renderReviews();}
 function datePlus90(date){const d=new Date(date+'T12:00:00');d.setDate(d.getDate()+90);return d.toISOString().slice(0,10)}
-function renderReviews(){const root=$('reviewList');if(!root)return;root.replaceChildren();const items=loadReviews().sort((a,b)=>a.next.localeCompare(b.next));if(!items.length){root.textContent='Ainda não há revisões registadas neste dispositivo.';return;}items.forEach((item,index)=>{const box=document.createElement('div');box.className='result';const title=document.createElement('strong');title.textContent=item.name+' · revisão '+item.next;box.append(title);const info=document.createElement('p');info.className='muted';info.textContent='Email: '+(item.email||'—')+' | WhatsApp: '+(item.phone||'—');box.append(info);const actions=document.createElement('div');actions.className='actions';if(item.phone){const wa=document.createElement('a');wa.className='btn';wa.href='https://wa.me/'+item.phone.replace(/\D/g,'')+'?text='+encodeURIComponent('Olá '+item.name+', está na altura da revisão trimestral da sua energia. Quer que volte a analisar as opções disponíveis?');wa.target='_blank';wa.rel='noopener';wa.textContent='Contactar WhatsApp';actions.append(wa);}if(item.email){const mail=document.createElement('a');mail.className='btn secondary';mail.href='mailto:'+item.email+'?subject='+encodeURIComponent('Revisão trimestral de energia — Wivolta')+'&body='+encodeURIComponent('Olá '+item.name+',\n\nEstá na altura da revisão trimestral da sua energia. Se desejar, posso voltar a analisar as opções disponíveis.\n\nWivolta');mail.textContent='Preparar email';actions.append(mail);}const del=document.createElement('button');del.className='btn secondary';del.textContent='Apagar registo';del.addEventListener('click',()=>{const all=loadReviews();all.splice(index,1);saveReviews(all);});actions.append(del);box.append(actions);root.append(box);});}
-$('saveReview')?.addEventListener('click',()=>{const name=$('reviewName').value.trim(),phone=$('reviewPhone').value.trim(),email=$('reviewEmail').value.trim(),date=$('reviewDate').value;if(!name||(!phone&&!email)||!date||!$('reviewConsent').checked){$('reviewStatus').textContent='Preencha o nome, pelo menos um contacto, a data e confirme a autorização.';$('reviewStatus').className='status warn';return;}const items=loadReviews();items.push({name,phone,email,last:date,next:datePlus90(date)});saveReviews(items);$('reviewStatus').textContent='Registo guardado neste navegador. Próxima revisão prevista: '+datePlus90(date);$('reviewStatus').className='status';$('reviewName').value='';$('reviewPhone').value='';$('reviewEmail').value='';$('reviewDate').value='';$('reviewConsent').checked=false;});renderReviews();
+function dayDiff(date){if(!date)return null;const now=new Date();now.setHours(0,0,0,0);const target=new Date(date+'T00:00:00');return Math.ceil((target-now)/86400000)}
+function reviewPriority(item){
+ const discount=dayDiff(item.discountEnd),fidelity=dayDiff(item.fidelityEnd),review=dayDiff(item.next);
+ if(discount!==null&&discount<=15&&discount>=0)return {rank:0,label:'Desconto termina em '+discount+' dia(s)',kind:'warn'};
+ if(review!==null&&review<=0)return {rank:1,label:'Revisão trimestral vencida',kind:'warn'};
+ if(fidelity!==null&&fidelity<=30&&fidelity>=0)return {rank:2,label:'Fidelização termina em '+fidelity+' dia(s)',kind:'warn'};
+ if(Number(item.saving)>=30)return {rank:3,label:'Oportunidade ≥ 30 €/ano',kind:'good'};
+ return {rank:4,label:'Acompanhamento agendado',kind:''};
+}
+function renderReviews(){
+ const root=$('reviewList'),summary=$('reviewSummary');if(!root||!summary)return;
+ root.replaceChildren();summary.replaceChildren();
+ const items=loadReviews().sort((a,b)=>{const pa=reviewPriority(a),pb=reviewPriority(b);return pa.rank-pb.rank||(a.next||'').localeCompare(b.next||'')});
+ const counts=[0,0,0,0];items.forEach(item=>{const p=reviewPriority(item);if(p.rank<4)counts[p.rank]++;});
+ const stats=[['Ação urgente',counts[0]+counts[1]+counts[2]],['Oportunidades ≥30€/ano',counts[3]],['Clientes acompanhados',items.length]];
+ stats.forEach(([label,value])=>{const d=document.createElement('div');d.className='result';const s=document.createElement('strong');s.textContent=label;d.append(s,document.createElement('br'),document.createTextNode(String(value)));summary.append(d);});
+ if(!items.length){root.textContent='Ainda não há clientes registados neste dispositivo.';return;}
+ items.forEach(item=>{
+  const p=reviewPriority(item),box=document.createElement('div');box.className='result';
+  const title=document.createElement('strong');title.textContent=item.name+' · '+p.label;box.append(title);
+  const info=document.createElement('p');info.className='muted';info.textContent='Próxima revisão: '+(item.next||'—')+' | Fim desconto: '+(item.discountEnd||'não indicado')+' | Fim fidelização: '+(item.fidelityEnd||'não indicado')+' | Poupança validada: '+(Number(item.saving)||0).toLocaleString('pt-PT')+' €/ano';box.append(info);
+  const contact=document.createElement('p');contact.className='muted';contact.textContent='Email: '+(item.email||'—')+' | WhatsApp: '+(item.phone||'—');box.append(contact);
+  const actions=document.createElement('div');actions.className='actions';
+  if(item.phone){const wa=document.createElement('a');wa.className='btn';wa.href='https://wa.me/'+item.phone.replace(/\D/g,'')+'?text='+encodeURIComponent('Olá '+item.name+', está na altura de rever as condições do seu contrato de energia. Quer que faça uma nova análise?');wa.target='_blank';wa.rel='noopener';wa.textContent='Contactar WhatsApp';actions.append(wa);}
+  if(item.email){const mail=document.createElement('a');mail.className='btn secondary';mail.href='mailto:'+item.email+'?subject='+encodeURIComponent('Revisão de energia — Wivolta')+'&body='+encodeURIComponent('Olá '+item.name+',\n\nGostaria de rever consigo as condições do seu contrato de energia.\n\nWivolta');mail.textContent='Preparar email';actions.append(mail);}
+  const done=document.createElement('button');done.className='btn secondary';done.textContent='Marcar revisão feita';done.addEventListener('click',()=>{const all=loadReviews(),idx=all.findIndex(x=>x.id===item.id);if(idx<0)return;all[idx].last=new Date().toISOString().slice(0,10);all[idx].next=datePlus90(all[idx].last);saveReviews(all);});actions.append(done);
+  const del=document.createElement('button');del.className='btn secondary';del.textContent='Apagar';del.addEventListener('click',()=>{saveReviews(loadReviews().filter(x=>x.id!==item.id));});actions.append(del);
+  box.append(actions);root.append(box);
+ });
+}
+$('saveReview')?.addEventListener('click',()=>{
+ const name=$('reviewName').value.trim(),phone=$('reviewPhone').value.trim(),email=$('reviewEmail').value.trim(),date=$('reviewDate').value;
+ const discountEnd=$('discountEnd').value,fidelityEnd=$('fidelityEnd').value,saving=Number($('annualSaving').value)||0;
+ if(!name||(!phone&&!email)||!date||!$('reviewConsent').checked){$('reviewStatus').textContent='Preencha nome, pelo menos um contacto, data da análise e confirme a autorização.';$('reviewStatus').className='status warn';return;}
+ const items=loadReviews();items.push({id:crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random(),name,phone,email,last:date,next:datePlus90(date),discountEnd,fidelityEnd,saving});
+ saveReviews(items);$('reviewStatus').textContent='Acompanhamento guardado. Próxima revisão: '+datePlus90(date);$('reviewStatus').className='status';
+ ['reviewName','reviewPhone','reviewEmail','reviewDate','discountEnd','fidelityEnd','annualSaving'].forEach(id=>$(id).value='');$('reviewConsent').checked=false;
+});
+renderReviews();
 window.addEventListener('resize',resizeCanvas);resizeCanvas();
 if('serviceWorker' in navigator && location.protocol.startsWith('http')){window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(err=>console.warn('PWA indisponível:',err)));}
 </script>
