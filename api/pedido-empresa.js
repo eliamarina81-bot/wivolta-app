@@ -15,8 +15,8 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "Pedido ou fatura em falta." });
     }
     const raw = String(body.file.data);
-    if (!/^[A-Za-z0-9+/]+={0,2}$/.test(raw) || raw.length > 5_500_000) {
-      return res.status(413).json({ error: "Ficheiro inválido ou demasiado grande (máximo 4 MB)." });
+    if (!/^[A-Za-z0-9+/]+={0,2}$/.test(raw) || raw.length > 4_100_000) {
+      return res.status(413).json({ error: "Ficheiro inválido ou demasiado grande (máximo 3 MB)." });
     }
     const allowed = ["application/pdf", "image/jpeg", "image/png"];
     if (!allowed.includes(body.file.type)) {
