@@ -76,7 +76,7 @@ header{background:white;border-bottom:1px solid var(--line);position:sticky;top:
 <div class="notice">A assinatura abaixo regista a confirmação do pedido de contacto e análise. Não substitui o formulário oficial, mandato ou contrato exigido pelo comercializador. Antes de qualquer mudança, será necessária a autorização específica e documentação aplicável.</div>
 <div style="margin-top:14px"><label>Assinatura do titular (opcional para pedido de contacto)</label><div class="signature"><canvas id="signature"></canvas><div class="sigfoot"><span id="sigLabel">Assine com o dedo ou rato</span><button type="button" class="btn secondary" id="clearSig">Limpar</button></div></div></div>
 <label class="checks"><input type="checkbox" id="privacy"><span>Li a <a href="/privacidade.html" target="_blank" rel="noopener">Informação de Privacidade</a>. Compreendo que os dados preenchidos ficam neste dispositivo e que só serão enviados à Wivolta os dados ou documentos que eu decidir enviar manualmente pelo WhatsApp. Não envio dados de terceiros sem autorização.</span></label>
-<div class="actions"><button class="btn" id="whatsappBtn" type="button">Preparar pedido no WhatsApp</button><button class="btn secondary" id="downloadSig" type="button">Guardar assinatura</button></div>
+<div class="actions"><button class="btn" id="whatsappBtn" type="button">Preparar pedido por email</button><button class="btn secondary" id="downloadSig" type="button">Guardar assinatura</button></div>
 <div id="sendStatus" class="status hidden"></div>
 <p class="muted">O botão apenas abre uma conversa. Não envia automaticamente a fatura nem os campos preenchidos. Só envie documentos depois de confirmar que é o titular ou que tem autorização para os partilhar.</p>
 </section>
@@ -103,7 +103,7 @@ header{background:white;border-bottom:1px solid var(--line);position:sticky;top:
 </section>
 <section class="card"><h2>5. Limites do acompanhamento</h2><p class="sub">A Wivolta pode rever periodicamente as condições e contactar o cliente com alternativas. A revisão não altera o contrato automaticamente.</p><div class="notice">Qualquer mudança exige validação de preços, condições, fidelização e autorização específica do titular. A Wivolta não está ligada em tempo real aos sistemas dos comercializadores nesta versão.</div></section>
 </main>
-<a class="wa-secret" href="https://wa.me/351938228963?text=Ol%C3%A1%2C%20quero%20enviar%20documentos%20para%20a%20Wivolta." target="_blank" rel="noopener" aria-label="Enviar documentos à Wivolta pelo WhatsApp" title="WhatsApp Wivolta"><span>Enviar documentos à Wivolta pelo WhatsApp</span>✆</a>
+
 <footer>© 2026 Wivolta · Comparação transparente de energia · <a href="/privacidade.html">Privacidade</a> · <a href="mailto:wivolta.parceiros@gmail.com">Contacto Wivolta</a><br>Os documentos selecionados são processados localmente no navegador. Não feche a página durante a leitura.</footer>
 
 <script>
@@ -364,10 +364,11 @@ canvas.addEventListener('pointerup',()=>drawing=false);canvas.addEventListener('
 $('clearSig').addEventListener('click',()=>{ctx.clearRect(0,0,canvas.width,canvas.height);signatureDirty=false;$('sigLabel').textContent='Assine com o dedo ou rato';});
 $('downloadSig').addEventListener('click',()=>{if(!signatureDirty){alert('Ainda não existe assinatura.');return;}const a=document.createElement('a');a.href=canvas.toDataURL('image/png');a.download='assinatura-wivolta.png';a.click();});
 $('whatsappBtn').addEventListener('click',()=>{
- if(!$('privacy').checked){alert('É necessário aceitar a informação de privacidade para enviar o pedido.');return;}
- const message='Olá, quero contactar a Wivolta para pedir uma análise da minha fatura. Vou anexar o documento manualmente nesta conversa.';
- $('sendStatus').textContent='A abrir o WhatsApp. Anexe manualmente a fatura. Nenhum NIF, CPE, CUI, telefone, email ou dado de consumo será colocado no link.';$('sendStatus').className='status warn';
- window.open('https://wa.me/351938228963?text='+encodeURIComponent(message),'_blank','noopener');
+ if(!$('privacy').checked){alert('É necessário aceitar a informação de privacidade para preparar o pedido.');return;}
+ const subject='Pedido de análise de energia — Wivolta';
+ const body='Olá, Wivolta.\n\nQuero pedir uma análise da minha fatura de eletricidade/gás.\n\nVou anexar a fatura apenas se decidir partilhá-la.\n\nObrigado(a).';
+ $('sendStatus').textContent='A abrir a aplicação de email. Anexe manualmente a fatura apenas se quiser. O número pessoal da equipa Wivolta não é divulgado.';$('sendStatus').className='status';
+ window.location.href='mailto:wivolta.parceiros@gmail.com?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
 });
 
 const REVIEW_KEY='wivolta-review-list-v2';
