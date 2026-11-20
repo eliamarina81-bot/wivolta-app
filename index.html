@@ -130,6 +130,7 @@ function numValue(v){
 function parseInvoice(raw){
  const text=(raw||'').replace(/\u00a0/g,' ').replace(/[ \t]+/g,' ').replace(/\r/g,'\n');
  const lines=text.split('\n').map(x=>x.trim()).filter(Boolean);
+ const normalized=norm(text);
  const supplierArea=norm(lines.slice(0,60).join(' '));
  const out={name:'',address:'',postal:'',supplier:'',nif:'',cpe:'',cui:'',power:'',tariff:'unknown',simple:'',peak:'',flat:'',off:'',outside:'',gas:'',total:'',period:''};
  const suppliers=['SU Eletricidade','MEO Energia','Gold Energy','Goldenergy','Iberdrola','Coopérnico','Plenitude','Repsol','Endesa','Galp','EDP'];
@@ -142,53 +143,48 @@ function parseInvoice(raw){
  out.cpe=findOne(text,[/(?:CPE|Código\s+do\s+Ponto\s+de\s+Entrega)\s*[:\-]?\s*(PT\s*[A-Z0-9]{16,24})/i]);
  out.cui=findOne(text,[/(?:CUI|Código\s+Universal\s+da\s+Instalação)\s*[:\-]?\s*(PT\s*[A-Z0-9]{16,24})/i]);
  out.power=findOne(text,[/(?:potência\s+contratada|potência)\D{0,35}(\d{1,2}[,.]\d{1,2})\s*kVA/i,/(\d{1,2}[,.]\d{1,2})\s*kVA/i]);
- out.tariff=/tri[- ]?hor[aá]rio|tr[ií]hor[aá]rio|tr[eê]s\s+per[ií]odos/i.test(text)?'tri':/bi[- ]?hor[aá]rio|dois\s+per[ií]odos/i.test(text)?'bi':/tarifa(?:rio)?[^\n]{0,70}simples|ciclo\s+hor[aá]rio[^\n]{0,70}simples/i.test(text)?'simples':'unknown';
 
- // Procura o valor associado ao período, sem confundir "fora de vazio" com "vazio".
- // Aceita rótulo e valor na mesma linha ou em linhas consecutivas do PDF/OCR.
- const valueAfterKwh=(str)=>{
-  const m=str.match(/(\d{1,3}(?:[ .]\d{3})*(?:[,.]\d{1,3})?|\d+(?:[,.]\d{1,3})?)\s*kwh\b/i)
-       ||str.match(/\bkwh\s*[:=]?\s*(\d{1,3}(?:[ .]\d{3})*(?:[,.]\d{1,3})?|\d+(?:[,.]\d{1,3})?)/i);
-  if(!m)return '';
-  const v=numValue(m[1]);return v!==''&&Number(v)<1000000?v:'';
- };
- const findPeriod=(kind)=>{
-  const patterns={
-   peak:[/\bponta\b/i],
-   flat:[/\bcheias\b/i],
-   off:[/\bvazio\b/i],
-   outside:[/fora\s+de\s+vazio/i],
-   gas:[/g[aá]s\s+natural|consumo\s+de\s+g[aá]s/i],
-   simple:[/simples/i]
-  }[kind];
-  for(let i=0;i<lines.length;i++){
-   const line=lines[i],n=norm(line);
-   if(kind==='off'&&/fora\s+de\s+vazio/i.test(n))continue;
-   const match=patterns.some(p=>p.test(line));
-   if(!match)continue;
-   // Não aceitar valores de preço (€/kWh); exige unidade kWh.
-   for(const candidate of [line,lines[i+1]||'',lines[i-1]||'']){
-    if(/€\s*\/?\s*kwh|eur\s*\/?\s*kwh/i.test(candidate))continue;
-    const v=valueAfterKwh(candidate);if(v!=='')return v;
-   }
-   // Algumas faturas apresentam "Ponta 123,4" sem repetir kWh na mesma linha.
-   const m=line.match(/(?:ponta|cheias|vazio|fora\s+de\s+vazio|simples)[^\d]{0,24}(\d{1,3}(?:[ .]\d{3})*(?:[,.]\d{1,3})?)/i);
-   if(m&&/kwh/i.test((lines[i+1]||'')+' '+line)){const v=numValue(m[1]);if(v!==''&&Number(v)<1000000)return v;}
-  }
-  return '';
- };
- out.outside=findPeriod('outside');
- out.peak=findPeriod('peak');
- out.flat=findPeriod('flat');
- out.off=findPeriod('off');
- out.gas=findPeriod('gas');
- out.simple=findPeriod('simple');
- if(!out.simple&&out.tariff==='simples'){
-  for(let i=0;i<lines.length;i++)if(/energia\s+ativa|consumo\s+eletricidade|consumo\s+el[eé]trico/i.test(lines[i])){
-   const v=valueAfterKwh(lines[i]+' '+(lines[i+1]||''));if(v!==''){out.simple=v;break;}
-  }
+ // O ciclo é determinado por indicação explícita do tarifário/ciclo, nunca pela tabela de leituras.
+ const cycleLines=lines.filter(l=>/(ciclo\s+hor[aá]rio|tarif[aá]rio|tipo\s+de\s+tarifa|modalidade\s+hor[aá]ria)/i.test(l));
+ const cycleText=norm(cycleLines.join(' '));
+ if(/tri[- ]?horario|tres\s+periodos/.test(cycleText))out.tariff='tri';
+ else if(/bi[- ]?horario|dois\s+periodos/.test(cycleText))out.tariff='bi';
+ else if(/\bsimples\b/.test(cycleText))out.tariff='simples';
+ else if(/tri[- ]?horario|tres\s+periodos/.test(normalized)&&/(tarifa|ciclo|contrato)/.test(normalized))out.tariff='tri';
+ else if(/bi[- ]?horario|dois\s+periodos/.test(normalized)&&/(tarifa|ciclo|contrato)/.test(normalized))out.tariff='bi';
+ else if(/(?:tarifario|ciclo horario)[^\n]{0,90}\bsimples\b/i.test(text))out.tariff='simples';
+
+ const parseQty=(v)=>{if(!v)return '';let x=String(v).replace(/\s/g,'').replace(/[€]/g,'');if(/^\d{1,3}(?:\.\d{3})+,\d+$/.test(x))x=x.replace(/\./g,'').replace(',','.');else if(/^\d+,\d+$/.test(x))x=x.replace(',','.');else if(/^\d{1,3}(?: \d{3})+(?:,\d+)?$/.test(v))x=x.replace(/ /g,'').replace(',','.');const n=Number(x);return Number.isFinite(n)&&n>=0&&n<1000000?String(n):'';};
+ const qtyIn=(line)=>{const m=line.match(/(\d{1,3}(?:[ .]\d{3})*(?:[,.]\d{1,3})?|\d+(?:[,.]\d{1,3})?)\s*kwh\b/i)||line.match(/\bkwh\s*[:=]?\s*(\d+(?:[,.]\d+)?)/i);return m?parseQty(m[1]):'';};
+
+ // Usa apenas linhas de energia ativa efetivamente faturada; exclui redes, descontos e leituras do contador.
+ const billed={simple:[],peak:[],flat:[],off:[],outside:[],gas:[]};
+ for(const line of lines){
+  const n=norm(line);
+  if(!/(energia\s+ativa|eletricidade\s+faturada|consumo\s+(?:de\s+)?eletricidade)/i.test(n))continue;
+  if(/acesso\s+(?:as\s+)?redes|desconto|tarifa\s+social|reativa|potencia\s+contratada/i.test(n))continue;
+  const q=qtyIn(line);if(q==='')continue;
+  if(/gas\s+natural|energia\s+ativa\s+gas/i.test(n)){billed.gas.push(Number(q));continue;}
+  if(/fora\s+de\s+vazio/i.test(n)){billed.outside.push(Number(q));continue;}
+  if(/\bponta\b/i.test(n)){billed.peak.push(Number(q));continue;}
+  if(/\bcheias?\b/i.test(n)){billed.flat.push(Number(q));continue;}
+  if(/\bvazio\b/i.test(n)){billed.off.push(Number(q));continue;}
+  if(/\bsimples\b/i.test(n)||/eletricidade\s+faturada|consumo\s+(?:de\s+)?eletricidade/i.test(n))billed.simple.push(Number(q));
+ }
+ const sum=a=>a.length?String(Math.round(a.reduce((x,y)=>x+y,0)*1000)/1000):'';
+ out.peak=sum(billed.peak);out.flat=sum(billed.flat);out.off=sum(billed.off);out.outside=sum(billed.outside);out.gas=sum(billed.gas);out.simple=sum(billed.simple);
+
+ // Cabeçalho da fatura pode apresentar o total faturado sem discriminar ciclo.
+ const headline=findOne(text,[/(?:eletricidade\s+faturada|consumo\s+total\s+faturado)[^\n]{0,70}?(\d{1,3}(?:[ .]\d{3})*(?:[,.]\d{1,3})?)\s*kwh/i]);
+ if(!out.simple&&out.tariff==='simples'&&headline)out.simple=parseQty(headline);
+ // Se a fatura discriminar períodos, totaliza apenas as linhas de energia faturada por período.
+ if(out.tariff==='bi'&&!out.off&&!out.outside&&headline)out.simple='';
+ if(out.tariff==='tri'&&!out.peak&&!out.flat&&!out.off)out.simple='';
+ if(!out.tariff||out.tariff==='unknown'){
+  if(out.peak||out.flat||out.off||out.outside)out.tariff='unknown';
  }
  out.total=findOne(text,[/valor\s+(?:total\s+)?(?:a\s+pagar|deste\s+documento)[^\d€]{0,35}(?:€\s*)?(\d{1,4}(?:[ .]\d{3})*[,.]\d{2})/i,/total\s+da\s+fatura[^\d€]{0,25}(?:€\s*)?(\d{1,4}(?:[ .]\d{3})*[,.]\d{2})/i,/montante\s+(?:a\s+pagar)?[^\d€]{0,25}(?:€\s*)?(\d{1,4}(?:[ .]\d{3})*[,.]\d{2})/i,/\bTOTAL\s+(\d{1,4}(?:[ .]\d{3})*[,.]\d{2})\s*€/i]);
+ out.period=findOne(text,[/(?:período\s+de\s+faturação|período\s+faturado)\s*[:\-]?\s*([^\n]{5,60})/i]);
  return out;
 }
 async function pdfText(file){
