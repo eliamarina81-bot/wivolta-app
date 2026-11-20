@@ -161,7 +161,7 @@ function parseInvoice(raw){
  const billed={simple:[],peak:[],flat:[],off:[],outside:[],gas:[]};
  for(const line of lines){
   const n=norm(line);
-  if(!/(energia\s+ativa|eletricidade\s+faturada|consumo\s+(?:de\s+)?eletricidade)/i.test(n))continue;
+  if(!/(energia\s+ativa|consumo\s+(?:de\s+)?eletricidade)/i.test(n))continue;
   if(/acesso\s+(?:as\s+)?redes|desconto|tarifa\s+social|reativa|potencia\s+contratada/i.test(n))continue;
   const q=qtyIn(line);if(q==='')continue;
   if(/gas\s+natural|energia\s+ativa\s+gas/i.test(n)){billed.gas.push(Number(q));continue;}
@@ -169,7 +169,7 @@ function parseInvoice(raw){
   if(/\bponta\b/i.test(n)){billed.peak.push(Number(q));continue;}
   if(/\bcheias?\b/i.test(n)){billed.flat.push(Number(q));continue;}
   if(/\bvazio\b/i.test(n)){billed.off.push(Number(q));continue;}
-  if(/\bsimples\b/i.test(n)||/eletricidade\s+faturada|consumo\s+(?:de\s+)?eletricidade/i.test(n))billed.simple.push(Number(q));
+  if(/\bsimples\b/i.test(n)||/consumo\s+(?:de\s+)?eletricidade/i.test(n))billed.simple.push(Number(q));
  }
  const sum=a=>a.length?String(Math.round(a.reduce((x,y)=>x+y,0)*1000)/1000):'';
  out.peak=sum(billed.peak);out.flat=sum(billed.flat);out.off=sum(billed.off);out.outside=sum(billed.outside);out.gas=sum(billed.gas);out.simple=sum(billed.simple);
