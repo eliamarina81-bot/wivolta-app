@@ -145,7 +145,12 @@ function parseInvoice(raw){
  out.power=findOne(text,[/(?:potência\s+contratada|potência)\D{0,35}(\d{1,2}[,.]\d{1,2})\s*kVA/i,/(\d{1,2}[,.]\d{1,2})\s*kVA/i]);
 
  // O ciclo é determinado por indicação explícita do tarifário/ciclo, nunca pela tabela de leituras.
- const cycleLines=lines.filter(l=>/(ciclo\s+hor[aá]rio|tarif[aá]rio|tipo\s+de\s+tarifa|modalidade\s+hor[aá]ria)/i.test(l));
+ const cycleLines=[];
+ for(let i=0;i<lines.length;i++){
+  if(/ciclo\s+hor[aá]rio|tarif[aá]rio|tipo\s+de\s+tarifa|modalidade\s+hor[aá]ria/i.test(lines[i])){
+   cycleLines.push(lines.slice(i,Math.min(lines.length,i+5)).join(' '));
+  }
+ }
  const cycleText=norm(cycleLines.join(' '));
  if(/tri[- ]?horario|tres\s+periodos/.test(cycleText))out.tariff='tri';
  else if(/bi[- ]?horario|dois\s+periodos/.test(cycleText))out.tariff='bi';
