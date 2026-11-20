@@ -94,31 +94,31 @@ function norm(t){return (t||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').
 function findOne(text,patterns){for(const re of patterns){const m=text.match(re);if(m&&m[1])return m[1].trim();}return '';}
 function numValue(v){
  if(!v)return '';
- let x=String(v).replace(/[^\\d,.-]/g,'');
- if(x.includes(',')&&x.includes('.'))x=x.replace(/\\./g,'').replace(',','.');
+ let x=String(v).replace(/[^\d,.-]/g,'');
+ if(x.includes(',')&&x.includes('.'))x=x.replace(/\./g,'').replace(',','.');
  else if(x.includes(','))x=x.replace(',','.');
- else if((x.match(/\\./g)||[]).length>1)x=x.replace(/\\./g,'');
+ else if((x.match(/\./g)||[]).length>1)x=x.replace(/\./g,'');
  const n=Number(x);return Number.isFinite(n)?String(n):'';
 }
 
 function parseInvoice(raw){
- const text=(raw||'').replace(/\\u00a0/g,' ').replace(/[ \\t]+/g,' ').replace(/\\r/g,'\\n');
- const lines=text.split('\\n').map(x=>x.trim()).filter(Boolean);
+ const text=(raw||'').replace(/\u00a0/g,' ').replace(/[ \t]+/g,' ').replace(/\r/g,'\n');
+ const lines=text.split('\n').map(x=>x.trim()).filter(Boolean);
  const supplierArea=norm(lines.slice(0,50).join(' '));
  const out={supplier:'',nif:'',cpe:'',cui:'',power:'',tariff:'unknown',simple:'',peak:'',flat:'',off:'',gas:'',total:'',period:''};
  const suppliers=['SU Eletricidade','MEO Energia','Gold Energy','Goldenergy','Iberdrola','Coopérnico','Plenitude','Repsol','Endesa','Galp','EDP'];
  out.supplier=suppliers.find(x=>supplierArea.includes(norm(x)))||'';
- out.nif=findOne(text,[/(?:NIF|N\\.I\\.F\\.?|Contribuinte|NIPC)\\s*[:nº.]?\\s*(\\d{9})/i]);
- out.cpe=findOne(text,[/(?:CPE|Código\\s+do\\s+Ponto\\s+de\\s+Entrega)\\s*[:\\-]?\\s*(PT\\s*[A-Z0-9]{16,24})/i]);
- out.cui=findOne(text,[/(?:CUI|Código\\s+Universal\\s+da\\s+Instalação)\\s*[:\\-]?\\s*(PT\\s*[A-Z0-9]{16,24})/i]);
- out.power=findOne(text,[/(?:potência\\s+contratada|potência)\\D{0,35}(\\d{1,2}[,.]\\d{1,2})\\s*kVA/i,/(\\d{1,2}[,.]\\d{1,2})\\s*kVA/i]);
- out.tariff=/tri[- ]?hor[aá]rio|tr[ií]hor[aá]rio|tr[eê]s per[ií]odos/i.test(text)?'tri':/bi[- ]?hor[aá]rio|dois per[ií]odos/i.test(text)?'bi':/tarifa(?:rio)?[^\\n]{0,70}simples|ciclo hor[aá]rio[^\\n]{0,70}simples/i.test(text)?'simples':'unknown';
+ out.nif=findOne(text,[/(?:NIF|N\.I\.F\.?|Contribuinte|NIPC)\s*[:nº.]?\s*(\d{9})/i]);
+ out.cpe=findOne(text,[/(?:CPE|Código\s+do\s+Ponto\s+de\s+Entrega)\s*[:\-]?\s*(PT\s*[A-Z0-9]{16,24})/i]);
+ out.cui=findOne(text,[/(?:CUI|Código\s+Universal\s+da\s+Instalação)\s*[:\-]?\s*(PT\s*[A-Z0-9]{16,24})/i]);
+ out.power=findOne(text,[/(?:potência\s+contratada|potência)\D{0,35}(\d{1,2}[,.]\d{1,2})\s*kVA/i,/(\d{1,2}[,.]\d{1,2})\s*kVA/i]);
+ out.tariff=/tri[- ]?hor[aá]rio|tr[ií]hor[aá]rio|tr[eê]s per[ií]odos/i.test(text)?'tri':/bi[- ]?hor[aá]rio|dois per[ií]odos/i.test(text)?'bi':/tarifa(?:rio)?[^\n]{0,70}simples|ciclo hor[aá]rio[^\n]{0,70}simples/i.test(text)?'simples':'unknown';
  const getConsumption=(labels)=>{
   const wanted=labels.map(norm);
   for(let i=0;i<lines.length;i++){
    if(!wanted.some(label=>norm(lines[i]).includes(label)))continue;
    const window=[lines[i],lines[i+1]||''].join(' ');
-   const m=window.match(/(\\d[\\d .]*(?:,\\d{1,3})?)\\s*kwh\\b/i)||window.match(/kwh\\s*[:=]?\\s*(\\d[\\d .]*(?:,\\d{1,3})?)/i);
+   const m=window.match(/(\d[\d .]*(?:,\d{1,3})?)\s*kwh\b/i)||window.match(/kwh\s*[:=]?\s*(\d[\d .]*(?:,\d{1,3})?)/i);
    if(m){const v=numValue(m[1]);if(v&&Number(v)<1000000)return v;}
   }
   return '';
@@ -129,7 +129,7 @@ function parseInvoice(raw){
  out.gas=getConsumption(['consumo de gás','consumo de gas','energia gás','energia gas','gás natural','gas natural']);
  out.simple=getConsumption(['energia simples medida','consumo simples','energia ativa simples','consumo total eletricidade','consumo total electricidade']);
  if(!out.simple&&out.tariff==='simples')out.simple=getConsumption(['energia ativa','eletricidade ativa','consumo de eletricidade']);
- out.total=findOne(text,[/valor\\s+(?:total\\s+)?(?:a\\s+pagar|deste\\s+documento)[^\\d€]{0,35}(?:€\\s*)?(\\d{1,4}(?:[ .]\\d{3})*[,.]\\d{2})/i,/total\\s+da\\s+fatura[^\\d€]{0,25}(?:€\\s*)?(\\d{1,4}(?:[ .]\\d{3})*[,.]\\d{2})/i,/montante\\s+(?:a\\s+pagar)?[^\\d€]{0,25}(?:€\\s*)?(\\d{1,4}(?:[ .]\\d{3})*[,.]\\d{2})/i,/\\bTOTAL\\s+(\\d{1,4}(?:[ .]\\d{3})*[,.]\\d{2})\\s*€/i]);
+ out.total=findOne(text,[/valor\s+(?:total\s+)?(?:a\s+pagar|deste\s+documento)[^\d€]{0,35}(?:€\s*)?(\d{1,4}(?:[ .]\d{3})*[,.]\d{2})/i,/total\s+da\s+fatura[^\d€]{0,25}(?:€\s*)?(\d{1,4}(?:[ .]\d{3})*[,.]\d{2})/i,/montante\s+(?:a\s+pagar)?[^\d€]{0,25}(?:€\s*)?(\d{1,4}(?:[ .]\d{3})*[,.]\d{2})/i,/\bTOTAL\s+(\d{1,4}(?:[ .]\d{3})*[,.]\d{2})\s*€/i]);
  return out;
 }
 
@@ -179,7 +179,7 @@ async function runOcr(worker,source){
 async function pdfOcrText(file){
  if(!window.pdfjsLib||!window.Tesseract)throw new Error('As bibliotecas de leitura não carregaram. Verifique a ligação à internet.');
  const pdf=await pdfjsLib.getDocument({data:await file.arrayBuffer()}).promise,worker=await Tesseract.createWorker('por');let all='';
- try{for(let p=1;p<=Math.min(pdf.numPages,5);p++){const page=await pdf.getPage(p),vp=page.getViewport({scale:2.35}),cv=document.createElement('canvas');cv.width=vp.width;cv.height=vp.height;await page.render({canvasContext:cv.getContext('2d'),viewport:vp}).promise;all+='\\n'+await runOcr(worker,cv);}}
+ try{for(let p=1;p<=Math.min(pdf.numPages,5);p++){const page=await pdf.getPage(p),vp=page.getViewport({scale:2.35}),cv=document.createElement('canvas');cv.width=vp.width;cv.height=vp.height;await page.render({canvasContext:cv.getContext('2d'),viewport:vp}).promise;all+='\n'+await runOcr(worker,cv);}}
  finally{await worker.terminate();}
  return all;
 }
@@ -207,10 +207,7 @@ async function readInvoice(file){
   if(file.type==='application/pdf'||file.name.toLowerCase().endsWith('.pdf'))raw=await pdfText(file);
   else if(file.type.startsWith('image/'))raw=await imageText(file);
   else throw new Error('Formato não suportado. Escolha PDF, JPG ou PNG.');
-  if(file.type==='application/pdf'||file.name.toLowerCase().endsWith('.pdf')){
-   showStatus('A cruzar o texto do PDF com reconhecimento visual melhorado…');
-   const visual=await pdfOcrText(file);raw+='\\n'+visual;
-  }
+  if((file.type==='application/pdf'||file.name.toLowerCase().endsWith('.pdf'))&&raw.replace(/\s/g,'').length<180){showStatus('PDF pouco legível. A iniciar OCR visual…');const visual=await pdfOcrText(file);raw+='\n'+visual;}
   const d=parseInvoice(raw);
   fill('supplier',d.supplier);fill('nif',d.nif);fill('cpe',d.cpe);fill('cui',d.cui);fill('power',d.power);fill('meterTariff',d.tariff);
   fill('kwhSimple',d.simple);fill('kwhPeak',d.peak);fill('kwhFlat',d.flat);fill('kwhOff',d.off);fill('gasKwh',d.gas);fill('invoiceTotal',d.total);
