@@ -387,7 +387,7 @@ $('whatsappBtn').addEventListener('click',async()=>{
  if($('supplyType').value==='Empresa'){
   const file=$('invoice').files[0];
   if(!file){alert('Selecione a fatura da empresa no início da página.');return;}
-  if(file.size>4*1024*1024){alert('A fatura excede 4 MB.');return;}
+  if(file.size>3*1024*1024){alert('A fatura excede 3 MB.');return;}
   if(!['application/pdf','image/jpeg','image/png'].includes(file.type)){alert('Use PDF, JPG ou PNG.');return;}
   const button=$('whatsappBtn');button.disabled=true;button.textContent='A enviar pedido…';
   $('sendStatus').textContent='A preparar o envio da fatura…';$('sendStatus').className='status';
