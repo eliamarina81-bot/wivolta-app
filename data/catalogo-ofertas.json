@@ -1,0 +1,334 @@
+{
+  "schemaVersion": "1.0.0",
+  "lastReviewed": "2026-11-20",
+  "currency": "EUR",
+  "market": "Portugal continental",
+  "principles": [
+    "Não comparar uma oferta sem preço unitário, potência e condições suficientes para calcular o perfil.",
+    "Não tratar descontos condicionados como descontos garantidos.",
+    "Não usar campanhas expiradas ou documentos sem validade confirmada.",
+    "Manter a origem documental e a data de cada valor."
+  ],
+  "offers": [
+    {
+      "id": "repsol-viva-eletricidade-domestico-20261015",
+      "supplier": "Repsol",
+      "offer": "Viva Eletricidade",
+      "segment": "residencial",
+      "energy": "electricity",
+      "tariffs": [
+        "simple",
+        "bi-hourly"
+      ],
+      "powerKva": [
+        1.15,
+        2.3,
+        3.45,
+        4.6,
+        5.75,
+        6.9,
+        10.35,
+        13.8,
+        17.25,
+        20.7
+      ],
+      "dailyPowerEur": {
+        "1.15": 0.1923,
+        "2.3": 0.2645,
+        "3.45": 0.3318,
+        "4.6": 0.4621,
+        "5.75": 0.5364,
+        "6.9": 0.6236,
+        "10.35": 0.8854,
+        "13.8": 1.1772,
+        "17.25": 1.4891,
+        "20.7": 1.8409
+      },
+      "energyEurKwh": {
+        "simple": {
+          "base": 0.185,
+          "discount15": 0.15725
+        },
+        "biHourly": {
+          "outsidePeak": {
+            "base": 0.217362,
+            "discount15": 0.184758
+          },
+          "offPeak": {
+            "base": 0.119911,
+            "discount15": 0.101924
+          }
+        }
+      },
+      "discountConditions": [
+        "Desconto máximo de 15% no termo de energia sujeito a faturação eletrónica, débito direto e serviços adicionais.",
+        "Os descontos condicionados estão limitados ao primeiro ano de vigência contratual."
+      ],
+      "validUntil": "2026-12-31",
+      "fidelity": false,
+      "priceIndexation": false,
+      "calculationStatus": "ready_electricity",
+      "sourceFiles": [
+        "VIVA_Geral_E_20261015_HQ.pdf"
+      ],
+      "notes": "Preços compostos pelos preços Repsol e tarifas de acesso às redes em vigor; impostos e outros encargos acrescem. O preço simples/bi-horário está documentado. Não assumir o desconto máximo sem confirmar elegibilidade."
+    },
+    {
+      "id": "galp-casa-estrada-eletricidade-20261001",
+      "supplier": "Galp",
+      "offer": "Casa & Estrada",
+      "segment": "residencial",
+      "energy": "electricity",
+      "tariffs": [
+        "simple",
+        "bi-hourly"
+      ],
+      "powerBandsKva": [
+        [
+          1.15,
+          2.3
+        ],
+        [
+          3.45,
+          5.75
+        ],
+        [
+          6.9,
+          10.35
+        ],
+        [
+          13.8,
+          20.7
+        ]
+      ],
+      "energyEurKwhByBand": [
+        {
+          "powerBandKva": [
+            1.15,
+            2.3
+          ],
+          "simple": 0.1913,
+          "outsidePeak": 0.2142,
+          "offPeak": 0.1428
+        },
+        {
+          "powerBandKva": [
+            3.45,
+            5.75
+          ],
+          "simple": 0.1561,
+          "outsidePeak": 0.19,
+          "offPeak": 0.13
+        },
+        {
+          "powerBandKva": [
+            6.9,
+            10.35
+          ],
+          "simple": 0.164,
+          "outsidePeak": 0.1847,
+          "offPeak": 0.1194
+        },
+        {
+          "powerBandKva": [
+            13.8,
+            20.7
+          ],
+          "simple": 0.1863,
+          "outsidePeak": 0.2021,
+          "offPeak": 0.1351
+        }
+      ],
+      "discountRatesPercent": [
+        2,
+        4,
+        6,
+        8,
+        10,
+        12
+      ],
+      "discountConditions": [
+        "A tabela associa descontos diferentes a uma ou duas energias, débito direto e serviços opcionais.",
+        "Com uma energia: 4% sem débito direto ou 6% com débito direto; serviços opcionais podem acrescentar 2% por serviço, conforme tabela.",
+        "Com eletricidade e gás: 6% sem débito direto ou 8% com débito direto; serviços opcionais podem acrescentar 2% por serviço, conforme tabela.",
+        "Os descontos incidem no total da fatura, mas excluem taxa DGEG, contribuição audiovisual e imposto especial sobre consumo de eletricidade.",
+        "Serviços opcionais identificados: 360 Casa (4,90 €/mês), 360 Casa Plus (6,90 €/mês) ou 360 Saúde (6,90 €/mês)."
+      ],
+      "validFrom": "2026-10-01",
+      "validUntil": "2026-12-31",
+      "fidelity": null,
+      "calculationStatus": "partial_no_power_term",
+      "sourceFiles": [
+        "AF_galp-plano-casa-estrada-tabela-precos-descontos-.pdf"
+      ],
+      "notes": "Documento limita a oferta a clientes particulares em Portugal Continental, tarifas simples e bi-horária até 20,7 kVA. Termo fixo elétrico não foi extraído com fiabilidade; não usar ainda para custo anual total."
+    },
+    {
+      "id": "galp-casa-estrada-gas-20261001",
+      "supplier": "Galp",
+      "offer": "Casa & Estrada",
+      "segment": "residencial",
+      "energy": "gas",
+      "gasConsumptionBandsM3Year": [
+        {
+          "band": 1,
+          "min": 0,
+          "max": 220,
+          "fixedEurDay": 0.0917,
+          "energyEurKwh": 0.1185
+        },
+        {
+          "band": 2,
+          "min": 221,
+          "max": 500,
+          "fixedEurDay": 0.1629,
+          "energyEurKwh": 0.1183
+        },
+        {
+          "band": 3,
+          "min": 501,
+          "max": 1000,
+          "fixedEurDay": 0.2338,
+          "energyEurKwh": 0.1168
+        },
+        {
+          "band": 4,
+          "min": 1001,
+          "max": 10000,
+          "fixedEurDay": 0.375,
+          "energyEurKwh": 0.1149
+        }
+      ],
+      "discountConditions": [
+        "Desconto no total da fatura depende de uma ou duas energias e de débito direto.",
+        "Os descontos indicados são válidos por 12 meses a partir da ativação."
+      ],
+      "validFrom": "2026-10-01",
+      "validUntil": "2026-12-31",
+      "calculationStatus": "partial_conversion_and_discount_validation",
+      "sourceFiles": [
+        "AF_galp-plano-casa-estrada-tabela-precos-descontos-.pdf"
+      ],
+      "notes": "A tabela de gás apresenta escalões em m3/ano. A aplicação ainda precisa de validar conversão/escala de consumo e elegibilidade antes de calcular."
+    },
+    {
+      "id": "galp-negocios-eletricidade-20261001",
+      "supplier": "Galp",
+      "offer": "Negócios",
+      "segment": "business",
+      "energy": "electricity",
+      "tariffs": [
+        "simple",
+        "bi-hourly"
+      ],
+      "validFrom": "2026-10-01",
+      "validUntil": "2026-12-31",
+      "discountConditions": [
+        "Oferta para clientes com atividade económica, tarifas simples e bi-horária até 20,70 kVA.",
+        "Descontos de energia variam com débito direto, contratação de uma ou duas energias e serviços opcionais.",
+        "A tabela menciona desconto adicional após 12 meses e serviço opcional; validar a ficha integral antes de apresentar proposta."
+      ],
+      "calculationStatus": "partial_prices_need_extraction",
+      "sourceFiles": [
+        "AF_galp-plano-negocios-tabela-precos-descontos-08_2.pdf"
+      ],
+      "notes": "Preço de termo fixo e energia está no documento, mas a tabela não foi integralmente estruturada nesta versão do catálogo."
+    },
+    {
+      "id": "iberdrola-mais-casa-2026",
+      "supplier": "Iberdrola",
+      "offer": "Plano Mais Casa",
+      "segment": "residencial",
+      "energy": "electricity",
+      "tariffs": [
+        "simple",
+        "bi-hourly"
+      ],
+      "validUntil": "2026-12-31",
+      "fidelity": false,
+      "priceIndexation": false,
+      "discountConditions": [
+        "16% base indicado como válido durante toda a vigência do contrato.",
+        "Mais 1% por fatura eletrónica e 1% por débito direto.",
+        "Mais 2% com Proteção Elétrica Lar/Lar Plus; perde-se o desconto associado se o serviço for cancelado.",
+        "Benefício de campanha de 40 €, atribuído como 4 € por fatura."
+      ],
+      "calculationStatus": "blocked_price_table_not_extracted",
+      "sourceFiles": [
+        "MCASA264.pdf"
+      ],
+      "notes": "O documento confirma condições, validade e ausência de fidelização, mas a extração de texto não devolveu os preços unitários. Não inventar preços nem calcular ainda."
+    },
+    {
+      "id": "iberdrola-mais-negocios-2026",
+      "supplier": "Iberdrola",
+      "offer": "Plano Mais Negócios",
+      "segment": "business",
+      "energy": "electricity",
+      "tariffs": [
+        "simple",
+        "bi-hourly"
+      ],
+      "validUntil": "2026-12-31",
+      "fidelity": true,
+      "fidelityMonths": 12,
+      "priceIndexation": false,
+      "discountConditions": [
+        "20% base indicado como válido durante toda a vigência do contrato.",
+        "Mais 1% por fatura eletrónica e 1% por débito direto.",
+        "Denúncia antecipada nos primeiros 12 meses implica compensação calculada pela potência contratada e dias remanescentes."
+      ],
+      "calculationStatus": "blocked_price_table_not_extracted",
+      "sourceFiles": [
+        "MNEG264.pdf"
+      ],
+      "notes": "Não recomendar sem apresentar claramente a fidelização de 12 meses e a fórmula de compensação."
+    },
+    {
+      "id": "edp-residencial-2026",
+      "supplier": "EDP",
+      "offer": "Tarifário Residencial",
+      "segment": "residencial",
+      "energy": "electricity",
+      "calculationStatus": "blocked_scan_or_text_unreadable",
+      "sourceFiles": [
+        "Tarifário Eletricidade Residencial 15_ Desconto 2026 (1).pdf",
+        "Tarifário Residencial Descontos para Sempre 10_ (1).pdf",
+        "Tarifários Eletricidade Residencial Base 2026 (sem desconto) (1).pdf"
+      ],
+      "notes": "O documento 'Descontos para Sempre' contém tabelas de preços, mas a data de referência extraída surge apenas como 1 de janeiro, sem ano legível. Não assumir que os valores são atuais até validar o PDF original e a sua vigência."
+    },
+    {
+      "id": "endesa-novembro-2026",
+      "supplier": "Endesa",
+      "offer": "Campanhas residenciais e empresariais",
+      "segment": "residential_and_business",
+      "energy": "electricity",
+      "calculationStatus": "blocked_base_prices_and_conditions_need_structuring",
+      "sourceFiles": [
+        "F26.0393_FICHA PLUS ENDESA_QUERO+.pdf",
+        "F26.0396_FICHA PLUS ENDESA ANIVERSARIO.pdf",
+        "F26.0397_FICHA PLUS ENDESA A SUA EMPRESA_8.pdf",
+        "F26.0398_FICHA PLUS ENDESA A SUA EMPRESA_10.pdf",
+        "F26.0399_FICHA PLUS ENDESA A SUA EMPRESA_12.pdf",
+        "F26.0400_FICHA PLUS ENDESA A SUA EMPRESA_14.pdf",
+        "F26.0401_FICHA PLUS ENDESA A SUA EMPRESA_TRIHORÁRIA_8_v3.pdf",
+        "F26.0402_FICHA PLUS ENDESA A SUA EMPRESA_TRIHORÁRIA_10_v3.pdf",
+        "F26.0403_FICHA PLUS ENDESA A SUA EMPRESA_TRIHORÁRIA_12.pdf"
+      ],
+      "notes": "As fichas incluem descontos sujeitos a condições como fornecimento conjunto de luz e gás, débito direto, fatura digital e serviços de assistência. Não comparar apenas pela percentagem promocional."
+    },
+    {
+      "id": "meo-tarifario-documento-2025",
+      "supplier": "MEO Energia",
+      "offer": "Documento de alteração de preços",
+      "segment": "unknown",
+      "energy": "electricity",
+      "calculationStatus": "excluded_stale",
+      "sourceFiles": [
+        "347_20241231_MEO_Energia_ Alteracao_Precos_01_janeiro_2025_site.pdf"
+      ],
+      "notes": "Documento refere alteração de preços em 1 de janeiro de 2025; não é usado como preço atual."
+    }
+  ]
+}
