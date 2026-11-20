@@ -162,19 +162,24 @@ function parseInvoice(raw){
  const parseQty=(v)=>{if(!v)return '';let x=String(v).replace(/\s/g,'').replace(/[€]/g,'');if(/^\d{1,3}(?:\.\d{3})+,\d+$/.test(x))x=x.replace(/\./g,'').replace(',','.');else if(/^\d+,\d+$/.test(x))x=x.replace(',','.');else if(/^\d{1,3}(?: \d{3})+(?:,\d+)?$/.test(v))x=x.replace(/ /g,'').replace(',','.');const n=Number(x);return Number.isFinite(n)&&n>=0&&n<1000000?String(n):'';};
  const qtyIn=(line)=>{const m=line.match(/(\d{1,3}(?:[ .]\d{3})*(?:[,.]\d{1,3})?|\d+(?:[,.]\d{1,3})?)\s*kwh\b/i)||line.match(/\bkwh\s*[:=]?\s*(\d+(?:[,.]\d+)?)/i);return m?parseQty(m[1]):'';};
 
- // Usa apenas linhas de energia ativa efetivamente faturada; exclui redes, descontos e leituras do contador.
+ // Extrai quantidades apenas na secção de detalhe da fatura.
+ // Junta linhas partidas pelo PDF/OCR, mas nunca usa a tabela de leituras do contador.
+ const detailStart=lines.findIndex(l=>/detalhes?\s+da\s+fatura|detalhe\s+da\s+fatura/i.test(norm(l)));
+ const detailEnd=detailStart>=0?lines.findIndex((l,i)=>i>detailStart&&/total\s+faturado|subtotal|total\s+da\s+fatura/i.test(norm(l))):-1;
+ const detailLines=detailStart>=0?lines.slice(detailStart+1,detailEnd>detailStart?detailEnd:Math.min(lines.length,detailStart+100)):[];
  const billed={simple:[],peak:[],flat:[],off:[],outside:[],gas:[]};
- for(const line of lines){
-  const n=norm(line);
-  if(!/(energia\s+ativa|consumo\s+(?:de\s+)?eletricidade)/i.test(n))continue;
-  if(/acesso\s+(?:as\s+)?redes|desconto|tarifa\s+social|reativa|potencia\s+contratada/i.test(n))continue;
-  const q=qtyIn(line);if(q==='')continue;
+ for(let i=0;i<detailLines.length;i++){
+  if(!/energia\s+ativa|consumo\s+(?:de\s+)?eletricidade/i.test(norm(detailLines[i])))continue;
+  const row=[detailLines[i],detailLines[i+1]||'',detailLines[i+2]||''].join(' ');
+  const n=norm(row);
+  if(/acesso\s+as\s+redes|desconto|tarifa\s+social|reativa|potencia\s+contratada/i.test(n))continue;
+  const q=qtyIn(row);if(q==='')continue;
   if(/gas\s+natural|energia\s+ativa\s+gas/i.test(n)){billed.gas.push(Number(q));continue;}
   if(/fora\s+de\s+vazio/i.test(n)){billed.outside.push(Number(q));continue;}
   if(/\bponta\b/i.test(n)){billed.peak.push(Number(q));continue;}
   if(/\bcheias?\b/i.test(n)){billed.flat.push(Number(q));continue;}
   if(/\bvazio\b/i.test(n)){billed.off.push(Number(q));continue;}
-  if(/\bsimples\b/i.test(n)||/consumo\s+(?:de\s+)?eletricidade/i.test(n))billed.simple.push(Number(q));
+  if(/\bsimples\b/i.test(n))billed.simple.push(Number(q));
  }
  const sum=a=>a.length?String(Math.round(a.reduce((x,y)=>x+y,0)*1000)/1000):'';
  out.peak=sum(billed.peak);out.flat=sum(billed.flat);out.off=sum(billed.off);out.outside=sum(billed.outside);out.gas=sum(billed.gas);out.simple=sum(billed.simple);
