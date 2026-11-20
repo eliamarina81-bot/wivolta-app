@@ -140,6 +140,7 @@
         }
       ],
       "discountRatesPercent": [
+        0,
         2,
         4,
         6,
@@ -157,11 +158,23 @@
       "validFrom": "2026-10-01",
       "validUntil": "2026-12-31",
       "fidelity": null,
-      "calculationStatus": "partial_no_power_term",
+      "calculationStatus": "ready_electricity_base_prices",
       "sourceFiles": [
         "AF_galp-plano-casa-estrada-tabela-precos-descontos-.pdf"
       ],
-      "notes": "Documento limita a oferta a clientes particulares em Portugal Continental, tarifas simples e bi-horária até 20,7 kVA. Termo fixo elétrico não foi extraído com fiabilidade; não usar ainda para custo anual total."
+      "notes": "Preços base de energia e termo fixo extraídos da tabela Galp em vigor desde 01-10-2026. Descontos de 4%-12% dependem de 1 ou 2 energias, débito direto e serviços opcionais; o motor só deve aplicar o desconto após confirmação da elegibilidade e custo do serviço.",
+      "dailyPowerEur": {
+        "1.15": 0.1968,
+        "2.3": 0.2495,
+        "3.45": 0.3167,
+        "4.6": 0.373,
+        "5.75": 0.4547,
+        "6.9": 0.5969,
+        "10.35": 0.7993,
+        "13.8": 1.009,
+        "17.25": 1.2628,
+        "20.7": 1.5695
+      }
     },
     {
       "id": "galp-casa-estrada-gas-20261001",
@@ -228,11 +241,82 @@
         "Descontos de energia variam com débito direto, contratação de uma ou duas energias e serviços opcionais.",
         "A tabela menciona desconto adicional após 12 meses e serviço opcional; validar a ficha integral antes de apresentar proposta."
       ],
-      "calculationStatus": "partial_prices_need_extraction",
+      "calculationStatus": "ready_base_prices_discount_validation_required",
       "sourceFiles": [
         "AF_galp-plano-negocios-tabela-precos-descontos-08_2.pdf"
       ],
-      "notes": "Preço de termo fixo e energia está no documento, mas a tabela não foi integralmente estruturada nesta versão do catálogo."
+      "notes": "Preços finais base em vigor em 2026, incluem acesso às redes; acresce IVA. Desconto no total da fatura: 4% uma energia sem DD, 6% uma energia com DD; 6% duas energias sem DD, 8% duas energias com DD; +1% após 12 meses e +2% por serviço opcional. Serviços 360 Assist 5,90€/mês ou 360 Assist+ 8,90€/mês. Confirmar se o serviço é economicamente vantajoso antes de aplicar desconto.",
+      "powerKva": [
+        1.15,
+        2.3,
+        3.45,
+        4.6,
+        5.75,
+        6.9,
+        10.35,
+        13.8,
+        17.25,
+        20.7
+      ],
+      "dailyPowerEur": {
+        "1.15": 0.2056,
+        "2.3": 0.258,
+        "3.45": 0.3205,
+        "4.6": 0.3767,
+        "5.75": 0.459,
+        "6.9": 0.6034,
+        "10.35": 0.8172,
+        "13.8": 1.0497,
+        "17.25": 1.2818,
+        "20.7": 1.5948
+      },
+      "energyEurKwhByPower": [
+        {
+          "powerKva": [
+            1.15,
+            2.3
+          ],
+          "simple": 0.1992,
+          "outsidePeak": 0.2222,
+          "offPeak": 0.1504
+        },
+        {
+          "powerKva": [
+            3.45,
+            5.75
+          ],
+          "simple": 0.162,
+          "outsidePeak": 0.1924,
+          "offPeak": 0.1372
+        },
+        {
+          "powerKva": [
+            6.9,
+            10.35
+          ],
+          "simple": 0.1701,
+          "outsidePeak": 0.187,
+          "offPeak": 0.1255
+        },
+        {
+          "powerKva": [
+            13.8,
+            20.7
+          ],
+          "simple": 0.1785,
+          "outsidePeak": 0.2011,
+          "offPeak": 0.1403
+        }
+      ],
+      "discountRatesPercent": [
+        0,
+        4,
+        6,
+        8,
+        10,
+        12,
+        13
+      ]
     },
     {
       "id": "iberdrola-mais-casa-2026",
@@ -329,6 +413,96 @@
         "347_20241231_MEO_Energia_ Alteracao_Precos_01_janeiro_2025_site.pdf"
       ],
       "notes": "Documento refere alteração de preços em 1 de janeiro de 2025; não é usado como preço atual."
+    },
+    {
+      "id": "repsol-leve-pro-eletricidade-empresas-20260923",
+      "supplier": "Repsol",
+      "offer": "Tarifa Leve Pro",
+      "segment": "business",
+      "energy": "electricity",
+      "tariffs": [
+        "simple",
+        "bi-hourly",
+        "tri-hourly"
+      ],
+      "validFrom": "2026-09-23",
+      "validUntil": null,
+      "powerKva": [
+        4.6,
+        17.25,
+        34.5
+      ],
+      "dailyPowerEur": {
+        "4.6": 0.3991,
+        "17.25": 1.2591,
+        "34.5": 2.206
+      },
+      "energyEurKwh": {
+        "simple": {
+          "4.6": {
+            "base": 0.2087501,
+            "discount15": 0.1774381
+          },
+          "17.25": {
+            "base": 0.2137501,
+            "discount15": 0.1816881
+          }
+        },
+        "biHourly": {
+          "outsidePeak": {
+            "4.6": {
+              "base": 0.2505001,
+              "discount15": 0.2129251
+            },
+            "17.25": {
+              "base": 0.2565001,
+              "discount15": 0.2180251
+            }
+          },
+          "offPeak": {
+            "4.6": {
+              "base": 0.1461251,
+              "discount15": 0.1242061
+            },
+            "17.25": {
+              "base": 0.1496251,
+              "discount15": 0.1271811
+            }
+          }
+        },
+        "triHourly": {
+          "peak": {
+            "34.5": {
+              "base": 0.4573751,
+              "discount15": 0.3887691
+            }
+          },
+          "shoulder": {
+            "34.5": {
+              "base": 0.2187501,
+              "discount15": 0.1859381
+            }
+          },
+          "offPeak": {
+            "34.5": {
+              "base": 0.1948751,
+              "discount15": 0.1656441
+            }
+          }
+        }
+      },
+      "discountConditions": [
+        "Descontos até 15% no termo de energia: 5% Bem-vindo à Repsol (primeiro ano), 5% faturação eletrónica e 5% débito direto; os dois últimos dependem da manutenção das condições.",
+        "Preço parcialmente indexado à regularização mensal dos Serviços Complementares (SSCC); o acerto pode ser positivo ou negativo.",
+        "Preços não incluem DGEG, contribuição audiovisual, imposto especial de consumo, financiamento da tarifa social e IVA."
+      ],
+      "fidelity": null,
+      "priceIndexation": "partial_sscc_monthly_adjustment",
+      "calculationStatus": "partial_limited_power_price_points_and_index_adjustment",
+      "sourceFiles": [
+        "17_REPSOL_TARIFA_ELETRICIDADE_LEVE_PRO_20260923.pdf"
+      ],
+      "notes": "Tarifa para BTN empresarial. A tabela apresenta preços de energia para potências específicas (4,60 e 17,25 kVA em simples/bi-horária; 34,50 kVA em tri-horária). Não extrapolar para outras potências nem calcular valor final sem regularização SSCC."
     }
   ]
 }
