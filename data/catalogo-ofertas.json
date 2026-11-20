@@ -503,6 +503,66 @@
         "17_REPSOL_TARIFA_ELETRICIDADE_LEVE_PRO_20260923.pdf"
       ],
       "notes": "Tarifa para BTN empresarial. A tabela apresenta preços de energia para potências específicas (4,60 e 17,25 kVA em simples/bi-horária; 34,50 kVA em tri-horária). Não extrapolar para outras potências nem calcular valor final sem regularização SSCC."
+    },
+    {
+      "id": "meo-eletricidade-residencial-base-202601",
+      "supplier": "MEO Energia",
+      "offer": "Tarifário Base — janeiro de 2026",
+      "segment": "residencial",
+      "energy": "electricity",
+      "tariffs": [
+        "simple",
+        "bi-hourly",
+        "tri-hourly"
+      ],
+      "validFrom": "2026-01-01",
+      "validUntil": null,
+      "fidelity": null,
+      "priceIndexation": false,
+      "dailyPowerEur": {
+        "1.15": 0.15,
+        "2.3": 0.2,
+        "3.45": 0.27,
+        "4.6": 0.38,
+        "5.75": 0.47,
+        "6.9": 0.55,
+        "10.35": 0.65,
+        "13.8": 0.8,
+        "17.25": 0.99,
+        "20.7": 1.15,
+        "27.6": 1.5,
+        "34.5": 2,
+        "41.4": 2.5
+      },
+      "energyEurKwh": {
+        "simple": {
+          "base": 0.1699
+        },
+        "biHourly": {
+          "outsidePeak": {
+            "base": 0.1999
+          },
+          "offPeak": {
+            "base": 0.1199
+          }
+        },
+        "triHourly": {
+          "peak": {
+            "base": 0.3499
+          },
+          "shoulder": {
+            "base": 0.1699
+          },
+          "offPeak": {
+            "base": 0.1199
+          }
+        }
+      },
+      "calculationStatus": "manual_review_validity_unconfirmed",
+      "sourceFiles": [
+        "Simulador de MEO Energia 2026 01.xlsx"
+      ],
+      "notes": "Valores do separador Tarifa 2026, identificados como tarifário base Jan/26. A validade comercial atual não está confirmada. Não apresentar na comparação automática até confirmação escrita da MEO. Não contém oferta de gás."
     }
   ]
 }
