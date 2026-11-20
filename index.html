@@ -46,18 +46,19 @@ header{background:white;border-bottom:1px solid var(--line);position:sticky;top:
 <div class="field"><label for="kwhFlat">Consumo cheias (kWh)</label><input id="kwhFlat" type="number" min="0" step="0.01"></div>
 <div class="field"><label for="kwhOff">Consumo vazio (kWh)</label><input id="kwhOff" type="number" min="0" step="0.01"></div>
 <div class="field"><label for="gasKwh">Consumo de gás (kWh), se aplicável</label><input id="gasKwh" type="number" min="0" step="0.01"></div>
-<div class="field"><label for="invoiceTotal">Total da fatura (€)</label><input id="invoiceTotal" type="number" min="0" step="0.01"></div>
+<div class="field"><label for="invoiceTotal">Total da fatura (€)</label><input id="invoiceTotal" type="number" min="0" step="0.01"></div><div class="field"><label for="billingDays">Dias do período faturado</label><input id="billingDays" type="number" min="1" max="366" step="1" placeholder="Ex.: 30"></div>
 </div>
 <p class="muted" id="readNotes">Os campos podem ser corrigidos manualmente. O CPE e o CUI só são aceites quando identificados junto do respetivo rótulo; confirme sempre os códigos na fatura.</p>
 </div>
 </section>
 
 <section class="card" id="comparar">
-<h2>2. Preparar comparação</h2><p class="sub">Não precisa de saber o preço por kWh nem de fazer contas. A Wivolta usa os dados da fatura para preparar a análise.</p>
-<div class="notice"><strong>O que será considerado:</strong> total da fatura, período faturado, consumo por horário, potência contratada e tarifário. A comparação só apresentará alternativas quando existirem preços e condições comerciais confirmados.</div>
-<div class="notice" style="margin-top:12px">A comparação automática ficará disponível quando as tabelas completas e as condições de cada comercializador estiverem validadas. Não apresentamos preços ou poupanças sem essa validação.</div><div id="billSummary" class="results" aria-live="polite"><div class="result">Depois de carregar e confirmar a fatura, verá aqui o resumo dos seus custos e consumos.</div></div>
-<div class="actions"><button class="btn" id="compareBtn" type="button">Atualizar resumo da fatura</button></div>
-<p class="muted">Estado: leitura e preparação de dados. A comparação automática de tarifas e a mudança de fornecedor ainda não estão ativas nesta versão.</p>
+<h2>2. Comparação de tarifas</h2><p class="sub">Estimativa com preços de campanha documentados. A comparação é feita apenas quando os dados necessários estão preenchidos.</p>
+<div class="notice"><strong>Importante:</strong> esta primeira versão calcula o custo anual estimado dos componentes de energia e potência da oferta documentada. Não equivale ao total da fatura: impostos, taxas, serviços e outros encargos podem acrescer. Não apresenta poupança face ao contrato atual sem os preços unitários atuais.</div>
+<div id="billSummary" class="results" aria-live="polite"><div class="result">Carregue uma fatura e confirme os dados para iniciar a análise.</div></div>
+<div class="actions"><button class="btn" id="compareBtn" type="button">Calcular estimativa anual</button></div>
+<div id="comparisonResults" class="results" aria-live="polite"></div>
+<p class="muted">Fonte: Repsol Tarifa Viva Eletricidade, versão 15/10/2026. Preços base com acesso às redes incluído, antes de impostos e encargos adicionais. Oferta indicada como válida até 31/12/2026 e sem fidelização. Descontos promocionais não incluídos nesta estimativa.</p>
 </section>
 
 <section class="card" id="adesao">
@@ -197,6 +198,48 @@ async function imageText(file){
 }
 
 function fill(id,value){if(value!==undefined&&value!==null&&value!==''&&$(id))$(id).value=value;}
+
+const REPSOL_VIVA_2026 = {
+ name:'Repsol — Tarifa Viva Eletricidade',
+ source:'VIVA_Geral_E_20261015_HQ.pdf',
+ version:'2026-10-15',
+ validUntil:'2026-12-31',
+ fidelity:false,
+ taxIncluded:false,
+ powerDaily:{'1.15':0.1923,'2.30':0.2645,'3.45':0.3318,'4.60':0.4621,'5.75':0.5364,'6.90':0.6236,'10.35':0.8854,'13.80':1.1772,'17.25':1.4891,'20.70':1.8409},
+ energy:{simples:{simple:0.185000},bi:{peak:0.217362,off:0.119911}}
+};
+function euro(v){return v.toLocaleString('pt-PT',{style:'currency',currency:'EUR'});}
+function runTariffComparison(){
+ const root=$('comparisonResults');root.replaceChildren();
+ const kind=$('supplyType')?.value==='Empresa'?'empresa':'residencial';
+ const tariff=$('meterTariff').value;
+ const power=Number(String($('power').value).replace(',','.'));
+ const days=Number($('billingDays').value);
+ const values={simple:Number($('kwhSimple').value)||0,peak:Number($('kwhPeak').value)||0,flat:Number($('kwhFlat').value)||0,off:Number($('kwhOff').value)||0};
+ const consumption=tariff==='simples'?values.simple:tariff==='bi'?values.peak+values.off:tariff==='tri'?values.peak+values.flat+values.off:0;
+ const error=[];
+ if(kind!=='residencial')error.push('Esta tarifa documentada é para clientes domésticos; não será aplicada a empresas.');
+ if(!REPSOL_VIVA_2026.powerDaily[power.toFixed(2)])error.push('A potência indicada não consta da tabela residencial Repsol Viva validada (1,15 a 20,70 kVA, escalões publicados).');
+ if(!['simples','bi'].includes(tariff))error.push('A tabela Repsol Viva consultada só fornece preços simples e bi-horários nesta ficha; não é possível calcular este tarifário.');
+ if(!days||days<1||days>366)error.push('Indique os dias abrangidos pelos consumos da fatura.');
+ if(!consumption||consumption<=0)error.push('Confirme os consumos em kWh do período faturado.');
+ if(error.length){const box=document.createElement('div');box.className='result';box.innerHTML='<strong>Não é possível calcular com segurança</strong><ul>'+error.map(x=>'<li>'+x+'</li>').join('')+'</ul>';root.append(box);return;}
+ const annualFactor=365/days;
+ const p=REPSOL_VIVA_2026.powerDaily[power.toFixed(2)];
+ const annualPower=p*365;
+ let annualEnergy=0,detail='';
+ if(tariff==='simples'){annualEnergy=values.simple*annualFactor*REPSOL_VIVA_2026.energy.simples.simple;detail='Energia simples: '+euro(REPSOL_VIVA_2026.energy.simples.simple)+'/kWh';}
+ if(tariff==='bi'){annualEnergy=(values.peak*REPSOL_VIVA_2026.energy.bi.peak+values.off*REPSOL_VIVA_2026.energy.bi.off)*annualFactor;detail='Fora de vazio: '+euro(REPSOL_VIVA_2026.energy.bi.peak)+'/kWh · Vazio: '+euro(REPSOL_VIVA_2026.energy.bi.off)+'/kWh';}
+ const total=annualPower+annualEnergy;
+ const card=document.createElement('div');card.className='result';
+ const title=document.createElement('strong');title.textContent=REPSOL_VIVA_2026.name;card.append(title);
+ const list=document.createElement('p');list.textContent='Potência anual: '+euro(annualPower)+' · Energia anual: '+euro(annualEnergy)+' · Total estimado: '+euro(total)+'/ano';card.append(list);
+ const notes=document.createElement('p');notes.className='muted';notes.textContent='Consumo anualizado: '+(consumption*annualFactor).toLocaleString('pt-PT',{maximumFractionDigits:0})+' kWh · '+detail+'. Cálculo antes de impostos e encargos adicionais; sem descontos condicionais. Oferta sem fidelização, válida até 31/12/2026 segundo a ficha consultada.';card.append(notes);
+ const caveat=document.createElement('p');caveat.className='muted';caveat.textContent='Isto é uma estimativa de uma oferta, não uma poupança garantida. Para comparar com o contrato atual são necessários os preços unitários atuais e as condições de saída.';card.append(caveat);
+ root.append(card);
+}
+
 function updateBillSummary(){
  const total=Number($('invoiceTotal').value),kwh=['kwhSimple','kwhPeak','kwhFlat','kwhOff'].reduce((s,id)=>s+(Number($(id).value)||0),0);
  const rows=[['Comercializador atual',$('supplier').value||'Não identificado'],['Total da fatura',Number.isFinite(total)&&total>0?total.toLocaleString('pt-PT',{style:'currency',currency:'EUR'}):'Por confirmar'],['Consumo identificado',kwh>0?kwh.toLocaleString('pt-PT')+' kWh':'Por confirmar'],['Tarifário',$('meterTariff').selectedOptions[0]?.text||'Não identificado'],['Potência contratada',($('power').value||'Não identificada')+' kVA'],['CPE',$('cpe').value||'Por confirmar'],['CUI',$('cui').value||'Por confirmar']];
@@ -222,8 +265,8 @@ async function readInvoice(file){
 }
 
 $('invoice').addEventListener('change',e=>readInvoice(e.target.files[0]));
-$('compareBtn').addEventListener('click',updateBillSummary);
-['supplier','nif','cpe','cui','power','meterTariff','kwhSimple','kwhPeak','kwhFlat','kwhOff','gasKwh','invoiceTotal'].forEach(id=>$(id)?.addEventListener('input',updateBillSummary));
+$('compareBtn').addEventListener('click',()=>{updateBillSummary();runTariffComparison();});
+['supplier','nif','cpe','cui','power','meterTariff','kwhSimple','kwhPeak','kwhFlat','kwhOff','gasKwh','invoiceTotal','billingDays'].forEach(id=>$(id)?.addEventListener('input',updateBillSummary));
 const canvas=$('signature');function resizeCanvas(){const ratio=Math.max(devicePixelRatio||1,1),r=canvas.getBoundingClientRect();const saved=signatureDirty?canvas.toDataURL():null;canvas.width=r.width*ratio;canvas.height=150*ratio;ctx=canvas.getContext('2d');ctx.scale(ratio,ratio);ctx.lineWidth=2.4;ctx.lineCap='round';ctx.strokeStyle='#102a43';if(saved){const img=new Image();img.onload=()=>ctx.drawImage(img,0,0,r.width,150);img.src=saved;}}
 function point(e){const r=canvas.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top};}
 canvas.addEventListener('pointerdown',e=>{drawing=true;canvas.setPointerCapture(e.pointerId);const p=point(e);ctx.beginPath();ctx.moveTo(p.x,p.y);e.preventDefault();});
