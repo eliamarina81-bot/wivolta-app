@@ -398,29 +398,22 @@ $('clearSig').addEventListener('click',()=>{ctx.clearRect(0,0,canvas.width,canva
 $('downloadSig').addEventListener('click',()=>{if(!signatureDirty){alert('Ainda não existe assinatura.');return;}const a=document.createElement('a');a.href=canvas.toDataURL('image/png');a.download='assinatura-wivolta.png';a.click();});
 $('whatsappBtn').addEventListener('click',async()=>{
  if(!$('privacy').checked){alert('É necessário autorizar o envio dos dados e da fatura.');return;}
- if($('supplyType').value==='Empresa'){
-  const file=$('invoice').files[0];
-  if(!file){alert('Selecione a fatura da empresa no início da página.');return;}
-  if(file.size>3*1024*1024){alert('A fatura excede 3 MB.');return;}
-  if(!['application/pdf','image/jpeg','image/png'].includes(file.type)){alert('Use PDF, JPG ou PNG.');return;}
-  const button=$('whatsappBtn');button.disabled=true;button.textContent='A enviar pedido…';
-  $('sendStatus').textContent='A preparar o envio da fatura…';$('sendStatus').className='status';
-  try{
-   const base64=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result).split(',')[1]);reader.onerror=()=>reject(new Error('Não foi possível ler a fatura.'));reader.readAsDataURL(file);});
-   const payload={client:{name:$('clientName').value,phone:$('clientPhone').value,email:$('clientEmail').value,nif:$('clientNif').value,service:$('energyType').value==='gas'?'Gás natural':'Eletricidade',supplier:$('supplier').value,cpe:$('cpe').value,cui:$('cui').value,power:$('power').value,notes:$('notes').value},file:{name:file.name,type:file.type,data:base64}};
-   if(!payload.client.name||!payload.client.phone)throw new Error('Preencha o nome da empresa e o telefone.');
-   const response=await fetch('/api/pedido-empresa',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-   const result=await response.json().catch(()=>({}));
-   if(!response.ok)throw new Error(result.error||'Não foi possível enviar o pedido.');
-   $('sendStatus').textContent='Pedido enviado com sucesso para a equipa Wivolta.';$('sendStatus').className='status success';
-  }catch(error){$('sendStatus').textContent=error.message;$('sendStatus').className='status error';}
-  finally{button.disabled=false;button.textContent='Enviar pedido e fatura por email';}
-  return;
- }
- const subject='Pedido de análise de energia — Wivolta';
- const body='Olá, Wivolta.\\n\\nQuero pedir uma análise da minha fatura de eletricidade/gás.\\n\\nObrigado(a).';
- $('sendStatus').textContent='A abrir a aplicação de email. Anexe a fatura se pretender partilhá-la.';$('sendStatus').className='status';
- window.location.href='mailto:wivolta.parceiros@gmail.com?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+ const file=$('invoice').files[0];
+ if(!file){alert('Selecione a fatura antes de enviar o pedido.');return;}
+ if(file.size>3*1024*1024){alert('A fatura excede 3 MB.');return;}
+ if(!['application/pdf','image/jpeg','image/png'].includes(file.type)){alert('Use PDF, JPG ou PNG.');return;}
+ const button=$('whatsappBtn');button.disabled=true;button.textContent='A enviar pedido…';
+ $('sendStatus').textContent='A preparar o envio seguro da fatura…';$('sendStatus').className='status';
+ try{
+  const base64=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result).split(',')[1]);reader.onerror=()=>reject(new Error('Não foi possível ler a fatura.'));reader.readAsDataURL(file);});
+  const payload={client:{name:$('clientName').value,phone:$('clientPhone').value,email:$('clientEmail').value,nif:$('clientNif').value,service:$('energyType').value==='gas'?'Gás natural':'Eletricidade',customerType:$('supplyType').value,supplier:$('supplier').value,cpe:$('cpe').value,cui:$('cui').value,power:$('power').value,destination:$('destination').value,notes:$('notes').value},file:{name:file.name,type:file.type,data:base64}};
+  if(!payload.client.name||!payload.client.phone)throw new Error('Preencha o nome e o telefone.');
+  const response=await fetch('/api/pedido-empresa',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+  const result=await response.json().catch(()=>({}));
+  if(!response.ok)throw new Error(result.error||'Não foi possível enviar o pedido.');
+  $('sendStatus').textContent='Pedido e fatura enviados para a equipa Wivolta.';$('sendStatus').className='status success';
+ }catch(error){$('sendStatus').textContent=error.message;$('sendStatus').className='status error';}
+ finally{button.disabled=false;button.textContent='Enviar pedido e fatura por email';}
 });
 
 const REVIEW_KEY='wivolta-review-list-v2';
