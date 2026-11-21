@@ -29,14 +29,16 @@ export default async function handler(req, res) {
     const fields = body.client;
     const safe = (v) => String(v || "Não indicado").slice(0, 500);
     const text = [
-      "Novo pedido de análise empresarial — Wivolta",
+      "Novo pedido de análise — Wivolta",
       "",
+      "Tipo de cliente: " + safe(fields.customerType),
       "Nome/empresa: " + safe(fields.name),
       "Telefone: " + safe(fields.phone),
       "Email: " + safe(fields.email),
       "NIF/NIPC: " + safe(fields.nif),
       "Serviço: " + safe(fields.service),
       "Comercializador atual: " + safe(fields.supplier),
+      "Comercializador pretendido: " + safe(fields.destination),
       "CPE: " + safe(fields.cpe),
       "CUI: " + safe(fields.cui),
       "Potência: " + safe(fields.power),
@@ -50,7 +52,7 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         from,
         to: ["wivolta.parceiros@gmail.com"],
-        subject: "Pedido empresarial Wivolta — " + safe(fields.name),
+        subject: "Pedido Wivolta — " + safe(fields.name),
         text,
         attachments: [attachment]
       })
