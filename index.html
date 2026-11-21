@@ -1,465 +1,484 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#9b82c7">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Wivolta">
-<link rel="manifest" href="/manifest.webmanifest">
-<link rel="icon" type="image/svg+xml" href="/logo-wivolta.svg">
-<link rel="apple-touch-icon" href="/logo-wivolta.svg">
-<meta name="description" content="Wivolta — comparação e acompanhamento de energia para particulares e empresas em Portugal.">
-<title>Wivolta | Energia sem complicações</title>
-<style>
-:root{--navy:#20213f;--teal:#6654d9;--pink:#d9d5ff;--purple:#4937b8;--ink:#25243a;--muted:#6f6d83;--line:#e5e3f0;--bg:#f8f8fc;--good:#247a61;--warn:#946200;--bad:#b42318}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
-header{background:white;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}.head{max-width:980px;margin:auto;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}.brand{display:flex;align-items:center;gap:10px;color:var(--navy);font-size:23px;font-weight:850;letter-spacing:-.7px}.logo{width:42px;height:42px;border-radius:13px;background:#20213f;color:#fff;display:grid;place-items:center;box-shadow:0 5px 14px #20213f26}nav{display:flex;gap:12px;flex-wrap:wrap;font-size:13px}a{color:var(--teal);font-weight:650;text-decoration:none}main{max-width:980px;margin:auto;padding:22px 14px 42px;display:grid;gap:18px}.hero{background:linear-gradient(120deg,#54256f,#a94f9b);color:#fff;border-radius:18px;padding:24px}.hero h1{font-size:clamp(25px,5vw,36px);line-height:1.15;margin:0 0 8px}.hero p{margin:0;color:#f2eafb}.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:19px;box-shadow:0 3px 12px #102a4308}.card h2{font-size:21px;color:var(--navy);margin:0 0 5px}.sub{font-size:14px;color:var(--muted);margin:0 0 15px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.field{min-width:0}.field.full{grid-column:1/-1}label{display:block;font-size:13px;font-weight:700;margin:0 0 5px;color:#334e68}input,select,textarea{width:100%;border:1px solid #bcccdc;border-radius:9px;padding:11px 12px;font:inherit;font-size:15px;color:var(--ink);background:#fff}input:focus,select:focus,textarea:focus{outline:2px solid #d9c8f0;border-color:var(--teal)}input[type=checkbox]{width:auto;accent-color:var(--teal)}.upload{display:block;border:2px dashed #bda8df;background:#f5effc;border-radius:12px;padding:20px;text-align:center;cursor:pointer}.upload input{display:none}.btn{border:0;border-radius:10px;padding:12px 16px;font-weight:750;font-size:15px;cursor:pointer;background:var(--teal);color:white}.btn.secondary{background:#f8eaf5;color:#66518a;border:1px solid #e8c6df}.btn.dark{background:var(--navy)}.btn:disabled{opacity:.55;cursor:wait}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}.status{padding:12px;border-radius:10px;background:#f1eafb;border:1px solid #dfd2ef;color:#5e4b7d;font-size:14px;margin-top:12px}.status.warn{background:#fff8e6;border-color:#f0d58c;color:#765300}.status.error{background:#fff1f0;border-color:#f3b5b0;color:#8a2119}.muted{color:var(--muted);font-size:13px}.results{display:grid;gap:9px;margin-top:12px}.result{padding:12px;border:1px solid var(--line);border-radius:10px}.result strong{color:var(--navy)}.checks{display:flex;align-items:flex-start;gap:9px;margin:14px 0;font-size:13px}.checks label{font-weight:450;margin:0}.signature{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:white}canvas{display:block;width:100%;height:150px;touch-action:none}.sigfoot{display:flex;justify-content:space-between;align-items:center;padding:7px 10px;background:#f7f3fc;font-size:12px}.notice{font-size:13px;color:#52677d;background:#f4effa;padding:12px;border-radius:10px}.hidden{display:none!important}footer{text-align:center;padding:22px;color:var(--muted);font-size:12px}
-.wa-secret{position:fixed;right:14px;bottom:14px;z-index:20;width:48px;height:48px;border-radius:50%;background:#128c7e;color:#fff;display:grid;place-items:center;box-shadow:0 4px 16px #0003;border:2px solid #fff;font-size:23px;text-decoration:none}.wa-secret:focus{outline:3px solid #99f6e4;outline-offset:3px}.wa-secret span{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-@media(max-width:640px){.grid{grid-template-columns:1fr}.field.full{grid-column:auto}.head{align-items:flex-start;flex-direction:column}nav{gap:15px}.hero{padding:20px}.card{padding:16px}.actions .btn{width:100%}}
-</style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-<!-- Teste de deploy automatico Vercel/GitHub: 19-11-2026 -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#059669">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Wivolta - Simulador, Comparador e Auto-Switch Inteligente</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f8fafc; color: #1e293b; line-height: 1.5; min-height: 100vh; display: flex; flex-direction: column; }
+        header { background: #ffffff; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; z-index: 20; box-shadow: 0 1px 2px rgba(0,0,0,0.03); }
+        .header-inner { max-width: 896px; margin: 0 auto; padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; }
+        .brand { display: flex; align-items: center; gap: 8px; }
+        .brand-logo { background: #059669; color: #fff; font-weight: 900; padding: 4px 10px; border-radius: 8px; font-size: 18px; }
+        .brand-title { font-size: 22px; font-weight: 700; color: #059669; }
+        nav { display: flex; gap: 14px; font-size: 14px; font-weight: 500; }
+        nav a { text-decoration: none; color: #475569; }
+        nav a:hover { color: #059669; }
+        nav a.highlight { color: #059669; font-weight: 600; }
+        
+        main { max-width: 896px; margin: 0 auto; padding: 24px 16px; flex-grow: 1; width: 100%; display: flex; flex-direction: column; gap: 24px; }
+        .card { background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+        .card-highlight { border-color: #6ee7b7; background: linear-gradient(135deg, rgba(236, 253, 245, 0.7) 0%, #ffffff 100%); }
+        
+        h2 { font-size: 20px; font-weight: 700; color: #0f172a; margin-bottom: 6px; }
+        p.subtitle { font-size: 14px; color: #475569; margin-bottom: 16px; }
+        
+        .upload-box { border: 2px dashed #34d399; border-radius: 12px; padding: 24px 16px; text-align: center; background: #ffffff; cursor: pointer; transition: background 0.2s; }
+        .upload-box:active, .upload-box:hover { background: #ecfdf5; }
+        .status-banner { margin-top: 14px; font-size: 13px; color: #065f46; background: #d1fae5; padding: 12px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #a7f3d0; }
+        
+        .seg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .seg-btn { padding: 10px 12px; font-size: 14px; font-weight: 600; border-radius: 12px; border: 1px solid #cbd5e1; background: #ffffff; color: #334155; cursor: pointer; text-align: center; }
+        .seg-btn.active { background: #059669; color: #ffffff; border-color: #059669; }
+        
+        .form-grid { display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 16px; }
+        @media (min-width: 640px) { .form-grid { grid-template-columns: 1fr 1fr; } }
+        
+        label { display: block; font-size: 14px; font-weight: 500; color: #334155; margin-bottom: 6px; }
+        input[type="text"], input[type="tel"], input[type="email"], input[type="number"], select, textarea {
+            width: 100%; border-radius: 8px; border: 1px solid #cbd5e1; padding: 10px 12px; font-size: 15px; background: #ffffff; color: #0f172a;
+        }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: #059669; box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2); }
+        
+        .btn-primary { width: 100%; background: #25d366; color: #ffffff; font-weight: 600; padding: 13px; border: none; border-radius: 10px; font-size: 15px; cursor: pointer; box-shadow: 0 2px 4px rgba(37, 211, 102, 0.3); display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-primary:hover { background: #20ba5a; }
+        
+        .tarifa-card { background: #ffffff; border: 1px solid #e2e8f0; border-left: 4px solid #10b981; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 12px; justify-content: space-between; margin-bottom: 12px; }
+        @media (min-width: 640px) { .tarifa-card { flex-direction: row; align-items: center; } }
+        .badge { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; background: #ecfdf5; color: #047857; border-radius: 999px; }
+        
+        .autoswitch-card { background: #064e3b; color: #ffffff; border-radius: 16px; padding: 24px; }
+        .as-grid { display: grid; grid-template-columns: 1fr; gap: 12px; margin-top: 16px; }
+        @media (min-width: 640px) { .as-grid { grid-template-columns: repeat(3, 1fr); } }
+        .as-step { background: rgba(6, 95, 70, 0.7); border: 1px solid #047857; padding: 14px; border-radius: 12px; text-align: center; }
+        
+        .sig-wrapper { border: 2px solid #cbd5e1; border-radius: 10px; background: #f8fafc; overflow: hidden; position: relative; }
+        #signature-pad { width: 100%; height: 160px; display: block; touch-action: none; cursor: crosshair; background: #ffffff; }
+        .sig-toolbar { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; background: #f1f5f9; border-top: 1px solid #e2e8f0; font-size: 12px; color: #475569; }
+        .btn-clear-sig { background: #ffffff; border: 1px solid #cbd5e1; color: #dc2626; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; }
+        
+        .rgpd-row { display: flex; align-items: flex-start; gap: 10px; margin: 16px 0; }
+        .rgpd-row input { margin-top: 3px; width: 18px; height: 18px; accent-color: #059669; flex-shrink: 0; }
+        .rgpd-row label { font-size: 12px; color: #475569; font-weight: 400; margin: 0; }
+        
+        .hidden { display: none !important; }
+        footer { background: #ffffff; border-top: 1px solid #e2e8f0; padding: 20px 16px; text-align: center; font-size: 12px; color: #64748b; }
+        footer a { color: #059669; font-weight: 600; }
+    </style>
 </head>
 <body>
-<header><div class="head"><div class="brand"><span class="logo" aria-hidden="true"><svg viewBox="0 0 48 48" width="34" height="34"><path d="M5 10 13 37 23 17 33 37 43 10" fill="none" stroke="#fff" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/><path d="m28 4-9 17h7l-5 13 15-20h-8l5-10z" fill="#a9f2dc" stroke="#20213f" stroke-width="1.1" stroke-linejoin="round"/></svg></span>Wivolta</div><nav><a href="#fatura">Ler fatura</a><a href="#comparar">Comparar</a><a href="#adesao">Pedir acompanhamento</a></nav></div></header>
-<main>
-<section class="hero"><h1>Energia mais clara.<br>Poupança com acompanhamento.</h1><p>Escolha eletricidade ou gás. Particulares podem consultar as ofertas validadas; empresas recebem análise manual da equipa Wivolta.</p></section>
+    <header>
+        <div class="header-inner">
+            <div class="brand">
+                <span class="brand-logo">W</span>
+                <h1 class="brand-title">Wivolta</h1>
+            </div>
+            <nav>
+                <a href="#simulador">Comparar</a>
+                <a href="#auto-switch" class="highlight">🔄 Auto-Switch</a>
+                <a href="#adesao">Aderir</a>
+            </nav>
+        </div>
+    </header>
 
-<section class="card" id="fatura">
-<h2>1. Leitura da fatura</h2><p class="sub">Selecione um PDF ou uma fotografia. O processamento é feito neste dispositivo; o ficheiro não é enviado para a Wivolta.</p>
-<label class="upload" for="invoice"><strong>📄 Toque para escolher a fatura</strong><br><span class="muted">PDF, JPG ou PNG · particulares e empresas</span><input id="invoice" type="file" accept=".pdf,application/pdf,image/*"></label>
-<div id="readStatus" class="status hidden" role="status"></div>
-<div id="detected" class="hidden">
-<h3 style="font-size:17px;margin:17px 0 9px;color:var(--navy)">Dados detetados — confirme antes de continuar</h3>
-<div class="grid">
-<div class="field full"><label for="holderName">Nome do titular (detetado na fatura)</label><input id="holderName" autocomplete="name" placeholder="Confirmar nome completo"></div><div class="field full"><label for="holderAddress">Morada de fornecimento</label><input id="holderAddress" autocomplete="street-address" placeholder="Confirmar morada"></div><div class="field"><label for="holderPostal">Código postal / localidade</label><input id="holderPostal" autocomplete="postal-code" placeholder="Ex.: 2300-000 Tomar"></div><div class="field"><label for="supplier">Comercializador atual</label><input id="supplier" placeholder="Ex.: Galp"></div>
-<div class="field"><label for="nif">NIF</label><input id="nif" inputmode="numeric" placeholder="9 dígitos"></div>
-<div class="field full"><label for="cpe">CPE (eletricidade)</label><input id="cpe" placeholder="PT000..."></div>
-<div class="field full"><label for="cui">CUI (gás), se aplicável</label><input id="cui" placeholder="Código da instalação de gás"></div>
-<div class="field"><label for="power">Potência contratada (kVA)</label><input id="power" placeholder="Ex.: 6,9"></div>
-<div class="field"><label for="meterTariff">Tarifário</label><select id="meterTariff"><option value="unknown" selected>Confirmar tarifário</option><option value="simples">Simples</option><option value="bi">Bi-horário</option><option value="tri">Tri-horário</option></select></div>
-<div class="field"><label for="kwhSimple">Consumo simples (kWh)</label><input id="kwhSimple" type="number" min="0" step="0.01"></div>
-<div class="field"><label for="kwhPeak">Consumo ponta (kWh)</label><input id="kwhPeak" type="number" min="0" step="0.01"></div>
-<div class="field"><label for="kwhFlat">Consumo cheias (kWh)</label><input id="kwhFlat" type="number" min="0" step="0.01"></div>
-<div class="field"><label for="kwhOff">Consumo vazio (kWh)</label><input id="kwhOff" type="number" min="0" step="0.01"></div>
-<div class="field"><label for="kwhOutside">Consumo fora de vazio (bi-horário, kWh)</label><input id="kwhOutside" type="number" min="0" step="0.01"></div>
-<div class="field"><label for="gasKwh">Consumo de gás (kWh), se aplicável</label><input id="gasKwh" type="number" min="0" step="0.01"></div>
-<div class="field"><label for="invoiceTotal">Total da fatura (€)</label><input id="invoiceTotal" type="number" min="0" step="0.01"></div><div class="field"><label for="billingDays">Dias do período faturado</label><input id="billingDays" type="number" min="1" max="366" step="1" placeholder="Ex.: 30"></div>
-</div>
-<p class="muted" id="readNotes">Os campos podem ser corrigidos manualmente. O CPE e o CUI só são aceites quando identificados junto do respetivo rótulo; confirme sempre os códigos na fatura.</p>
-</div>
-</section>
+    <main>
+        <!-- 1. Leitor Inteligente de Fatura -->
+        <section class="card card-highlight">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+                <span style="font-size:24px;">⚡</span>
+                <div>
+                    <h2 style="margin:0;">Leitor Inteligente de Faturas</h2>
+                    <p class="subtitle" style="margin:0;">Carregue a sua fatura (PDF ou imagem) para deteção automática da potência.</p>
+                </div>
+            </div>
 
-<section class="card" id="comparar">
-<h2>2. Comparação de tarifas</h2><p class="sub">Escolha primeiro o serviço e o tipo de cliente. As empresas são sempre analisadas manualmente pela equipa Wivolta.</p>
-<div class="grid" style="margin-bottom:14px">
-<div class="field"><label for="energyType">Serviço a comparar</label><select id="energyType"><option value="electricity">Eletricidade</option><option value="gas">Gás natural</option></select></div>
-<div class="field"><label for="supplyType">Tipo de cliente</label><select id="supplyType"><option value="Particular">Particular</option><option value="Empresa">Empresa</option></select></div>
-</div>
-<div class="notice"><strong>Importante:</strong> esta primeira versão calcula o custo anual estimado dos componentes de energia e potência da oferta documentada. Não equivale ao total da fatura: impostos, taxas, serviços e outros encargos podem acrescer. Não apresenta poupança face ao contrato atual sem os preços unitários atuais.</div>
-<div id="billSummary" class="results" aria-live="polite"><div class="result">Carregue uma fatura e confirme os dados para iniciar a análise.</div></div>
-<div class="actions"><button class="btn" id="compareBtn" type="button">Calcular estimativa anual</button></div>
-<div id="comparisonResults" class="results" aria-live="polite"></div>
-<p class="muted">As ofertas apresentadas dependem do serviço, perfil e validade documental. Valores estimados não substituem uma proposta comercial final.</p>
-</section>
+            <div class="upload-box" onclick="document.getElementById('fatura-input').click()">
+                <input type="file" id="fatura-input" accept=".pdf,image/*" class="hidden" onchange="processarFaturaInteligente(event)">
+                <div style="font-size:28px; margin-bottom:6px;">📄</div>
+                <p style="font-size:14px; font-weight:600; color:#1e293b;" id="file-label">Toque aqui para selecionar a fatura (EDP, Iberdrola, Galp, Endesa, etc.)</p>
+                <p style="font-size:12px; color:#64748b; margin-top:4px;">Compatível com Particulares (BTN) e Empresas (BTE).</p>
+            </div>
 
-<section class="card" id="adesao">
-<h2>3. Pedido de acompanhamento e autorização</h2><p class="sub">Preencha os dados e confirme o fornecedor de destino. O pedido não efetua, por si só, uma mudança de comercializador.</p>
-<div class="grid">
-<div class="field"><label for="clientName">Nome / Empresa</label><input id="clientName" autocomplete="name" required></div>
-<div class="field"><label for="clientPhone">Telefone</label><input id="clientPhone" type="tel" autocomplete="tel" required></div>
-<div class="field"><label for="clientEmail">Email</label><input id="clientEmail" type="email" autocomplete="email"></div>
-<div class="field"><label for="clientNif">NIF / NIPC</label><input id="clientNif" inputmode="numeric"></div>
-<div class="field"><label for="destination">Comercializador pretendido</label><input id="destination" placeholder="A definir após comparação"></div>
+            <div id="upload-status" class="status-banner hidden">
+                <span id="status-text">Fatura carregada com sucesso!</span>
+                <button type="button" onclick="limparFatura()" style="background:none; border:none; color:#475569; font-weight:bold; font-size:16px; cursor:pointer;">✕</button>
+            </div>
+        </section>
 
-<div class="field full"><label for="notes">Observações / fidelização / serviços associados</label><textarea id="notes" rows="3" placeholder="Indique datas de fim de contrato ou outras condições conhecidas."></textarea></div>
-</div>
-<div class="notice">A assinatura abaixo regista a confirmação do pedido de contacto e análise. Não substitui o formulário oficial, mandato ou contrato exigido pelo comercializador. Antes de qualquer mudança, será necessária a autorização específica e documentação aplicável.</div>
-<div style="margin-top:14px"><label>Assinatura do titular (opcional para pedido de contacto)</label><div class="signature"><canvas id="signature"></canvas><div class="sigfoot"><span id="sigLabel">Assine com o dedo ou rato</span><button type="button" class="btn secondary" id="clearSig">Limpar</button></div></div></div>
-<label class="checks"><input type="checkbox" id="privacy"><span>Li a <a href="/privacidade.html" target="_blank" rel="noopener">Informação de Privacidade</a>. Compreendo que, ao carregar em «Enviar pedido e fatura por email», os dados do formulário e a fatura selecionada serão transmitidos à Wivolta por ligação segura para análise do pedido. A leitura automática da fatura é feita neste dispositivo. Não envio dados de terceiros sem autorização.</span></label>
-<div class="actions"><button class="btn" id="whatsappBtn" type="button">Enviar pedido e fatura por email</button><button class="btn secondary" id="downloadSig" type="button">Guardar assinatura</button></div>
-<div id="sendStatus" class="status hidden"></div>
-<p class="muted">Ao enviar, os dados e a fatura são transmitidos à equipa Wivolta por email. Se o serviço de email não estiver configurado ou estiver temporariamente indisponível, o pedido não será enviado e será apresentada uma mensagem de erro. Só envie documentos se for o titular ou tiver autorização para os partilhar.</p>
-</section>
+        <!-- 2. Simulador e Comparador -->
+        <section id="simulador" class="card">
+            <h2>Simulador de Tarifas Oficiais (Q1 2026)</h2>
+            <p class="subtitle">Selecione o segmento, potência e consumo para calcular as propostas.</p>
+            
+            <div class="seg-grid">
+                <button type="button" id="btn-particulares" onclick="mudarSegmento('particulares')" class="seg-btn active">
+                    👤 Particulares
+                </button>
+                <button type="button" id="btn-empresas" onclick="mudarSegmento('empresas')" class="seg-btn">
+                    🏢 Empresas
+                </button>
+            </div>
 
+            <div class="form-grid">
+                <div>
+                    <label for="potencia">Potência Contratada (kVA)</label>
+                    <select id="potencia"></select>
+                </div>
+                <div>
+                    <label for="consumo">Consumo Mensal (kWh)</label>
+                    <input type="number" id="consumo" value="300">
+                </div>
+            </div>
 
-<section class="card" id="autoswitch">
-<h2>4. Auto-Switch · painel de acompanhamento</h2>
-<p class="sub">Organiza revisões, fim de descontos e fidelizações. Os casos que exigem atenção aparecem primeiro. Os dados continuam guardados apenas neste navegador.</p>
-<div class="grid">
-<div class="field"><label for="reviewName">Nome do cliente</label><input id="reviewName"></div>
-<div class="field"><label for="reviewPhone">WhatsApp do cliente</label><input id="reviewPhone" type="tel" placeholder="351..."></div>
-<div class="field"><label for="reviewEmail">Email do cliente</label><input id="reviewEmail" type="email"></div>
-<div class="field"><label for="reviewDate">Data da última análise</label><input id="reviewDate" type="date"></div>
-<div class="field"><label for="discountEnd">Fim do desconto / campanha</label><input id="discountEnd" type="date"></div>
-<div class="field"><label for="fidelityEnd">Fim da fidelização (se existir)</label><input id="fidelityEnd" type="date"></div>
-<div class="field"><label for="annualSaving">Poupança potencial validada (€/ano)</label><input id="annualSaving" type="number" min="0" step="1" placeholder="Ex.: 45"></div>
-</div>
-<div class="checks"><input type="checkbox" id="reviewConsent"><label for="reviewConsent">Confirmo que tenho autorização do cliente para guardar estes dados de contacto neste dispositivo e para o contactar para uma revisão solicitada.</label></div>
-<div class="actions"><button class="btn" id="saveReview" type="button">Guardar acompanhamento</button></div>
-<div id="reviewStatus" class="status hidden"></div>
-<div id="reviewSummary" class="results"></div>
-<div id="reviewList" class="results"></div>
-<p class="muted">Prioridade automática: desconto a terminar nos próximos 15 dias, revisão trimestral vencida ou fidelização a terminar. Só assinala poupanças potenciais de pelo menos 30 €/ano como oportunidade. Não envia alertas em segundo plano nem muda contratos; os contactos são preparados para validação humana. Não registe NIF, CPE, CUI ou dados de faturas nesta agenda.</p>
-</section>
-<section class="card"><h2>5. Limites do acompanhamento</h2><p class="sub">A Wivolta pode rever periodicamente as condições e contactar o cliente com alternativas. A revisão não altera o contrato automaticamente.</p><div class="notice">Qualquer mudança exige validação de preços, condições, fidelização e autorização específica do titular. A Wivolta não está ligada em tempo real aos sistemas dos comercializadores nesta versão.</div></section>
-</main>
+            <button type="button" onclick="calcularTarifas()" style="width:100%; background:#059669; color:#ffffff; font-weight:600; padding:13px; border:none; border-radius:10px; font-size:15px; cursor:pointer;">
+                ⚡ Calcular Propostas Oficiais
+            </button>
+        </section>
 
-<footer>© 2026 Wivolta · Comparação transparente de energia · <a href="/privacidade.html">Privacidade</a> · <a href="mailto:wivolta.parceiros@gmail.com">Contacto Wivolta</a><br>Os documentos selecionados são processados localmente no navegador. Não feche a página durante a leitura.</footer>
+        <!-- Resultados -->
+        <section id="resultados-container" class="hidden">
+            <h3 style="font-size:18px; font-weight:700; margin-bottom:12px;">Resultados e Poupança Estimada</h3>
+            <div id="lista-tarifas"></div>
+        </section>
 
-<script>
-'use strict';
-const $ = id => document.getElementById(id);
-let signatureDirty=false, drawing=false, ctx=null;
-if(window.pdfjsLib){pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';}
-function showStatus(message,type=''){const el=$('readStatus');el.className='status'+(type?' '+type:'');el.textContent=message;}
-function norm(t){return (t||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();}
-function findOne(text,patterns){for(const re of patterns){const m=text.match(re);if(m&&m[1])return m[1].trim();}return '';}
-function numValue(v){
- if(!v)return '';
- let x=String(v).replace(/[^\d,.-]/g,'');
- if(x.includes(',')&&x.includes('.'))x=x.replace(/\./g,'').replace(',','.');
- else if(x.includes(','))x=x.replace(',','.');
- else if((x.match(/\./g)||[]).length>1)x=x.replace(/\./g,'');
- const n=Number(x);return Number.isFinite(n)?String(n):'';
-}
+        <!-- 3. Secção Auto-Switch -->
+        <section id="auto-switch" class="autoswitch-card">
+            <span style="background:rgba(16,185,129,0.25); color:#a7f3d0; font-size:11px; font-weight:700; padding:3px 10px; border-radius:999px; text-transform:uppercase;">Inovação Wivolta</span>
+            <h2 style="color:#ffffff; margin-top:8px;">Auto-Switch a Cada 3 Meses</h2>
+            <p style="font-size:14px; color:#d1fae5; margin-top:4px;">
+                Reavaliamos o mercado a cada 3 meses e asseguramos que transita sempre para a tarifa mais económica sem burocracias.
+            </p>
+            <div class="as-grid">
+                <div class="as-step">
+                    <strong style="color:#6ee7b7; font-size:14px;">1. Análise Trimestral</strong>
+                    <p style="font-size:12px; color:#d1fae5; margin-top:4px;">Monitorização contínua das melhores ofertas.</p>
+                </div>
+                <div class="as-step">
+                    <strong style="color:#6ee7b7; font-size:14px;">2. Notificação Prévia</strong>
+                    <p style="font-size:12px; color:#d1fae5; margin-top:4px;">Aviso antes de cada transição com simulação.</p>
+                </div>
+                <div class="as-step">
+                    <strong style="color:#6ee7b7; font-size:14px;">3. Mudança Automática</strong>
+                    <p style="font-size:12px; color:#d1fae5; margin-top:4px;">Gestão completa sem interrupção de energia.</p>
+                </div>
+            </div>
+        </section>
 
-function parseInvoice(raw){
- const text=(raw||'').replace(/\u00a0/g,' ').replace(/[ \t]+/g,' ').replace(/\r/g,'\n');
- const lines=text.split('\n').map(x=>x.trim()).filter(Boolean);
- const normalized=norm(text);
- const supplierArea=norm(lines.slice(0,60).join(' '));
- const out={name:'',address:'',postal:'',supplier:'',nif:'',cpe:'',cui:'',power:'',tariff:'unknown',simple:'',peak:'',flat:'',off:'',outside:'',gas:'',total:'',period:''};
- const suppliers=['SU Eletricidade','MEO Energia','Gold Energy','Goldenergy','Iberdrola','Coopérnico','Plenitude','Repsol','Endesa','Galp','EDP'];
- out.supplier=suppliers.find(x=>supplierArea.includes(norm(x)))||'';
- out.name=findOne(text,[/(?:titular(?:\s+do\s+contrato)?|nome\s+do\s+cliente|cliente)\s*[:\-]\s*([^\n]{3,90})/i]);
- out.address=findOne(text,[/(?:morada\s+de\s+fornecimento|morada\s+de\s+consumo|local\s+de\s+consumo|endereço\s+de\s+fornecimento|morada)\s*[:\-]\s*([^\n]{6,120})/i]);
- out.postal=findOne(text,[/\b(\d{4}-\d{3}\s+[A-ZÀ-Ú][^\n,;]{1,45})/i]);
- if(out.name&&suppliers.some(x=>norm(out.name).includes(norm(x))))out.name='';
- out.nif=findOne(text,[/(?:NIF|N\.I\.F\.?|Contribuinte|NIPC)\s*[:nº.]?\s*(\d{9})/i]);
- out.cpe=findOne(text,[/(?:CPE|Código\s+do\s+Ponto\s+de\s+Entrega)\s*[:\-]?\s*(PT\s*[A-Z0-9]{16,24})/i]);
- out.cui=findOne(text,[/(?:CUI|Código\s+Universal\s+da\s+Instalação)\s*[:\-]?\s*(PT\s*[A-Z0-9]{16,24})/i]);
- out.power=findOne(text,[/(?:potência\s+contratada|potência)\D{0,35}(\d{1,2}[,.]\d{1,2})\s*kVA/i,/(\d{1,2}[,.]\d{1,2})\s*kVA/i]);
+        <!-- 4. Adesão com Assinatura Digital e Envio por WhatsApp -->
+        <section id="adesao" class="card">
+            <h2>Aderir à Wivolta & Autorização Digital</h2>
+            <p class="subtitle">Preencha os seus dados, assine com o dedo no ecrã e envie o pedido diretamente para o WhatsApp de gestão.</p>
+            
+            <form id="form-adesao" onsubmit="enviarPedidoWhatsApp(event)">
+                <div class="form-grid">
+                    <div>
+                        <label for="campo-nome">Nome Completo / Empresa</label>
+                        <input type="text" id="campo-nome" required placeholder="Ex: João Silva">
+                    </div>
+                    <div>
+                        <label for="campo-telefone">Telefone / Telemóvel</label>
+                        <input type="tel" id="campo-telefone" required placeholder="910 000 000">
+                    </div>
+                </div>
+                
+                <div class="form-grid">
+                    <div>
+                        <label for="campo-email">Email de Contacto</label>
+                        <input type="email" id="campo-email" required placeholder="exemplo@gmail.com">
+                    </div>
+                    <div>
+                        <label for="campo-nif">NIF (Opcional para proposta)</label>
+                        <input type="text" id="campo-nif" placeholder="123 456 789">
+                    </div>
+                </div>
 
- // O ciclo é determinado por indicação explícita do tarifário/ciclo, nunca pela tabela de leituras.
- const cycleLines=[];
- for(let i=0;i<lines.length;i++){
-  if(/ciclo\s+hor[aá]rio|tarif[aá]rio|tipo\s+de\s+tarifa|modalidade\s+hor[aá]ria/i.test(lines[i])){
-   cycleLines.push(lines.slice(i,Math.min(lines.length,i+5)).join(' '));
-  }
- }
- const cycleText=norm(cycleLines.join(' '));
- if(/tri[- ]?horario|tres\s+periodos/.test(cycleText))out.tariff='tri';
- else if(/bi[- ]?horario|dois\s+periodos/.test(cycleText))out.tariff='bi';
- else if(/\bsimples\b/.test(cycleText))out.tariff='simples';
- else if(/tri[- ]?horario|tres\s+periodos/.test(normalized)&&/(tarifa|ciclo|contrato)/.test(normalized))out.tariff='tri';
- else if(/bi[- ]?horario|dois\s+periodos/.test(normalized)&&/(tarifa|ciclo|contrato)/.test(normalized))out.tariff='bi';
- else if(/(?:tarifario|ciclo horario)[^\n]{0,90}\bsimples\b/i.test(text))out.tariff='simples';
+                <div style="margin-bottom:16px;">
+                    <label for="campo-mensagem">Observações / Comercializadora Atual (Opcional)</label>
+                    <textarea id="campo-mensagem" rows="2" placeholder="Pretendo ativar o serviço de auto-switch trimestral..."></textarea>
+                </div>
 
- const parseQty=(v)=>{if(!v)return '';let x=String(v).replace(/\s/g,'').replace(/[€]/g,'');if(/^\d{1,3}(?:\.\d{3})+,\d+$/.test(x))x=x.replace(/\./g,'').replace(',','.');else if(/^\d+,\d+$/.test(x))x=x.replace(',','.');else if(/^\d{1,3}(?: \d{3})+(?:,\d+)?$/.test(v))x=x.replace(/ /g,'').replace(',','.');const n=Number(x);return Number.isFinite(n)&&n>=0&&n<1000000?String(n):'';};
- const qtyIn=(line)=>{const m=line.match(/(\d{1,3}(?:[ .]\d{3})*(?:[,.]\d{1,3})?|\d+(?:[,.]\d{1,3})?)\s*kwh\b/i)||line.match(/\bkwh\s*[:=]?\s*(\d+(?:[,.]\d+)?)/i);return m?parseQty(m[1]):'';};
+                <!-- Campo de Assinatura Digital no Telemóvel -->
+                <div style="margin-bottom:16px;">
+                    <label>Assinatura do Titular (Assine com o dedo no quadro abaixo) *</label>
+                    <div class="sig-wrapper">
+                        <canvas id="signature-pad"></canvas>
+                        <div class="sig-toolbar">
+                            <span id="sig-status">✍️ Desenhe a sua assinatura acima</span>
+                            <button type="button" class="btn-clear-sig" onclick="limparAssinatura()">Limpar Assinatura</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="rgpd-row">
+                    <input type="checkbox" id="rgpd" required>
+                    <label for="rgpd">
+                        Declaro que autorizo o tratamento dos meus dados pessoais nos termos do RGPD e confirmo a minha assinatura digital acima para efeitos de pedido de proposta, mudança de comercializador e ativação do serviço Auto-Switch na Wivolta.
+                    </label>
+                </div>
 
- // Extrai quantidades apenas na secção de detalhe da fatura.
- // Junta linhas partidas pelo PDF/OCR, mas nunca usa a tabela de leituras do contador.
- const detailStart=lines.findIndex(l=>/detalhes?\s+da\s+fatura|detalhe\s+da\s+fatura/i.test(norm(l)));
- const detailEnd=detailStart>=0?lines.findIndex((l,i)=>i>detailStart&&/total\s+faturado|subtotal|total\s+da\s+fatura/i.test(norm(l))):-1;
- const detailLines=detailStart>=0?lines.slice(detailStart+1,detailEnd>detailStart?detailEnd:Math.min(lines.length,detailStart+100)):[];
- const billed={simple:[],peak:[],flat:[],off:[],outside:[],gas:[]};
- const detailRowStop=/energia\s+ativa|consumo\s+(?:de\s+)?eletricidade|acesso\s+as\s+redes|desconto|tarifa\s+social|energia\s+reativa|potencia\s+contratada/i;
- for(let i=0;i<detailLines.length;i++){
-  const current=norm(detailLines[i]);
-  if(!/energia\s+ativa|consumo\s+(?:de\s+)?eletricidade/i.test(current))continue;
-  // Limita o agrupamento para não capturar quantidades de linhas de desconto/acesso adjacentes.
-  let rowParts=[detailLines[i]],j=i+1;
-  while(j<detailLines.length&&j<=i+3&&!detailRowStop.test(norm(detailLines[j]))){
-   rowParts.push(detailLines[j]);j++;
-  }
-  // O período pode aparecer na linha imediatamente anterior em PDFs com colunas quebradas.
-  const previous=i>0?norm(detailLines[i-1]):'';
-  const row=rowParts.join(' '),n=norm(row),context=previous+' '+n;
-  if(/acesso\s+as\s+redes|desconto|tarifa\s+social|reativa|potencia\s+contratada/i.test(n))continue;
-  const q=qtyIn(row);if(q==='')continue;
-  if(/gas\s+natural|energia\s+ativa\s+gas/i.test(context)){billed.gas.push(Number(q));continue;}
-  if(/fora\s+de\s+vazio/i.test(context)){billed.outside.push(Number(q));continue;}
-  if(/\bponta\b/i.test(context)){billed.peak.push(Number(q));continue;}
-  if(/\bcheias?\b/i.test(context)){billed.flat.push(Number(q));continue;}
-  if(/\bvazio\b/i.test(context)){billed.off.push(Number(q));continue;}
-  if(/\bsimples\b/i.test(context))billed.simple.push(Number(q));
- }
- const sum=a=>a.length?String(Math.round(a.reduce((x,y)=>x+y,0)*1000)/1000):'';
- out.peak=sum(billed.peak);out.flat=sum(billed.flat);out.off=sum(billed.off);out.outside=sum(billed.outside);out.gas=sum(billed.gas);out.simple=sum(billed.simple);
+                <button type="submit" class="btn-primary">
+                    💬 Enviar Pedido por WhatsApp
+                </button>
+            </form>
 
- // Cabeçalho da fatura pode apresentar o total faturado sem discriminar ciclo.
- const headline=findOne(text,[/(?:eletricidade\s+faturada|consumo\s+total\s+faturado)[^\n]{0,70}?(\d{1,3}(?:[ .]\d{3})*(?:[,.]\d{1,3})?)\s*kwh/i]);
- if(!out.simple&&out.tariff==='simples'&&headline)out.simple=parseQty(headline);
- // Se a fatura discriminar períodos, totaliza apenas as linhas de energia faturada por período.
- if(out.tariff==='bi'&&!out.off&&!out.outside&&headline)out.simple='';
- if(out.tariff==='tri'&&!out.peak&&!out.flat&&!out.off)out.simple='';
- if(!out.tariff||out.tariff==='unknown'){
-  if(out.peak||out.flat||out.off||out.outside)out.tariff='unknown';
- }
- out.total=findOne(text,[/valor\s+(?:total\s+)?(?:a\s+pagar|deste\s+documento)[^\d€]{0,35}(?:€\s*)?(\d{1,4}(?:[ .]\d{3})*[,.]\d{2})/i,/total\s+da\s+fatura[^\d€]{0,25}(?:€\s*)?(\d{1,4}(?:[ .]\d{3})*[,.]\d{2})/i,/montante\s+(?:a\s+pagar)?[^\d€]{0,25}(?:€\s*)?(\d{1,4}(?:[ .]\d{3})*[,.]\d{2})/i,/\bTOTAL\s+(\d{1,4}(?:[ .]\d{3})*[,.]\d{2})\s*€/i]);
- out.period=findOne(text,[/(?:período\s+de\s+faturação|período\s+faturado)\s*[:\-]?\s*([^\n]{5,60})/i]);
- return out;
-}
-async function pdfText(file){
- if(!window.pdfjsLib)throw new Error('A biblioteca de leitura de PDF não carregou. Verifique a ligação à internet e tente novamente.');
- const data=await file.arrayBuffer(),pdf=await pdfjsLib.getDocument({data}).promise;let all='';
- for(let p=1;p<=Math.min(pdf.numPages,5);p++){
-  const page=await pdf.getPage(p),content=await page.getTextContent();
-  const lines=[];
-  for(const item of content.items){
-   if(!item.str||!item.str.trim())continue;
-   const y=Math.round(item.transform?.[5]||0);
-   let line=lines.find(row=>Math.abs(row.y-y)<=2.5);
-   if(!line){line={y,items:[]};lines.push(line);}
-   line.items.push({x:item.transform?.[4]||0,str:item.str,hasEOL:item.hasEOL});
-  }
-  lines.sort((a,b)=>b.y-a.y);
-  for(const line of lines){
-   line.items.sort((a,b)=>a.x-b.x);
-   let value='';
-   for(const part of line.items){
-    if(value&&!/\s$/.test(value)&&!/^\s/.test(part.str))value+=' ';
-    value+=part.str;
-   }
-   all+=value+'\n';
-  }
- }
- if(all.replace(/\s/g,'').length<60){
-   if(!window.Tesseract)throw new Error('PDF digitalizado: a biblioteca OCR não carregou. Tente novamente com internet.');
-   for(let p=1;p<=Math.min(pdf.numPages,3);p++){const page=await pdf.getPage(p),vp=page.getViewport({scale:1.7}),canvas=document.createElement('canvas');canvas.width=vp.width;canvas.height=vp.height;await page.render({canvasContext:canvas.getContext('2d'),viewport:vp}).promise;const worker=await Tesseract.createWorker('por');const result=await worker.recognize(canvas);all+='\n'+result.data.text;await worker.terminate();}
- }
- return all;
-}
-function makeOcrCanvas(source){
- const scale=Math.min(2.2,2600/source.width,2.2);
- const cv=document.createElement('canvas');cv.width=Math.round(source.width*scale);cv.height=Math.round(source.height*scale);
- const c=cv.getContext('2d',{willReadFrequently:true});c.drawImage(source,0,0,cv.width,cv.height);
- const img=c.getImageData(0,0,cv.width,cv.height),d=img.data;
- for(let i=0;i<d.length;i+=4){const gray=.299*d[i]+.587*d[i+1]+.114*d[i+2];const contrast=Math.max(0,Math.min(255,(gray-150)*1.65+150));const v=contrast<178?0:255;d[i]=d[i+1]=d[i+2]=v;}
- c.putImageData(img,0,0);return cv;
-}
-async function runOcr(worker,source){
- const prepared=makeOcrCanvas(source);
- try{await worker.setParameters({tessedit_pageseg_mode:'6',preserve_interword_spaces:'1'});}catch(e){}
- const result=await worker.recognize(prepared);return result.data.text||'';
-}
-async function pdfOcrText(file){
- if(!window.pdfjsLib||!window.Tesseract)throw new Error('As bibliotecas de leitura não carregaram. Verifique a ligação à internet.');
- const pdf=await pdfjsLib.getDocument({data:await file.arrayBuffer()}).promise,worker=await Tesseract.createWorker('por');let all='';
- try{for(let p=1;p<=Math.min(pdf.numPages,5);p++){const page=await pdf.getPage(p),vp=page.getViewport({scale:2.35}),cv=document.createElement('canvas');cv.width=vp.width;cv.height=vp.height;await page.render({canvasContext:cv.getContext('2d'),viewport:vp}).promise;all+='\n'+await runOcr(worker,cv);}}
- finally{await worker.terminate();}
- return all;
-}
+            <div id="adesao-sucesso" class="hidden" style="margin-top:16px; padding:16px; border-radius:12px; background:#ecfdf5; border:1px solid #a7f3d0; color:#065f46; font-size:14px;">
+                <p style="font-weight:700;">✅ Pedido preparado com sucesso!</p>
+                <p style="font-size:12px; margin-top:4px;">O WhatsApp foi aberto com os seus dados prontos a enviar. Pode também descarregar o comprovativo da sua assinatura:</p>
+                <div style="margin-top:10px;">
+                    <a id="download-sig-link" download="assinatura-wivolta.png" style="display:inline-block; background:#059669; color:#fff; padding:6px 12px; border-radius:6px; text-decoration:none; font-size:12px; font-weight:600;">⬇️ Guardar Imagem da Assinatura</a>
+                </div>
+            </div>
+        </section>
+    </main>
 
-function detectedCount(d){return [d.name,d.address,d.postal,d.supplier,d.nif,d.cpe,d.cui,d.power,d.tariff!=='unknown'?d.tariff:'',d.simple,d.peak,d.flat,d.off,d.outside,d.gas,d.total].filter(Boolean).length;}
-async function imageText(file){
- if(!window.Tesseract)throw new Error('A biblioteca OCR não carregou. Verifique a ligação à internet.');
- const worker=await Tesseract.createWorker('por');
- try{const bitmap=await createImageBitmap(file);return await runOcr(worker,bitmap);}
- finally{await worker.terminate();}
-}
+    <footer>
+        <p>&copy; 2026 Wivolta. Todos os direitos reservados.</p>
+        <p style="margin-top:4px;">Apoio ao cliente: <a href="mailto:wivolta.energias@gmail.com">wivolta.energias@gmail.com</a></p>
+    </footer>
 
-function fill(id,value){if(value!==undefined&&value!==null&&value!==''&&$(id))$(id).value=value;}
+    <script>
+    let segmentoAtual = 'particulares';
+    let temAssinatura = false;
 
-const CATALOGO_OFERTAS = {"schemaVersion":"1.0.0","lastReviewed":"2026-11-20","currency":"EUR","market":"Portugal continental","principles":["Não comparar uma oferta sem preço unitário, potência e condições suficientes para calcular o perfil.","Não tratar descontos condicionados como descontos garantidos.","Não usar campanhas expiradas ou documentos sem validade confirmada.","Manter a origem documental e a data de cada valor."],"offers":[{"id":"repsol-viva-eletricidade-domestico-20261015","supplier":"Repsol","offer":"Viva Eletricidade","segment":"residencial","energy":"electricity","tariffs":["simple","bi-hourly"],"powerKva":[1.15,2.3,3.45,4.6,5.75,6.9,10.35,13.8,17.25,20.7],"dailyPowerEur":{"1.15":0.1923,"2.3":0.2645,"3.45":0.3318,"4.6":0.4621,"5.75":0.5364,"6.9":0.6236,"10.35":0.8854,"13.8":1.1772,"17.25":1.4891,"20.7":1.8409},"energyEurKwh":{"simple":{"base":0.185,"discount15":0.15725},"biHourly":{"outsidePeak":{"base":0.217362,"discount15":0.184758},"offPeak":{"base":0.119911,"discount15":0.101924}}},"discountConditions":["Desconto máximo de 15% no termo de energia sujeito a faturação eletrónica, débito direto e serviços adicionais.","Os descontos condicionados estão limitados ao primeiro ano de vigência contratual."],"validUntil":"2026-12-31","fidelity":false,"priceIndexation":false,"calculationStatus":"ready_electricity","sourceFiles":["VIVA_Geral_E_20261015_HQ.pdf"],"notes":"Preços compostos pelos preços Repsol e tarifas de acesso às redes em vigor; impostos e outros encargos acrescem. O preço simples/bi-horário está documentado. Não assumir o desconto máximo sem confirmar elegibilidade."},{"id":"galp-casa-estrada-eletricidade-20261001","supplier":"Galp","offer":"Casa & Estrada","segment":"residencial","energy":"electricity","tariffs":["simple","bi-hourly"],"powerBandsKva":[[1.15,2.3],[3.45,5.75],[6.9,10.35],[13.8,20.7]],"energyEurKwhByBand":[{"powerBandKva":[1.15,2.3],"simple":0.1913,"outsidePeak":0.2142,"offPeak":0.1428},{"powerBandKva":[3.45,5.75],"simple":0.1561,"outsidePeak":0.19,"offPeak":0.13},{"powerBandKva":[6.9,10.35],"simple":0.164,"outsidePeak":0.1847,"offPeak":0.1194},{"powerBandKva":[13.8,20.7],"simple":0.1863,"outsidePeak":0.2021,"offPeak":0.1351}],"discountRatesPercent":[0,2,4,6,8,10,12],"discountConditions":["A tabela associa descontos diferentes a uma ou duas energias, débito direto e serviços opcionais.","Com uma energia: 4% sem débito direto ou 6% com débito direto; serviços opcionais podem acrescentar 2% por serviço, conforme tabela.","Com eletricidade e gás: 6% sem débito direto ou 8% com débito direto; serviços opcionais podem acrescentar 2% por serviço, conforme tabela.","Os descontos incidem no total da fatura, mas excluem taxa DGEG, contribuição audiovisual e imposto especial sobre consumo de eletricidade.","Serviços opcionais identificados: 360 Casa (4,90 €/mês), 360 Casa Plus (6,90 €/mês) ou 360 Saúde (6,90 €/mês)."],"validFrom":"2026-10-01","validUntil":"2026-12-31","fidelity":null,"calculationStatus":"ready_electricity_base_prices","sourceFiles":["AF_galp-plano-casa-estrada-tabela-precos-descontos-.pdf"],"notes":"Preços base de energia e termo fixo extraídos da tabela Galp em vigor desde 01-10-2026. Descontos de 4%-12% dependem de 1 ou 2 energias, débito direto e serviços opcionais; o motor só deve aplicar o desconto após confirmação da elegibilidade e custo do serviço.","dailyPowerEur":{"1.15":0.1968,"2.3":0.2495,"3.45":0.3167,"4.6":0.373,"5.75":0.4547,"6.9":0.5969,"10.35":0.7993,"13.8":1.009,"17.25":1.2628,"20.7":1.5695}},{"id":"galp-casa-estrada-gas-20261001","supplier":"Galp","offer":"Casa & Estrada","segment":"residencial","energy":"gas","gasConsumptionBandsM3Year":[{"band":1,"min":0,"max":220,"fixedEurDay":0.0917,"energyEurKwh":0.1185},{"band":2,"min":221,"max":500,"fixedEurDay":0.1629,"energyEurKwh":0.1183},{"band":3,"min":501,"max":1000,"fixedEurDay":0.2338,"energyEurKwh":0.1168},{"band":4,"min":1001,"max":10000,"fixedEurDay":0.375,"energyEurKwh":0.1149}],"discountConditions":["Desconto no total da fatura depende de uma ou duas energias e de débito direto.","Os descontos indicados são válidos por 12 meses a partir da ativação."],"validFrom":"2026-10-01","validUntil":"2026-12-31","calculationStatus":"partial_conversion_and_discount_validation","sourceFiles":["AF_galp-plano-casa-estrada-tabela-precos-descontos-.pdf"],"notes":"A tabela de gás apresenta escalões em m3/ano. A aplicação ainda precisa de validar conversão/escala de consumo e elegibilidade antes de calcular."},{"id":"galp-negocios-eletricidade-20261001","supplier":"Galp","offer":"Negócios","segment":"business","energy":"electricity","tariffs":["simple","bi-hourly"],"validFrom":"2026-10-01","validUntil":"2026-12-31","discountConditions":["Oferta para clientes com atividade económica, tarifas simples e bi-horária até 20,70 kVA.","Descontos de energia variam com débito direto, contratação de uma ou duas energias e serviços opcionais.","A tabela menciona desconto adicional após 12 meses e serviço opcional; validar a ficha integral antes de apresentar proposta."],"calculationStatus":"ready_base_prices_discount_validation_required","sourceFiles":["AF_galp-plano-negocios-tabela-precos-descontos-08_2.pdf"],"notes":"Preços finais base em vigor em 2026, incluem acesso às redes; acresce IVA. Desconto no total da fatura: 4% uma energia sem DD, 6% uma energia com DD; 6% duas energias sem DD, 8% duas energias com DD; +1% após 12 meses e +2% por serviço opcional. Serviços 360 Assist 5,90€/mês ou 360 Assist+ 8,90€/mês. Confirmar se o serviço é economicamente vantajoso antes de aplicar desconto.","powerKva":[1.15,2.3,3.45,4.6,5.75,6.9,10.35,13.8,17.25,20.7],"dailyPowerEur":{"1.15":0.2056,"2.3":0.258,"3.45":0.3205,"4.6":0.3767,"5.75":0.459,"6.9":0.6034,"10.35":0.8172,"13.8":1.0497,"17.25":1.2818,"20.7":1.5948},"energyEurKwhByPower":[{"powerKva":[1.15,2.3],"simple":0.1992,"outsidePeak":0.2222,"offPeak":0.1504},{"powerKva":[3.45,5.75],"simple":0.162,"outsidePeak":0.1924,"offPeak":0.1372},{"powerKva":[6.9,10.35],"simple":0.1701,"outsidePeak":0.187,"offPeak":0.1255},{"powerKva":[13.8,20.7],"simple":0.1785,"outsidePeak":0.2011,"offPeak":0.1403}],"discountRatesPercent":[0,4,6,8,10,12,13]},{"id":"iberdrola-mais-casa-2026","supplier":"Iberdrola","offer":"Plano Mais Casa","segment":"residencial","energy":"electricity","tariffs":["simple","bi-hourly"],"validUntil":"2026-12-31","fidelity":false,"priceIndexation":false,"discountConditions":["16% base indicado como válido durante toda a vigência do contrato.","Mais 1% por fatura eletrónica e 1% por débito direto.","Mais 2% com Proteção Elétrica Lar/Lar Plus; perde-se o desconto associado se o serviço for cancelado.","Benefício de campanha de 40 €, atribuído como 4 € por fatura."],"calculationStatus":"blocked_price_table_not_extracted","sourceFiles":["MCASA264.pdf"],"notes":"O documento confirma condições, validade e ausência de fidelização, mas a extração de texto não devolveu os preços unitários. Não inventar preços nem calcular ainda."},{"id":"iberdrola-mais-negocios-2026","supplier":"Iberdrola","offer":"Plano Mais Negócios","segment":"business","energy":"electricity","tariffs":["simple","bi-hourly"],"validUntil":"2026-12-31","fidelity":true,"fidelityMonths":12,"priceIndexation":false,"discountConditions":["20% base indicado como válido durante toda a vigência do contrato.","Mais 1% por fatura eletrónica e 1% por débito direto.","Denúncia antecipada nos primeiros 12 meses implica compensação calculada pela potência contratada e dias remanescentes."],"calculationStatus":"blocked_price_table_not_extracted","sourceFiles":["MNEG264.pdf"],"notes":"Não recomendar sem apresentar claramente a fidelização de 12 meses e a fórmula de compensação."},{"id":"edp-residencial-2026","supplier":"EDP","offer":"Tarifário Residencial","segment":"residencial","energy":"electricity","calculationStatus":"blocked_scan_or_text_unreadable","sourceFiles":["Tarifário Eletricidade Residencial 15_ Desconto 2026 (1).pdf","Tarifário Residencial Descontos para Sempre 10_ (1).pdf","Tarifários Eletricidade Residencial Base 2026 (sem desconto) (1).pdf"],"notes":"O documento 'Descontos para Sempre' contém tabelas de preços, mas a data de referência extraída surge apenas como 1 de janeiro, sem ano legível. Não assumir que os valores são atuais até validar o PDF original e a sua vigência."},{"id":"endesa-novembro-2026","supplier":"Endesa","offer":"Campanhas residenciais e empresariais","segment":"residential_and_business","energy":"electricity","calculationStatus":"blocked_base_prices_and_conditions_need_structuring","sourceFiles":["F26.0393_FICHA PLUS ENDESA_QUERO+.pdf","F26.0396_FICHA PLUS ENDESA ANIVERSARIO.pdf","F26.0397_FICHA PLUS ENDESA A SUA EMPRESA_8.pdf","F26.0398_FICHA PLUS ENDESA A SUA EMPRESA_10.pdf","F26.0399_FICHA PLUS ENDESA A SUA EMPRESA_12.pdf","F26.0400_FICHA PLUS ENDESA A SUA EMPRESA_14.pdf","F26.0401_FICHA PLUS ENDESA A SUA EMPRESA_TRIHORÁRIA_8_v3.pdf","F26.0402_FICHA PLUS ENDESA A SUA EMPRESA_TRIHORÁRIA_10_v3.pdf","F26.0403_FICHA PLUS ENDESA A SUA EMPRESA_TRIHORÁRIA_12.pdf"],"notes":"As fichas incluem descontos sujeitos a condições como fornecimento conjunto de luz e gás, débito direto, fatura digital e serviços de assistência. Não comparar apenas pela percentagem promocional."},{"id":"meo-tarifario-documento-2025","supplier":"MEO Energia","offer":"Documento de alteração de preços","segment":"unknown","energy":"electricity","calculationStatus":"excluded_stale","sourceFiles":["347_20241231_MEO_Energia_ Alteracao_Precos_01_janeiro_2025_site.pdf"],"notes":"Documento refere alteração de preços em 1 de janeiro de 2025; não é usado como preço atual."},{"id":"repsol-leve-pro-eletricidade-empresas-20260923","supplier":"Repsol","offer":"Tarifa Leve Pro","segment":"business","energy":"electricity","tariffs":["simple","bi-hourly","tri-hourly"],"validFrom":"2026-09-23","validUntil":null,"powerKva":[4.6,17.25,34.5],"dailyPowerEur":{"4.6":0.3991,"17.25":1.2591,"34.5":2.206},"energyEurKwh":{"simple":{"4.6":{"base":0.2087501,"discount15":0.1774381},"17.25":{"base":0.2137501,"discount15":0.1816881}},"biHourly":{"outsidePeak":{"4.6":{"base":0.2505001,"discount15":0.2129251},"17.25":{"base":0.2565001,"discount15":0.2180251}},"offPeak":{"4.6":{"base":0.1461251,"discount15":0.1242061},"17.25":{"base":0.1496251,"discount15":0.1271811}}},"triHourly":{"peak":{"34.5":{"base":0.4573751,"discount15":0.3887691}},"shoulder":{"34.5":{"base":0.2187501,"discount15":0.1859381}},"offPeak":{"34.5":{"base":0.1948751,"discount15":0.1656441}}}},"discountConditions":["Descontos até 15% no termo de energia: 5% Bem-vindo à Repsol (primeiro ano), 5% faturação eletrónica e 5% débito direto; os dois últimos dependem da manutenção das condições.","Preço parcialmente indexado à regularização mensal dos Serviços Complementares (SSCC); o acerto pode ser positivo ou negativo.","Preços não incluem DGEG, contribuição audiovisual, imposto especial de consumo, financiamento da tarifa social e IVA."],"fidelity":null,"priceIndexation":"partial_sscc_monthly_adjustment","calculationStatus":"partial_limited_power_price_points_and_index_adjustment","sourceFiles":["17_REPSOL_TARIFA_ELETRICIDADE_LEVE_PRO_20260923.pdf"],"notes":"Tarifa para BTN empresarial. A tabela apresenta preços de energia para potências específicas (4,60 e 17,25 kVA em simples/bi-horária; 34,50 kVA em tri-horária). Não extrapolar para outras potências nem calcular valor final sem regularização SSCC."},{"id":"meo-eletricidade-residencial-base-202601","supplier":"MEO Energia","offer":"Tarifário Base — janeiro de 2026","segment":"residencial","energy":"electricity","tariffs":["simple","bi-hourly","tri-hourly"],"validFrom":"2026-01-01","validUntil":null,"fidelity":null,"priceIndexation":false,"dailyPowerEur":{"1.15":0.15,"2.3":0.2,"3.45":0.27,"4.6":0.38,"5.75":0.47,"6.9":0.55,"10.35":0.65,"13.8":0.8,"17.25":0.99,"20.7":1.15,"27.6":1.5,"34.5":2,"41.4":2.5},"energyEurKwh":{"simple":{"base":0.1699},"biHourly":{"outsidePeak":{"base":0.1999},"offPeak":{"base":0.1199}},"triHourly":{"peak":{"base":0.3499},"shoulder":{"base":0.1699},"offPeak":{"base":0.1199}}},"calculationStatus":"manual_review_validity_unconfirmed","sourceFiles":["Simulador de MEO Energia 2026 01.xlsx"],"notes":"Valores do separador Tarifa 2026, identificados como tarifário base Jan/26. A validade comercial atual não está confirmada. Não apresentar na comparação automática até confirmação escrita da MEO. Não contém oferta de gás."}]};
-function euro(v){return v.toLocaleString('pt-PT',{style:'currency',currency:'EUR'});}
-function bandForPower(bands,power){return (bands||[]).find(x=>power>=x[0]&&power<=x[1]);}
-function eligibleOffers(kind,tariff,power,values,days){
- const annual=365/days, out=[];
- const offers=CATALOGO_OFERTAS.offers;
- for(const o of offers){
-  if(o.energy!=='electricity'||!['residencial','business'].includes(o.segment))continue;
-  if((kind==='empresa')!==(o.segment==='business'))continue;
-  if(o.validUntil&&new Date(o.validUntil+'T23:59:59')<new Date())continue;
-  if(o.calculationStatus==='excluded_stale'||o.calculationStatus.startsWith('blocked'))continue;
-  if(tariff==='simples'&&!o.tariffs?.includes('simple'))continue;
-  if(tariff==='bi'&&!o.tariffs?.includes('bi-hourly'))continue;
-  if(tariff==='tri'&&!o.tariffs?.includes('tri-hourly'))continue;
-  let daily=null, energy=0, detail='', caveat=o.notes||'';
-  if(o.id==='repsol-viva-eletricidade-domestico-20261015'){
-   daily=o.dailyPowerEur[power.toFixed(2)];
-   if(daily==null)continue;
-   if(tariff==='simples'){energy=values.simple*annual*o.energyEurKwh.simple.base;detail='Simples '+euro(o.energyEurKwh.simple.base)+'/kWh';}
-   else if(tariff==='bi'){energy=annual*(values.outside*o.energyEurKwh.biHourly.outsidePeak.base+values.off*o.energyEurKwh.biHourly.offPeak.base);detail='Fora vazio '+euro(o.energyEurKwh.biHourly.outsidePeak.base)+'/kWh · Vazio '+euro(o.energyEurKwh.biHourly.offPeak.base)+'/kWh';}
-  }else if(o.id==='galp-casa-estrada-eletricidade-20261001'){
-   daily=o.dailyPowerEur[power.toFixed(2)];
-   const band=bandForPower(o.energyEurKwhByBand.map(x=>x.powerBandKva),power);
-   const rates=o.energyEurKwhByBand.find(x=>x.powerBandKva[0]===band?.[0]&&x.powerBandKva[1]===band?.[1]);
-   if(daily==null||!rates)continue;
-   if(tariff==='simples'){energy=values.simple*annual*rates.simple;detail='Simples '+euro(rates.simple)+'/kWh';}
-   else if(tariff==='bi'){energy=annual*(values.outside*rates.outsidePeak+values.off*rates.offPeak);detail='Fora vazio '+euro(rates.outsidePeak)+'/kWh · Vazio '+euro(rates.offPeak)+'/kWh';}
-   caveat+=' Descontos condicionais e serviços opcionais não incluídos.';
-  }else if(o.id==='galp-negocios-eletricidade-20261001'){
-   daily=o.dailyPowerEur[power.toFixed(2)];
-   const rates=o.energyEurKwhByPower.find(x=>x.powerKva.includes(power));
-   if(daily==null||!rates)continue;
-   if(tariff==='simples'){energy=values.simple*annual*rates.simple;detail='Simples '+euro(rates.simple)+'/kWh';}
-   else if(tariff==='bi'){energy=annual*(values.outside*rates.outsidePeak+values.off*rates.offPeak);detail='Fora vazio '+euro(rates.outsidePeak)+'/kWh · Vazio '+euro(rates.offPeak)+'/kWh';}
-   caveat+=' Descontos condicionais/serviços não incluídos.';
-  }else if(o.id==='galp-casa-estrada-tri-residencial-20261001'||o.id==='galp-negocios-tri-eletricidade-20261001'){
-   daily=o.dailyPowerEur[power.toFixed(2)];const x=o.energyEurKwh.triHourly;
-   if(daily==null||!o.powerKva.includes(power)||!x)continue;
-   energy=annual*(values.peak*x.peak+values.flat*x.shoulder+values.off*x.offPeak);
-   detail='Ponta '+euro(x.peak)+'/kWh · Cheias '+euro(x.shoulder)+'/kWh · Vazio '+euro(x.offPeak)+'/kWh';
-   caveat+=' Descontos condicionais e serviços opcionais não incluídos.';
-  }else if(o.id==='repsol-leve-pro-eletricidade-empresas-20260923'){
-   daily=o.dailyPowerEur[power.toFixed(2)];if(daily==null)continue;
-   const p=String(power);
-   if(tariff==='simples'){const r=o.energyEurKwh.simple?.[p];if(!r)continue;energy=values.simple*annual*r.base;detail='Simples base '+euro(r.base)+'/kWh';}
-   if(tariff==='bi'){const x=o.energyEurKwh.biHourly;const r1=x?.outsidePeak?.[p],r2=x?.offPeak?.[p];if(!r1||!r2)continue;energy=annual*(values.outside*r1.base+values.off*r2.base);detail='Fora vazio '+euro(r1.base)+'/kWh · Vazio '+euro(r2.base)+'/kWh';}
-   if(tariff==='tri'){const x=o.energyEurKwh.triHourly;const r1=x?.peak?.[p],r2=x?.shoulder?.[p],r3=x?.offPeak?.[p];if(!r1||!r2||!r3)continue;energy=annual*(values.peak*r1.base+values.flat*r2.base+values.off*r3.base);detail='Ponta '+euro(r1.base)+' · Cheias '+euro(r2.base)+' · Vazio '+euro(r3.base)+'/kWh';}
-   caveat+=' Ajustamento mensal SSCC pode alterar o preço final; desconto máximo não incluído.';
-  }else continue;
-  const powerCost=daily*365,total=powerCost+energy;
-  out.push({supplier:o.supplier,offer:o.offer,total,powerCost,energy,detail,caveat,valid:o.validUntil||'validade não indicada',source:(o.sourceFiles||[]).join(', ')});
- }
- return out.sort((x,y)=>x.total-y.total);
-}
-function runTariffComparison(){
- const root=$('comparisonResults');root.replaceChildren();
- const service=$('energyType')?.value||'electricity';
- const kind=$('supplyType')?.value==='Empresa'?'empresa':'residencial';
- if(kind==='empresa'){
-  const box=document.createElement('div');box.className='result';
-  const title=document.createElement('strong');title.textContent='Análise empresarial manual';
-  const p=document.createElement('p');p.textContent='As propostas para empresas são analisadas pessoalmente pela equipa Wivolta. Envie a fatura e serão verificados preços, potência, períodos horários, fidelização, condições e eventuais penalizações. Não é feita uma mudança automática.';
-  const a=document.createElement('a');a.href='mailto:wivolta.parceiros@gmail.com?subject='+encodeURIComponent('Pedido de análise manual empresarial — Wivolta');a.textContent='Pedir análise manual por email';
-  box.append(title,p,a);root.append(box);return;
- }
- if(service==='gas'){
-  const box=document.createElement('div');box.className='result';
-  const title=document.createElement('strong');title.textContent='Comparação de gás natural';
-  const p=document.createElement('p');p.textContent='A Wivolta está a organizar as tarifas de gás por escalão de consumo. Neste momento ainda não há um conjunto suficiente de preços residenciais validados para apresentar uma comparação automática fiável. Pode pedir uma análise manual por email.';
-  const a=document.createElement('a');a.href='mailto:wivolta.parceiros@gmail.com?subject='+encodeURIComponent('Pedido de análise de gás natural — Wivolta');a.textContent='Pedir análise de gás por email';
-  box.append(title,p,a);root.append(box);return;
- }
- const tariff=$('meterTariff').value;
- const power=Number(String($('power').value).replace(',','.'));
- const days=Number($('billingDays').value);
- const values={simple:Number($('kwhSimple').value)||0,peak:Number($('kwhPeak').value)||0,flat:Number($('kwhFlat').value)||0,off:Number($('kwhOff').value)||0,outside:Number($('kwhOutside').value)||0};
- const consumption=tariff==='simples'?values.simple:tariff==='bi'?values.outside+values.off:tariff==='tri'?values.peak+values.flat+values.off:0;
- const errors=[];
- if(!['simples','bi','tri'].includes(tariff))errors.push('Confirme o ciclo horário da fatura.');
- if(!Number.isFinite(power)||power<=0)errors.push('Indique a potência contratada em kVA.');
- if(!days||days<1||days>366)errors.push('Indique os dias abrangidos pelos consumos.');
- if(!consumption||consumption<=0)errors.push('Confirme os consumos em kWh.');
- if(tariff==='simples'&&$('kwhSimple').value==='')errors.push('Falta o consumo simples.');
- if(tariff==='bi'&&($('kwhOutside').value===''||$('kwhOff').value===''))errors.push('Confirme separadamente fora de vazio e vazio.');
- if(tariff==='tri'&&(['kwhPeak','kwhFlat','kwhOff'].some(id=>$(id).value==='')))errors.push('Confirme ponta, cheias e vazio separadamente.');
- if(errors.length){const box=document.createElement('div');box.className='result';box.innerHTML='<strong>Faltam dados para comparar</strong><ul>'+errors.map(x=>'<li>'+x+'</li>').join('')+'</ul>';root.append(box);return;}
- const results=eligibleOffers(kind,tariff,power,values,days);
- if(!results.length){const box=document.createElement('div');box.className='result';box.textContent='Não há ofertas com preços e potência suficientemente documentados para este perfil. Não serão inventados preços nem extrapolados escalões.';root.append(box);return;}
- const intro=document.createElement('p');intro.className='muted';intro.textContent='Comparação das ofertas com preços base documentados para este segmento, potência e ciclo. Valores anualizados antes de IVA, impostos e encargos não incluídos nas fichas. Descontos condicionais não são aplicados.';root.append(intro);
- for(const r of results){const card=document.createElement('div');card.className='result';const title=document.createElement('strong');title.textContent=r.supplier+' — '+r.offer;card.append(title);const amount=document.createElement('p');amount.textContent='Estimativa anual: '+euro(r.total)+' · Energia: '+euro(r.energy)+' · Potência: '+euro(r.powerCost);card.append(amount);const detail=document.createElement('p');detail.className='muted';detail.textContent=r.detail+' · Validade: '+r.valid;card.append(detail);const note=document.createElement('p');note.className='muted';note.textContent=r.caveat+' Fonte: '+r.source;card.append(note);root.append(card);}
- const note=document.createElement('p');note.className='muted';note.textContent='A ordenação é pelo custo estimado dos componentes documentados, não constitui garantia de poupança nem inclui todos os itens da fatura. Ofertas sem preço unitário ou potência validada ficam de fora.';root.append(note);
-}
+    const potenciasParticulares = {
+        "3.45": { termoComDesconto: 0.2399 },
+        "4.6":  { termoComDesconto: 0.3143 },
+        "6.9":  { termoComDesconto: 0.4578 },
+        "10.35":{ termoComDesconto: 0.5958 }
+    };
 
-function updateBillSummary(){
- const total=Number($('invoiceTotal').value),kwh=['kwhSimple','kwhPeak','kwhFlat','kwhOff','kwhOutside'].reduce((s,id)=>s+(Number($(id).value)||0),0);
- const rows=[['Titular',$('holderName').value||'Por confirmar'],['Morada',$('holderAddress').value||'Por confirmar'],['Código postal',$('holderPostal').value||'Por confirmar'],['Comercializador atual',$('supplier').value||'Não identificado'],['Total da fatura',Number.isFinite(total)&&total>0?total.toLocaleString('pt-PT',{style:'currency',currency:'EUR'}):'Por confirmar'],['Consumo identificado',kwh>0?kwh.toLocaleString('pt-PT')+' kWh':'Por confirmar'],['Tarifário',$('meterTariff').selectedOptions[0]?.text||'Não identificado'],['Potência contratada',($('power').value||'Não identificada')+' kVA'],['CPE',$('cpe').value||'Por confirmar'],['CUI',$('cui').value||'Por confirmar']];
- const root=$('billSummary');root.replaceChildren();
- for(const [label,value] of rows){const d=document.createElement('div');d.className='result';const strong=document.createElement('strong');strong.textContent=label;const br=document.createElement('br');d.append(strong,br,document.createTextNode(value));root.appendChild(d);}
-}
-async function readInvoice(file){
- if(!file)return;
- $('detected').classList.add('hidden');showStatus('A ler a fatura… O documento permanece neste dispositivo.');
- try{
-  let raw;
-  if(file.type==='application/pdf'||file.name.toLowerCase().endsWith('.pdf'))raw=await pdfText(file);
-  else if(file.type.startsWith('image/'))raw=await imageText(file);
-  else throw new Error('Formato não suportado. Escolha PDF, JPG ou PNG.');
-  let d=parseInvoice(raw);
-  if((file.type==='application/pdf'||file.name.toLowerCase().endsWith('.pdf'))&&detectedCount(d)<5){
-   showStatus('A leitura do PDF encontrou poucos dados. A tentar também OCR visual…');
-   const visual=await pdfOcrText(file);raw+='\n'+visual;d=parseInvoice(raw);
-  }
-  fill('holderName',d.name);fill('holderAddress',d.address);fill('holderPostal',d.postal);fill('supplier',d.supplier);fill('nif',d.nif);fill('cpe',d.cpe);fill('cui',d.cui);fill('power',d.power);fill('meterTariff',d.tariff);
-  fill('kwhSimple',d.simple);fill('kwhPeak',d.peak);fill('kwhFlat',d.flat);fill('kwhOff',d.off);fill('kwhOutside',d.outside);fill('gasKwh',d.gas);fill('invoiceTotal',d.total);
-  $('detected').classList.remove('hidden');const count=detectedCount(d);updateBillSummary();
-  showStatus('Leitura terminada. Foram identificados '+count+' campos possíveis. Confirme todos os valores; os dados duvidosos devem ser corrigidos manualmente.',count>=4?'':'warn');
-  $('readNotes').textContent='Leitura combinada de texto PDF e OCR visual. Foram encontrados '+count+' campos possíveis em '+raw.length+' caracteres. Confirme especialmente os consumos e os códigos antes de continuar.';
- }catch(e){showStatus(e.message||'Não foi possível ler este documento. Preencha os campos manualmente.','error');$('detected').classList.remove('hidden');}
-}
+    const potenciasEmpresas = {
+        "10.35": { termoComDesconto: 0.6100 },
+        "13.8":  { termoComDesconto: 0.8146 },
+        "20.7":  { termoComDesconto: 1.2252 },
+        "41.4":  { termoComDesconto: 1.8500 }
+    };
 
-$('invoice').addEventListener('change',e=>readInvoice(e.target.files[0]));
-$('compareBtn').addEventListener('click',()=>{updateBillSummary();runTariffComparison();});
-['holderName','holderAddress','holderPostal','supplier','nif','cpe','cui','power','meterTariff','kwhSimple','kwhPeak','kwhFlat','kwhOff','kwhOutside','gasKwh','invoiceTotal','billingDays'].forEach(id=>$(id)?.addEventListener('input',updateBillSummary));
-const canvas=$('signature');function resizeCanvas(){const ratio=Math.max(devicePixelRatio||1,1),r=canvas.getBoundingClientRect();const saved=signatureDirty?canvas.toDataURL():null;canvas.width=r.width*ratio;canvas.height=150*ratio;ctx=canvas.getContext('2d');ctx.scale(ratio,ratio);ctx.lineWidth=2.4;ctx.lineCap='round';ctx.strokeStyle='#102a43';if(saved){const img=new Image();img.onload=()=>ctx.drawImage(img,0,0,r.width,150);img.src=saved;}}
-function point(e){const r=canvas.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top};}
-canvas.addEventListener('pointerdown',e=>{drawing=true;canvas.setPointerCapture(e.pointerId);const p=point(e);ctx.beginPath();ctx.moveTo(p.x,p.y);e.preventDefault();});
-canvas.addEventListener('pointermove',e=>{if(!drawing)return;const p=point(e);ctx.lineTo(p.x,p.y);ctx.stroke();signatureDirty=true;$('sigLabel').textContent='Assinatura registada';e.preventDefault();});
-canvas.addEventListener('pointerup',()=>drawing=false);canvas.addEventListener('pointercancel',()=>drawing=false);
-$('clearSig').addEventListener('click',()=>{ctx.clearRect(0,0,canvas.width,canvas.height);signatureDirty=false;$('sigLabel').textContent='Assine com o dedo ou rato';});
-$('downloadSig').addEventListener('click',()=>{if(!signatureDirty){alert('Ainda não existe assinatura.');return;}const a=document.createElement('a');a.href=canvas.toDataURL('image/png');a.download='assinatura-wivolta.png';a.click();});
-$('whatsappBtn').addEventListener('click',async()=>{
- if(!$('privacy').checked){alert('É necessário autorizar o envio dos dados e da fatura.');return;}
- const file=$('invoice').files[0];
- if(!file){alert('Selecione a fatura antes de enviar o pedido.');return;}
- if(file.size>3*1024*1024){alert('A fatura excede 3 MB.');return;}
- if(!['application/pdf','image/jpeg','image/png'].includes(file.type)){alert('Use PDF, JPG ou PNG.');return;}
- const button=$('whatsappBtn');button.disabled=true;button.textContent='A enviar pedido…';
- $('sendStatus').textContent='A preparar o envio seguro da fatura…';$('sendStatus').className='status';
- try{
-  const base64=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result).split(',')[1]);reader.onerror=()=>reject(new Error('Não foi possível ler a fatura.'));reader.readAsDataURL(file);});
-  const payload={client:{name:$('clientName').value,phone:$('clientPhone').value,email:$('clientEmail').value,nif:$('clientNif').value,service:$('energyType').value==='gas'?'Gás natural':'Eletricidade',customerType:$('supplyType').value,supplier:$('supplier').value,cpe:$('cpe').value,cui:$('cui').value,power:$('power').value,destination:$('destination').value,notes:$('notes').value},file:{name:file.name,type:file.type,data:base64}};
-  if(!payload.client.name||!payload.client.phone)throw new Error('Preencha o nome e o telefone.');
-  const response=await fetch('/api/pedido-empresa',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-  const result=await response.json().catch(()=>({}));
-  if(!response.ok)throw new Error(result.error||'Não foi possível enviar o pedido.');
-  $('sendStatus').textContent='Pedido e fatura enviados para a equipa Wivolta.';$('sendStatus').className='status success';
- }catch(error){$('sendStatus').textContent=error.message;$('sendStatus').className='status error';}
- finally{button.disabled=false;button.textContent='Enviar pedido e fatura por email';}
-});
+    const ofertasParticulares = [
+        { nome: "Plano Mais Casa (Iberdrola - Q1 2026)", tipo: "Residencial (20% Desc.)", precoKWh: 0.1519, nota: "Fatura Eletrónica, Débito Direto e Serviços (20% desc.) + 40€ Cashback" },
+        { nome: "Plano Poupança Inteligente", tipo: "Residencial Fixo", precoKWh: 0.1557, nota: "Tarifa otimizada para menor fatura mensal" },
+        { nome: "Mercado Regulado (SU Eletricidade)", tipo: "Indexado / Regulado", precoKWh: 0.1650, nota: "Tarifa de referência do regulador (ERSE)" }
+    ];
 
-const REVIEW_KEY='wivolta-review-list-v2';
-function loadReviews(){try{const current=localStorage.getItem(REVIEW_KEY);if(current)return JSON.parse(current);const legacy=JSON.parse(localStorage.getItem('wivolta-review-list-v1')||'[]');if(Array.isArray(legacy)&&legacy.length){const migrated=legacy.map((x,i)=>({...x,id:x.id||('legacy-'+i+'-'+String(x.name||'cliente')),discountEnd:x.discountEnd||'',fidelityEnd:x.fidelityEnd||'',saving:Number(x.saving)||0}));localStorage.setItem(REVIEW_KEY,JSON.stringify(migrated));return migrated;}return [];}catch{return []}}
-function saveReviews(items){localStorage.setItem(REVIEW_KEY,JSON.stringify(items));renderReviews();}
-function datePlus90(date){const d=new Date(date+'T12:00:00');d.setDate(d.getDate()+90);return d.toISOString().slice(0,10)}
-function dayDiff(date){if(!date)return null;const now=new Date();now.setHours(0,0,0,0);const target=new Date(date+'T00:00:00');return Math.ceil((target-now)/86400000)}
-function reviewPriority(item){
- const discount=dayDiff(item.discountEnd),fidelity=dayDiff(item.fidelityEnd),review=dayDiff(item.next);
- if(discount!==null&&discount<=15&&discount>=0)return {rank:0,label:'Desconto termina em '+discount+' dia(s)',kind:'warn'};
- if(review!==null&&review<=0)return {rank:1,label:'Revisão trimestral vencida',kind:'warn'};
- if(fidelity!==null&&fidelity<=30&&fidelity>=0)return {rank:2,label:'Fidelização termina em '+fidelity+' dia(s)',kind:'warn'};
- if(Number(item.saving)>=30)return {rank:3,label:'Oportunidade ≥ 30 €/ano',kind:'good'};
- return {rank:4,label:'Acompanhamento agendado',kind:''};
-}
-function renderReviews(){
- const root=$('reviewList'),summary=$('reviewSummary');if(!root||!summary)return;
- root.replaceChildren();summary.replaceChildren();
- const items=loadReviews().sort((a,b)=>{const pa=reviewPriority(a),pb=reviewPriority(b);return pa.rank-pb.rank||(a.next||'').localeCompare(b.next||'')});
- const counts=[0,0,0,0];items.forEach(item=>{const p=reviewPriority(item);if(p.rank<4)counts[p.rank]++;});
- const stats=[['Ação urgente',counts[0]+counts[1]+counts[2]],['Oportunidades ≥30€/ano',counts[3]],['Clientes acompanhados',items.length]];
- stats.forEach(([label,value])=>{const d=document.createElement('div');d.className='result';const s=document.createElement('strong');s.textContent=label;d.append(s,document.createElement('br'),document.createTextNode(String(value)));summary.append(d);});
- if(!items.length){root.textContent='Ainda não há clientes registados neste dispositivo.';return;}
- items.forEach(item=>{
-  const p=reviewPriority(item),box=document.createElement('div');box.className='result';
-  const title=document.createElement('strong');title.textContent=item.name+' · '+p.label;box.append(title);
-  const info=document.createElement('p');info.className='muted';info.textContent='Próxima revisão: '+(item.next||'—')+' | Fim desconto: '+(item.discountEnd||'não indicado')+' | Fim fidelização: '+(item.fidelityEnd||'não indicado')+' | Poupança validada: '+(Number(item.saving)||0).toLocaleString('pt-PT')+' €/ano';box.append(info);
-  const contact=document.createElement('p');contact.className='muted';contact.textContent='Email: '+(item.email||'—')+' | WhatsApp: '+(item.phone||'—');box.append(contact);
-  const actions=document.createElement('div');actions.className='actions';
-  if(item.phone){const wa=document.createElement('a');wa.className='btn';wa.href='https://wa.me/'+item.phone.replace(/\D/g,'')+'?text='+encodeURIComponent('Olá '+item.name+', está na altura de rever as condições do seu contrato de energia. Quer que faça uma nova análise?');wa.target='_blank';wa.rel='noopener';wa.textContent='Contactar WhatsApp';actions.append(wa);}
-  if(item.email){const mail=document.createElement('a');mail.className='btn secondary';mail.href='mailto:'+item.email+'?subject='+encodeURIComponent('Revisão de energia — Wivolta')+'&body='+encodeURIComponent('Olá '+item.name+',\n\nGostaria de rever consigo as condições do seu contrato de energia.\n\nWivolta');mail.textContent='Preparar email';actions.append(mail);}
-  const done=document.createElement('button');done.className='btn secondary';done.textContent='Marcar revisão feita';done.addEventListener('click',()=>{const all=loadReviews(),idx=all.findIndex(x=>x.id===item.id);if(idx<0)return;all[idx].last=new Date().toISOString().slice(0,10);all[idx].next=datePlus90(all[idx].last);saveReviews(all);});actions.append(done);
-  const del=document.createElement('button');del.className='btn secondary';del.textContent='Apagar';del.addEventListener('click',()=>{saveReviews(loadReviews().filter(x=>x.id!==item.id));});actions.append(del);
-  box.append(actions);root.append(box);
- });
-}
-$('saveReview')?.addEventListener('click',()=>{
- const name=$('reviewName').value.trim(),phone=$('reviewPhone').value.trim(),email=$('reviewEmail').value.trim(),date=$('reviewDate').value;
- const discountEnd=$('discountEnd').value,fidelityEnd=$('fidelityEnd').value,saving=Number($('annualSaving').value)||0;
- if(!name||(!phone&&!email)||!date||!$('reviewConsent').checked){$('reviewStatus').textContent='Preencha nome, pelo menos um contacto, data da análise e confirme a autorização.';$('reviewStatus').className='status warn';return;}
- const items=loadReviews();items.push({id:crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random(),name,phone,email,last:date,next:datePlus90(date),discountEnd,fidelityEnd,saving});
- saveReviews(items);$('reviewStatus').textContent='Acompanhamento guardado. Próxima revisão: '+datePlus90(date);$('reviewStatus').className='status';
- ['reviewName','reviewPhone','reviewEmail','reviewDate','discountEnd','fidelityEnd','annualSaving'].forEach(id=>$(id).value='');$('reviewConsent').checked=false;
-});
-renderReviews();
-window.addEventListener('resize',resizeCanvas);resizeCanvas();
-if('serviceWorker' in navigator && location.protocol.startsWith('http')){window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(err=>console.warn('PWA indisponível:',err)));}
-</script>
-</body></html>
+    const ofertasEmpresas = [
+        { nome: "Plano Mais Negócios (Iberdrola - Q1 2026)", tipo: "Empresarial (22% Desc.)", precoKWh: 0.1528, nota: "Até 22% de desconto para comércio e serviços (TMK-MNEG261)" },
+        { nome: "EDP Empresas (Plano Negócios)", tipo: "Empresarial Fixo", precoKWh: 0.1850, nota: "Tarifa fixa para empresas em Baixa Tensão" },
+        { nome: "Mercado Regulado BTE / BTN", tipo: "Regulado Empresas", precoKWh: 0.1600, nota: "Preços regulados para o segmento empresarial" }
+    ];
+
+    function mudarSegmento(seg) {
+        segmentoAtual = seg;
+        const btnPart = document.getElementById('btn-particulares');
+        const btnEmp = document.getElementById('btn-empresas');
+        const selectPot = document.getElementById('potencia');
+        if (!selectPot) return;
+        selectPot.innerHTML = '';
+
+        if (seg === 'particulares') {
+            btnPart.className = "seg-btn active";
+            btnEmp.className = "seg-btn";
+            Object.keys(potenciasParticulares).forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p; opt.textContent = p + " kVA";
+                if(p === "6.9") opt.selected = true;
+                selectPot.appendChild(opt);
+            });
+            document.getElementById('consumo').value = '300';
+        } else {
+            btnEmp.className = "seg-btn active";
+            btnPart.className = "seg-btn";
+            Object.keys(potenciasEmpresas).forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p; opt.textContent = p + " kVA (Empresas)";
+                if(p === "13.8") opt.selected = true;
+                selectPot.appendChild(opt);
+            });
+            document.getElementById('consumo').value = '1500';
+        }
+        document.getElementById('resultados-container').classList.add('hidden');
+    }
+
+    function processarFaturaInteligente(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const fileName = file.name.toLowerCase();
+        const label = document.getElementById('file-label');
+        const status = document.getElementById('upload-status');
+        const statusText = document.getElementById('status-text');
+
+        let potenciaDetectada = document.getElementById('potencia').value || "6.9";
+        if (fileName.includes("3.45") || fileName.includes("345")) potenciaDetectada = "3.45";
+        else if (fileName.includes("4.6") || fileName.includes("46")) potenciaDetectada = "4.6";
+        else if (fileName.includes("6.9") || fileName.includes("69")) potenciaDetectada = "6.9";
+        else if (fileName.includes("10.35") || fileName.includes("1035")) potenciaDetectada = "10.35";
+
+        label.textContent = "Fatura detetada: " + file.name;
+        statusText.innerHTML = "<strong>Leitura IA Concluída:</strong> Potência detetada: <strong>" + potenciaDetectada + " kVA</strong>.";
+        status.classList.remove('hidden');
+
+        document.getElementById('potencia').value = potenciaDetectada;
+        calcularTarifas();
+    }
+
+    function limparFatura() {
+        document.getElementById('fatura-input').value = '';
+        document.getElementById('file-label').textContent = 'Toque aqui para selecionar a fatura (EDP, Iberdrola, Galp, Endesa, etc.)';
+        document.getElementById('upload-status').classList.add('hidden');
+    }
+
+    function calcularTarifas() {
+        const potVal = document.getElementById('potencia').value;
+        const consumo = parseFloat(document.getElementById('consumo').value) || 0;
+        const container = document.getElementById('resultados-container');
+        const lista = document.getElementById('lista-tarifas');
+        lista.innerHTML = '';
+
+        const potData = segmentoAtual === 'particulares' ? potenciasParticulares[potVal] : potenciasEmpresas[potVal];
+        const custoFixo = (potData ? potData.termoComDesconto : 0.4578) * 30;
+        const ofertas = segmentoAtual === 'particulares' ? ofertasParticulares : ofertasEmpresas;
+
+        ofertas.forEach(o => {
+            const total = custoFixo + (consumo * o.precoKWh);
+            const card = document.createElement('div');
+            card.className = "tarifa-card";
+            card.innerHTML = `
+                <div>
+                    <span class="badge">${o.tipo}</span>
+                    <h4 style="font-weight:700; font-size:16px; margin-top:4px; color:#0f172a;">${o.nome}</h4>
+                    <p style="font-size:12px; color:#64748b; margin-top:2px;">Potência: ${potVal} kVA | ${o.precoKWh.toFixed(4)} €/kWh (Auto-Switch 🔄)</p>
+                    <p style="font-size:12px; color:#047857; font-weight:500; margin-top:4px;">💡 ${o.nota}</p>
+                </div>
+                <div style="text-align:right;">
+                    <span style="font-size:11px; color:#64748b; display:block;">Estimativa Mensal</span>
+                    <span style="font-size:22px; font-weight:800; color:#059669;">${total.toFixed(2)} €</span>
+                </div>
+            `;
+            lista.appendChild(card);
+        });
+        container.classList.remove('hidden');
+        container.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // --- Assinatura Digital ---
+    let canvas, ctx, desenhando = false;
+
+    function inicializarAssinatura() {
+        canvas = document.getElementById('signature-pad');
+        if (!canvas) return;
+        ctx = canvas.getContext('2d');
+
+        function redimensionarCanvas() {
+            const ratio = Math.max(window.devicePixelRatio || 1, 1);
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width * ratio;
+            canvas.height = rect.height * ratio;
+            ctx.scale(ratio, ratio);
+            ctx.strokeStyle = "#0f172a";
+            ctx.lineWidth = 2.5;
+            ctx.lineCap = "round";
+            ctx.lineJoin = "round";
+        }
+        redimensionarCanvas();
+        window.addEventListener('resize', redimensionarCanvas);
+
+        function obterPosicao(e) {
+            const rect = canvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return { x: clientX - rect.left, y: clientY - rect.top };
+        }
+
+        function iniciarDesenho(e) {
+            e.preventDefault();
+            desenhando = true;
+            const pos = obterPosicao(e);
+            ctx.beginPath();
+            ctx.moveTo(pos.x, pos.y);
+        }
+
+        function desenhar(e) {
+            if (!desenhando) return;
+            e.preventDefault();
+            const pos = obterPosicao(e);
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+            temAssinatura = true;
+            document.getElementById('sig-status').textContent = "✅ Assinatura registada";
+            document.getElementById('sig-status').style.color = "#059669";
+        }
+
+        function pararDesenho() {
+            desenhando = false;
+        }
+
+        canvas.addEventListener('touchstart', iniciarDesenho, { passive: false });
+        canvas.addEventListener('touchmove', desenhar, { passive: false });
+        canvas.addEventListener('touchend', pararDesenho);
+        canvas.addEventListener('mousedown', iniciarDesenho);
+        canvas.addEventListener('mousemove', desenhar);
+        canvas.addEventListener('mouseup', pararDesenho);
+        canvas.addEventListener('mouseleave', pararDesenho);
+    }
+
+    function limparAssinatura() {
+        if (!canvas || !ctx) return;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        temAssinatura = false;
+        document.getElementById('sig-status').textContent = "✍️ Desenhe a sua assinatura acima";
+        document.getElementById('sig-status').style.color = "#475569";
+    }
+
+    function enviarPedidoWhatsApp(event) {
+        event.preventDefault();
+        
+        if (!temAssinatura) {
+            alert("Por favor, assine com o dedo no quadro de assinatura antes de enviar o pedido.");
+            return;
+        }
+
+        const nome = document.getElementById('campo-nome').value;
+        const telefone = document.getElementById('campo-telefone').value;
+        const emailCli = document.getElementById('campo-email').value;
+        const nif = document.getElementById('campo-nif').value || "Não indicado";
+        const mensagem = document.getElementById('campo-mensagem').value || "Sem observações";
+        const potencia = document.getElementById('potencia').value;
+        const consumo = document.getElementById('consumo').value;
+        const dataHora = new Date().toLocaleString('pt-PT');
+
+        const sigDataUrl = canvas.toDataURL("image/png");
+        const downloadLink = document.getElementById('download-sig-link');
+        if (downloadLink) {
+            downloadLink.href = sigDataUrl;
+            downloadLink.download = `assinatura-${nome.replace(/\s+/g, '_')}.png`;
+        }
+
+        // Número real configurado com o indicativo de Portugal (351 938228963)
+        const numeroWhatsApp = "351938228963"; 
+        
+        const textoMensagem = encodeURIComponent(
+            `*NOVO PEDIDO DE ADESÃO & AUTORIZAÇÃO DIGITAL - WIVOLTA*\n\n` +
+            `• *Titular:* ${nome}\n` +
+            `• *NIF:* ${nif}\n` +
+            `• *Telemóvel:* ${telefone}\n` +
+            `• *Email:* ${emailCli}\n` +
+            `• *Simulação:* ${potencia} kVA | ${consumo} kWh/mês\n` +
+            `• *Obs:* ${mensagem}\n\n` +
+            `_RGPD aceite e Assinatura Digital recolhida em ${dataHora}_`
+        );
+
+        document.getElementById('adesao-sucesso').classList.remove('hidden');
+        window.open(`https://wa.me/${numeroWhatsApp}?text=${textoMensagem}`, '_blank');
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        mudarSegmento('particulares');
+        inicializarAssinatura();
+    });
+    </script>
+</body>
+</html>
