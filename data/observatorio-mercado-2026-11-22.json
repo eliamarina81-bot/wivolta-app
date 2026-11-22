@@ -1,0 +1,420 @@
+{
+  "schemaVersion": "1.0.0",
+  "snapshotDate": "2026-11-22",
+  "purpose": "Observação externa do mercado. Estes snapshots de comparadores não alimentam o motor Wivolta; servem para triagem e posterior verificação documental.",
+  "electricity": {
+    "source": "TarifaJusta",
+    "sourceDataDate": "2026-11-16",
+    "referenceProfile": {
+      "powerKva": 3.45,
+      "monthlyKwh": 250,
+      "tariff": "simple",
+      "taxes": "excluded"
+    },
+    "rangeEurKwh": {
+      "min": 0.1399,
+      "average": 0.1525,
+      "max": 0.164
+    },
+    "supplierSnapshot": [
+      {
+        "supplier": "Endesa",
+        "offer": "e-Luz Digital",
+        "simple": 0.1399,
+        "offPeak": 0.1168,
+        "outsidePeak": 0.1627,
+        "dailyPower345": 0.3079,
+        "dailyPower69": 0.7302
+      },
+      {
+        "supplier": "EDP Comercial",
+        "offer": "Eletricidade DD+FE Digital",
+        "simple": 0.1424,
+        "offPeak": 0.0951,
+        "outsidePeak": 0.1645,
+        "dailyPower345": 0.2891,
+        "dailyPower69": 0.578
+      },
+      {
+        "supplier": "Repsol",
+        "offer": "Eletricidade Repsol",
+        "simple": 0.148,
+        "offPeak": 0.0959,
+        "outsidePeak": 0.1738,
+        "dailyPower345": 0.2918,
+        "dailyPower69": 0.5636
+      },
+      {
+        "supplier": "G9 Energy",
+        "offer": "VANTAGEM+ Luz",
+        "simple": 0.1496,
+        "offPeak": null,
+        "outsidePeak": null,
+        "dailyPower345": 0.265,
+        "dailyPower69": 0.45,
+        "powerApproximate": true
+      },
+      {
+        "supplier": "MEO Energia",
+        "offer": "Luz MEO",
+        "simple": 0.1499,
+        "offPeak": 0.0999,
+        "outsidePeak": 0.1799,
+        "dailyPower345": 0.27,
+        "dailyPower69": 0.55
+      },
+      {
+        "supplier": "Iberdrola",
+        "offer": "Plano Digital",
+        "simple": 0.1558,
+        "offPeak": 0.1018,
+        "outsidePeak": 0.1921,
+        "dailyPower345": 0.3734,
+        "dailyPower69": 0.6182
+      },
+      {
+        "supplier": "Goldenergy",
+        "offer": "Tarifa Digital",
+        "simple": 0.1599,
+        "offPeak": 0.0987,
+        "outsidePeak": 0.1639,
+        "dailyPower345": 0.3199,
+        "dailyPower69": 0.6199
+      },
+      {
+        "supplier": "Plenitude",
+        "offer": "Tarifa Fácil",
+        "simple": 0.1634,
+        "offPeak": 0.0979,
+        "outsidePeak": 0.1684,
+        "dailyPower345": 0.3917,
+        "dailyPower69": 0.7435
+      },
+      {
+        "supplier": "Galp",
+        "offer": "Plano Combina",
+        "simple": 0.164,
+        "offPeak": 0.1194,
+        "outsidePeak": 0.1847,
+        "dailyPower345": 0.3167,
+        "dailyPower69": 0.5611
+      },
+      {
+        "supplier": "SU Eletricidade",
+        "offer": "Regulada",
+        "simple": 0.1711,
+        "offPeak": 0.1087,
+        "outsidePeak": 0.1988,
+        "dailyPower345": 0.1917,
+        "dailyPower69": 0.3659
+      }
+    ],
+    "additionalComparisons": [
+      {
+        "source": "DECO PROteste",
+        "sourceDataDate": "2026-11-17",
+        "profile": {
+          "powerKva": 3.45,
+          "monthlyKwh": 150,
+          "tariff": "simple"
+        },
+        "monthlyBillsEur": [
+          {
+            "supplier": "EDP Comercial",
+            "offer": "Campanha 20% Fatura",
+            "value": 32.32
+          },
+          {
+            "supplier": "Ibelectra",
+            "offer": "Solução Conforto",
+            "value": 34.53
+          },
+          {
+            "supplier": "SU Eletricidade",
+            "offer": "Regulada",
+            "value": 36.78
+          }
+        ],
+        "note": "A oferta EDP referida no artigo é apresentada sem condições associadas quando contratada pelo simulador DECO."
+      },
+      {
+        "source": "DECO PROteste",
+        "sourceDataDate": "2026-11-17",
+        "profile": {
+          "powerKva": 6.9,
+          "monthlyKwh": 400,
+          "tariff": "simple"
+        },
+        "monthlyBillsEur": [
+          {
+            "supplier": "EDP Comercial",
+            "offer": "Campanha 20% Fatura",
+            "value": 82.13
+          },
+          {
+            "supplier": "Ibelectra",
+            "offer": "Solução Conforto",
+            "value": 88.58
+          },
+          {
+            "supplier": "Iberdrola",
+            "offer": "Poupança Inteligente",
+            "value": 94.85
+          },
+          {
+            "supplier": "Galp",
+            "offer": "Casa & Estrada",
+            "value": 95.17
+          },
+          {
+            "supplier": "Endesa",
+            "offer": "Tarifa Digital Luz",
+            "value": 95.55
+          },
+          {
+            "supplier": "SU Eletricidade",
+            "offer": "Regulada",
+            "value": 95.65
+          }
+        ]
+      },
+      {
+        "source": "Manie",
+        "sourceDataDate": "2026-10-26",
+        "profile": {
+          "powerKva": 6.9,
+          "monthlyKwh": 400,
+          "tariff": "simple",
+          "taxes": "excluded"
+        },
+        "observed": {
+          "supplier": "EDP Comercial",
+          "offer": "Eletricidade DD+FE Digital",
+          "energyEurKwh": 0.1337,
+          "dailyPowerEur": 0.4624,
+          "firstYearMonthlyEstimate": 67.35,
+          "withoutDiscountMonthlyEstimate": 84.18
+        },
+        "note": "Valores de referência pré-IVA e taxas; desconto depende das condições da oferta."
+      }
+    ]
+  },
+  "gas": {
+    "source": "TarifaJusta",
+    "sourceDataDate": "2026-11-16",
+    "profile": {
+      "monthlyKwh": 250,
+      "consumptionBand": 2,
+      "ivaIncluded": true
+    },
+    "monthlyBillsEur": [
+      {
+        "supplier": "CUR",
+        "offer": "Regulado",
+        "value": 25.97,
+        "energyEurKwh": 0.0601,
+        "dailyFixedApprox": 0.2
+      },
+      {
+        "supplier": "EDP Comercial",
+        "offer": "Gás",
+        "value": 36.5,
+        "energyEurKwh": 0.0913,
+        "dailyFixedApprox": 0.225
+      },
+      {
+        "supplier": "Endesa",
+        "offer": "Gás",
+        "value": 38.12,
+        "energyEurKwh": 0.0838,
+        "dailyFixedApprox": 0.33
+      },
+      {
+        "supplier": "Plenitude",
+        "offer": "Gás",
+        "value": 38.14,
+        "energyEurKwh": 0.0986,
+        "dailyFixedApprox": 0.209
+      },
+      {
+        "supplier": "Repsol",
+        "offer": "Gás",
+        "value": 39.29,
+        "energyEurKwh": 0.0876,
+        "dailyFixedApprox": 0.33
+      },
+      {
+        "supplier": "G9 Energy",
+        "offer": "Gás",
+        "value": 39.89,
+        "energyEurKwh": 0.1005,
+        "dailyFixedApprox": 0.24
+      },
+      {
+        "supplier": "Iberdrola",
+        "offer": "Gás",
+        "value": 42.05,
+        "energyEurKwh": 0.0928,
+        "dailyFixedApprox": 0.361
+      },
+      {
+        "supplier": "Goldenergy",
+        "offer": "Gás",
+        "value": 42.12,
+        "energyEurKwh": 0.0963,
+        "dailyFixedApprox": 0.334
+      },
+      {
+        "supplier": "Galp",
+        "offer": "Gás",
+        "value": 42.56,
+        "energyEurKwh": 0.1037,
+        "dailyFixedApprox": 0.285
+      }
+    ],
+    "note": "Snapshot indicativo; exclui ISP/taxa de carbono e taxa de ocupação do subsolo, e alguns termos fixos são estimados."
+  },
+  "business": {
+    "source": "Selectra",
+    "sourceDataDate": "2026-10-27",
+    "profile": {
+      "powerKva": 13.8,
+      "monthlyKwh": 908
+    },
+    "monthlyBillsEur": [
+      {
+        "supplier": "Ibelectra",
+        "offer": "Solução Segura DD+FE",
+        "value": 202.04
+      },
+      {
+        "supplier": "Ibelectra",
+        "offer": "Solução Conforto DD+FE",
+        "value": 203.99
+      },
+      {
+        "supplier": "Endesa",
+        "offer": "Tarifa Digital Luz",
+        "value": 206.33
+      },
+      {
+        "supplier": "Muon",
+        "offer": "Negócios Verde",
+        "value": 214.95
+      },
+      {
+        "supplier": "Luzboa",
+        "offer": "BTN Luzboa",
+        "value": 215.33
+      },
+      {
+        "supplier": "Luzigás",
+        "offer": "Super Lig Fixo Empresas",
+        "value": 215.49
+      },
+      {
+        "supplier": "SU Eletricidade",
+        "offer": "Transitória",
+        "value": 217.8
+      },
+      {
+        "supplier": "Iberdrola",
+        "offer": "Plano Mais Negócios DD+FE",
+        "value": 220.53
+      },
+      {
+        "supplier": "Oeneo Energy",
+        "offer": "Prime",
+        "value": 221.29
+      },
+      {
+        "supplier": "MEO Energia",
+        "offer": "MEO Energia Fixa DD+FE",
+        "value": 223.45
+      }
+    ],
+    "indexedAlternatives": [
+      {
+        "supplier": "Luzigás",
+        "offer": "Dinâmico Poupança+",
+        "value": 206.99
+      },
+      {
+        "supplier": "Luzigás",
+        "offer": "Dinâmico Base",
+        "value": 216.35
+      },
+      {
+        "supplier": "Muon",
+        "offer": "Indexado Negócios Verde",
+        "value": 262.42
+      },
+      {
+        "supplier": "Ibelectra",
+        "offer": "Solução Família",
+        "value": 264.46
+      },
+      {
+        "supplier": "Ibelectra",
+        "offer": "Solução Amigo",
+        "value": 267.81
+      },
+      {
+        "supplier": "Ibelectra",
+        "offer": "Solução Casa",
+        "value": 271.52
+      }
+    ],
+    "note": "Ranking de comparador para perfil indicativo; condições e fidelização não confirmadas em documentos oficiais."
+  },
+  "officialSources": [
+    {
+      "name": "ERSE — simulador comercial",
+      "url": "https://simuladorprecos.erse.pt/",
+      "lastCsvUpdate": "2026-10-19"
+    },
+    {
+      "name": "ERSE — tarifas de eletricidade",
+      "url": "https://www.erse.pt/atividade/regulacao/tarifas-e-precos-eletricidade/"
+    },
+    {
+      "name": "ERSE — tarifas de gás 2026-2027",
+      "url": "https://www.erse.pt/atividade/regulacao/tarifas-e-precos-gas-natural/",
+      "validFrom": "2026-10-01",
+      "validTo": "2027-09-30"
+    }
+  ],
+  "sources": [
+    {
+      "name": "TarifaJusta — eletricidade",
+      "url": "https://tarifajusta.pt/precos/kwh",
+      "dataDate": "2026-11-16"
+    },
+    {
+      "name": "DECO PROteste — tarifas mais baratas",
+      "url": "https://www.deco.proteste.pt/casa-energia/eletricidade-gas/noticias/eletricidade-qual-tarifa-mais-barata",
+      "dataDate": "2026-11-17"
+    },
+    {
+      "name": "Manie — eletricidade novembro 2026",
+      "url": "https://www.manie.pt/blog/eletricidade-mais-barata-novembro-2026",
+      "dataDate": "2026-10-26"
+    },
+    {
+      "name": "TarifaJusta — gás",
+      "url": "https://tarifajusta.pt/gas",
+      "dataDate": "2026-11-16"
+    },
+    {
+      "name": "Selectra — ofertas empresariais",
+      "url": "https://selectra.pt/energia/precos/eletricidade-mais-barata",
+      "dataDate": "2026-10-27"
+    }
+  ],
+  "limitations": [
+    "Snapshot não é tabela oficial de ofertas nem verificação de contrato.",
+    "Não usar para simular poupança ou recomendar adesão sem validar preço, termo de potência/fixo, impostos, descontos, elegibilidade, fidelização, validade e segmento diretamente nos documentos do comercializador.",
+    "Perfis e tarifas diferentes não são comparáveis entre si.",
+    "Alternativas indexadas empresariais são observações de ranking, não cálculos de perfil."
+  ]
+}
