@@ -68,4 +68,4 @@ assert.equal(wrongCui.validacao.cui, false, "rejects electricity operator prefix
 const malformed = parse("CPE PT0002AB");
 assert.equal(malformed.validacao.cpe, false, "rejects malformed CPE");
 
-console.log("OCR parser tests: PASS (17 checks)");
+console.log("OCR parser tests: PASS (26 checks)");
