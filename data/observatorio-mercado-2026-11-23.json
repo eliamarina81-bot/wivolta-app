@@ -1,0 +1,389 @@
+{
+  "schemaVersion": "1.0.0",
+  "reviewDate": "2026-11-23",
+  "status": "observation-only",
+  "engineEligible": false,
+  "purpose": "Observação de mercado recolhida em 23/11/2026. Os preços e rankings são comparações de perfil e não fichas contratuais verificadas; não alimentar o motor nem apresentar como oferta ativa.",
+  "residentialElectricity": {
+    "sources": [
+      {
+        "name": "Manie — artigo novembro 2026",
+        "url": "https://www.manie.pt/blog/eletricidade-mais-barata-novembro-2026",
+        "dataDate": "2026-10-26",
+        "profile": {
+          "powerKva": 6.9,
+          "monthlyKwh": 400,
+          "tariff": "simple",
+          "periodDays": 30,
+          "taxes": "excluded"
+        },
+        "observations": [
+          {
+            "supplier": "EDP Comercial",
+            "offer": "Eletricidade DD+FE Digital",
+            "energyEurKwh": 0.1337,
+            "dailyPowerEur": 0.4624,
+            "firstYearMonthlyEstimate": 67.35,
+            "monthlyWithoutDiscount": 84.18,
+            "discount": "20% por 12 meses",
+            "conditions": "Novos clientes, débito direto e fatura eletrónica; o artigo indica confirmação da oferta em edp.pt em 31/10/2026.",
+            "verification": "Comparador/artigo; não é ficha normalizada completa",
+            "engineEligible": false
+          },
+          {
+            "supplier": "Ibelectra",
+            "offer": "Solução Segura DD+FE",
+            "energyEurKwh": 0.1495,
+            "dailyPowerEur": 0.4436,
+            "monthlyEstimate": 73.11,
+            "conditions": "DD+FE indicado na fonte; demais condições não verificadas",
+            "engineEligible": false
+          },
+          {
+            "supplier": "LuziGás",
+            "offer": "Super Lig Fixo",
+            "energyEurKwh": 0.1656,
+            "dailyPowerEur": 0.3707,
+            "monthlyEstimate": 77.36,
+            "conditions": "Condições/validade não verificadas em ficha do comercializador",
+            "engineEligible": false
+          },
+          {
+            "supplier": "Endesa",
+            "offer": "Tarifa Digital Luz",
+            "energyEurKwh": 0.1399,
+            "dailyPowerEur": 0.7452,
+            "monthlyEstimate": 78.32,
+            "conditions": "Condições/validade não verificadas em ficha do comercializador",
+            "engineEligible": false
+          },
+          {
+            "supplier": "Luzboa",
+            "offer": "Preço Fixo",
+            "energyEurKwh": 0.1614,
+            "dailyPowerEur": 0.4636,
+            "monthlyEstimate": 78.47,
+            "conditions": "Artigo indica sem DD/FE; condições/validade não verificadas em ficha do comercializador",
+            "engineEligible": false
+          }
+        ],
+        "notes": [
+          "Perfil simples de 6,9 kVA/400 kWh, 30 dias, antes de IVA e taxas.",
+          "O preço do primeiro ano da EDP é condicionado e não deve ser perpetuado após os 12 meses."
+        ]
+      },
+      {
+        "name": "DECO PROteste — comparação novembro",
+        "url": "https://www.deco.proteste.pt/casa-energia/eletricidade-gas/noticias/eletricidade-qual-tarifa-mais-barata",
+        "dataDate": "2026-11-17",
+        "profiles": [
+          {
+            "powerKva": 3.45,
+            "monthlyKwh": 150,
+            "tariff": "simple",
+            "monthlyBillsEur": [
+              {
+                "supplier": "EDP Comercial",
+                "offer": "Campanha 20% Fatura",
+                "value": 32.32
+              },
+              {
+                "supplier": "Ibelectra",
+                "offer": "Solução Conforto",
+                "value": 34.53
+              },
+              {
+                "supplier": "SU Eletricidade",
+                "offer": "Regulada",
+                "value": 36.78
+              }
+            ]
+          },
+          {
+            "powerKva": 6.9,
+            "monthlyKwh": 400,
+            "tariff": "simple",
+            "monthlyBillsEur": [
+              {
+                "supplier": "EDP Comercial",
+                "offer": "Campanha 20% Fatura",
+                "value": 82.13
+              },
+              {
+                "supplier": "Ibelectra",
+                "offer": "Solução Conforto",
+                "value": 88.58
+              },
+              {
+                "supplier": "Iberdrola",
+                "offer": "Poupança Inteligente",
+                "value": 94.85
+              },
+              {
+                "supplier": "Galp",
+                "offer": "Casa & Estrada",
+                "value": 95.17
+              },
+              {
+                "supplier": "Endesa",
+                "offer": "Tarifa Digital Luz",
+                "value": 95.55
+              },
+              {
+                "supplier": "SU Eletricidade",
+                "offer": "Regulada",
+                "value": 95.65
+              }
+            ]
+          }
+        ],
+        "note": "A DECO refere a oferta EDP sem condições associadas quando contratada através do simulador DECO. Não foram verificados todos os preços em fichas de fornecedor.",
+        "engineEligible": false
+      },
+      {
+        "name": "Manie — comparação Black Friday",
+        "url": "https://manie.pt/blog/black-friday-luz-gas-2026",
+        "checkedDate": "2026-11-23",
+        "profile": {
+          "powerKva": 6.9,
+          "monthlyKwh": 400,
+          "tariff": "simple",
+          "taxes": "excluded"
+        },
+        "observations": [
+          {
+            "supplier": "EDP",
+            "offer": "Desconto para Sempre",
+            "monthlyEstimate": 75.77,
+            "annualEstimate": 909.24,
+            "conditions": "Campanha mencionada no artigo; ficha e validade não confirmadas"
+          },
+          {
+            "supplier": "Galp",
+            "offer": "Casa & Estrada",
+            "monthlyEstimate": 78.51,
+            "annualEstimate": 942.12,
+            "conditions": "DD indicado no artigo; restante elegibilidade não confirmada"
+          },
+          {
+            "supplier": "Iberdrola",
+            "offer": "Plano Mais Casa",
+            "monthlyEstimate": 84.2,
+            "conditions": "Campanha/condições não verificadas em ficha do comercializador"
+          },
+          {
+            "supplier": "Endesa",
+            "offer": "Tarifa Quero+",
+            "monthlyEstimate": 99.88,
+            "conditions": "Campanha/condições não verificadas em ficha do comercializador"
+          }
+        ],
+        "note": "Observação comparativa de campanhas, não recomendação nem validação de elegibilidade.",
+        "engineEligible": false
+      }
+    ]
+  },
+  "gas": {
+    "source": "DECO PROteste — gás natural novembro",
+    "url": "https://www.deco.proteste.pt/casa-energia/eletricidade-gas/noticias/gas-natural-qual-tarifa-mais-barata",
+    "dataDate": "2026-11-17",
+    "profiles": [
+      {
+        "monthlyKwh": 150,
+        "monthlyBillsEur": [
+          {
+            "supplier": "CUR",
+            "offer": "Tarifa regulada",
+            "value": 19.01
+          },
+          {
+            "supplier": "EDP Comercial",
+            "offer": "Gás",
+            "value": 22.76
+          },
+          {
+            "supplier": "Galp",
+            "offer": "Casa & Estrada",
+            "value": 24.12
+          },
+          {
+            "supplier": "Iberdrola",
+            "offer": "Mais Casa Gás",
+            "value": 24.25
+          },
+          {
+            "supplier": "Endesa",
+            "offer": "Tarifa Digital Gás",
+            "value": 24.27
+          },
+          {
+            "supplier": "Goldenergy",
+            "offer": "Desconto Máximo Monogás",
+            "value": 26.04
+          }
+        ]
+      },
+      {
+        "monthlyKwh": 300,
+        "monthlyBillsEur": [
+          {
+            "supplier": "CUR",
+            "offer": "Tarifa regulada",
+            "value": 34.1
+          }
+        ]
+      }
+    ],
+    "note": "Comparação de perfil sem condições associadas; valores do artigo. Não foi verificada cada ficha comercial.",
+    "engineEligible": false
+  },
+  "businessElectricity": {
+    "source": "Selectra — preços para empresas",
+    "url": "https://selectra.pt/energia/precos/eletricidade-mais-barata",
+    "dataDate": "2026-10-27",
+    "profile": {
+      "powerKva": 13.8,
+      "monthlyKwh": 908
+    },
+    "fixedOrMarketOffers": [
+      {
+        "supplier": "Ibelectra",
+        "offer": "Solução Segura DD+FE",
+        "monthlyEstimate": 202.04
+      },
+      {
+        "supplier": "Ibelectra",
+        "offer": "Solução Conforto DD+FE",
+        "monthlyEstimate": 203.99
+      },
+      {
+        "supplier": "Endesa",
+        "offer": "Tarifa Digital Luz",
+        "monthlyEstimate": 206.33
+      },
+      {
+        "supplier": "Muon",
+        "offer": "Negócios Verde",
+        "monthlyEstimate": 214.95
+      },
+      {
+        "supplier": "Luzboa",
+        "offer": "BTN Luzboa",
+        "monthlyEstimate": 215.33
+      },
+      {
+        "supplier": "Luzigás",
+        "offer": "Super Lig Fixo Empresas",
+        "monthlyEstimate": 215.49
+      },
+      {
+        "supplier": "SU Eletricidade",
+        "offer": "Tarifa Transitória",
+        "monthlyEstimate": 217.8
+      },
+      {
+        "supplier": "Iberdrola",
+        "offer": "Plano Mais Negócios DD+FE",
+        "monthlyEstimate": 220.53
+      },
+      {
+        "supplier": "Oeneo Energy",
+        "offer": "Prime",
+        "monthlyEstimate": 221.29
+      },
+      {
+        "supplier": "MEO Energia",
+        "offer": "MEO Energia Fixa DD+FE",
+        "monthlyEstimate": 223.45
+      }
+    ],
+    "indexedObservations": [
+      {
+        "supplier": "Luzigás",
+        "offer": "Dinâmico Poupança+",
+        "monthlyEstimate": 206.99
+      },
+      {
+        "supplier": "Luzigás",
+        "offer": "Dinâmico Base",
+        "monthlyEstimate": 216.35
+      },
+      {
+        "supplier": "Muon",
+        "offer": "Indexado Negócios Verde",
+        "monthlyEstimate": 262.42
+      },
+      {
+        "supplier": "Ibelectra",
+        "offer": "Solução Família",
+        "monthlyEstimate": 264.46
+      },
+      {
+        "supplier": "Ibelectra",
+        "offer": "Solução Amigo",
+        "monthlyEstimate": 267.81
+      },
+      {
+        "supplier": "Ibelectra",
+        "offer": "Solução Casa",
+        "monthlyEstimate": 271.52
+      }
+    ],
+    "note": "Perfil indicativo; preços, fidelização, elegibilidade, validade e fichas contratuais não confirmados. Data de referência já com cerca de quatro semanas.",
+    "engineEligible": false
+  },
+  "regulatedReference": {
+    "electricity": {
+      "validity": "2026-10-01 a 2026-12-31",
+      "power6_9KvaDailyEur": 0.3659,
+      "simpleEurKwh": 0.1711,
+      "biHourly": {
+        "outsideOffPeakEurKwh": 0.2045,
+        "offPeakEurKwh": 0.1143
+      },
+      "triHourly": {
+        "peakEurKwh": 0.2553,
+        "shoulderEurKwh": 0.1747,
+        "offPeakEurKwh": 0.1143
+      },
+      "source": "Valores ERSE citados em https://www.literaciafinanceira.pt/artigos/preco-kwh (consulta a 23/11/2026); usar como referência, não como ficha do fornecedor.",
+      "engineEligible": false
+    },
+    "gas": {
+      "validity": "2026-10-01 a 2027-09-30",
+      "escalon2": {
+        "dailyFixedEur": 0.1378,
+        "energyEurKwh": 0.0639
+      },
+      "source": "ERSE, tarifas e preços do gás 2026-2027; tabela transcrita em https://www.sonorgas.pt/tarifarios/",
+      "engineEligible": false
+    }
+  },
+  "sources": [
+    {
+      "name": "ERSE — simulador manual e CSV",
+      "url": "https://simuladorprecos.erse.pt/manual",
+      "note": "A página indica CSV atualizado em 02/09/2026; data demasiado antiga para assumir cobertura de campanhas de novembro."
+    },
+    {
+      "name": "ERSE — tarifas de eletricidade",
+      "url": "https://www.erse.pt/atividade/regulacao/tarifas-e-precos-eletricidade/"
+    },
+    {
+      "name": "ERSE — tarifas de gás",
+      "url": "https://www.erse.pt/atividade/regulacao/tarifas-e-precos-gas-natural/"
+    },
+    {
+      "name": "EDP — página de ofertas",
+      "url": "https://www.edp.pt/particulares/energia/eletricidade/",
+      "note": "Página indica oferta digital para novos clientes, DD+FE, simples ou bi-horária, desconto 12 meses e adesões online até 31/12/2026; preços completos/ficha não extraídos nesta revisão."
+    }
+  ],
+  "limitations": [
+    "Observações não são fichas contratuais completas nem ofertas atuais verificadas diretamente.",
+    "Não integrar no motor sem confirmar preços de energia e potência, período horário, descontos, validade, fidelização, elegibilidade, impostos e segmento.",
+    "Comparações com perfis diferentes não são diretamente comparáveis.",
+    "Não foi encontrado no repositório um arquivo de campanhas PDF/documentos comerciais.",
+    "Nenhuma oferta deste ficheiro é elegível para recomendações automáticas."
+  ]
+}
