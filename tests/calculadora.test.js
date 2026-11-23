@@ -45,6 +45,7 @@ set("calc-discount", "50");
 context.calcularCusto();
 assert.match(elements.get("calc-result").innerHTML, /Total estimado/);
 assert.match(elements.get("calc-result").innerHTML, /509,50/, "renders the expected annual total");
+assert.match(elements.get("calc-result").innerHTML, /6,9 kVA/, "shows the contracted power as a reference");
 
 set("calc-kwh", "");
 context.calcularCusto();
