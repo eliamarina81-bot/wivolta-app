@@ -1,13 +1,14 @@
 {
   "schemaVersion": "1.0.0",
-  "lastReviewed": "2026-11-20",
+  "lastReviewed": "2026-11-23",
   "currency": "EUR",
   "market": "Portugal continental",
   "principles": [
     "Não comparar uma oferta sem preço unitário, potência e condições suficientes para calcular o perfil.",
     "Não tratar descontos condicionados como descontos garantidos.",
     "Não usar campanhas expiradas ou documentos sem validade confirmada.",
-    "Manter a origem documental e a data de cada valor."
+    "Manter a origem documental e a data de cada valor.",
+    "As comissões e regras de remuneração são informação interna e não fazem parte do catálogo público."
   ],
   "offers": [
     {
@@ -188,41 +189,51 @@
           "min": 0,
           "max": 220,
           "fixedEurDay": 0.0917,
-          "energyEurKwh": 0.1185
+          "energyEurKwh": 0.1048
         },
         {
           "band": 2,
           "min": 221,
           "max": 500,
           "fixedEurDay": 0.1629,
-          "energyEurKwh": 0.1183
+          "energyEurKwh": 0.1037
         },
         {
           "band": 3,
           "min": 501,
           "max": 1000,
           "fixedEurDay": 0.2338,
-          "energyEurKwh": 0.1168
+          "energyEurKwh": 0.1032
         },
         {
           "band": 4,
           "min": 1001,
           "max": 10000,
           "fixedEurDay": 0.375,
-          "energyEurKwh": 0.1149
+          "energyEurKwh": 0.1029
         }
       ],
       "discountConditions": [
-        "Desconto no total da fatura depende de uma ou duas energias e de débito direto.",
-        "Os descontos indicados são válidos por 12 meses a partir da ativação."
+        "1 energia: 4% sem débito direto; 6% com débito direto; serviços opcionais acrescentam 2% cada, até 8%/10%.",
+        "2 energias: 6% sem débito direto; 8% com débito direto; serviços opcionais acrescentam 2% cada, até 10%/12%.",
+        "Desconto no total da fatura, excluindo taxa DGEG, contribuição audiovisual e IEC; válido 12 meses.",
+        "A tarifa usa escalões anuais em m3: 0–220, 221–500, 501–1000 e 1001–10000."
       ],
       "validFrom": "2026-10-01",
       "validUntil": "2026-12-31",
-      "calculationStatus": "partial_conversion_and_discount_validation",
+      "calculationStatus": "ready_gas_base_prices",
       "sourceFiles": [
         "AF_galp-plano-casa-estrada-tabela-precos-descontos-.pdf"
       ],
-      "notes": "A tabela de gás apresenta escalões em m3/ano. A aplicação ainda precisa de validar conversão/escala de consumo e elegibilidade antes de calcular."
+      "notes": "Tabela corrigida a partir do PDF Galp Casa & Estrada: energia base 0,1048/0,1037/0,1032/0,1029 €/kWh por escalão e termo fixo 0,0917/0,1629/0,2338/0,3750 €/dia. Preços finais incluem acesso às redes; acresce IVA. Não usar a tabela de gás do Plano Negócios para clientes residenciais.",
+      "discountRatesPercent": [
+        0,
+        4,
+        6,
+        8,
+        10,
+        12
+      ]
     },
     {
       "id": "galp-negocios-eletricidade-20261001",
@@ -563,6 +574,408 @@
         "Simulador de MEO Energia 2026 01.xlsx"
       ],
       "notes": "Valores do separador Tarifa 2026, identificados como tarifário base Jan/26. A validade comercial atual não está confirmada. Não apresentar na comparação automática até confirmação escrita da MEO. Não contém oferta de gás."
+    },
+    {
+      "id": "iberdrola-mais-casa-eletricidade-2026",
+      "supplier": "Iberdrola",
+      "offer": "Plano Mais Casa",
+      "segment": "residencial",
+      "energy": "electricity",
+      "tariffs": [
+        "simple",
+        "bi-hourly"
+      ],
+      "powerKva": [
+        1.15,
+        2.3,
+        3.45,
+        4.6,
+        5.75,
+        6.9,
+        10.35,
+        13.8,
+        17.25,
+        20.7
+      ],
+      "dailyPowerEur": {
+        "1.15": 0.2321,
+        "2.3": 0.3473,
+        "3.45": 0.4519,
+        "4.6": 0.5993,
+        "5.75": 0.6848,
+        "6.9": 0.7576,
+        "10.35": 0.9897,
+        "13.8": 1.2838,
+        "17.25": 1.5926,
+        "20.7": 1.8975
+      },
+      "energyEurKwh": {
+        "simple": {
+          "base": 0.1999
+        },
+        "biHourly": {
+          "outsidePeak": {
+            "base": 0.2399
+          },
+          "offPeak": {
+            "base": 0.1299
+          }
+        }
+      },
+      "defaultDiscountPercent": 16,
+      "discountRatesPercent": [
+        16,
+        17,
+        18,
+        19,
+        20
+      ],
+      "discountConditions": [
+        "16% base no termo de potência e energia, válido durante toda a vigência.",
+        "+1% com fatura eletrónica e +1% com débito direto.",
+        "+2% com Proteção Elétrica Lar/Lar Plus; o desconto associado perde-se se o serviço for cancelado.",
+        "Campanha de 40 €, atribuída como 4 € por fatura."
+      ],
+      "validFrom": "2026-01-01",
+      "validUntil": "2026-12-31",
+      "fidelity": false,
+      "priceIndexation": false,
+      "calculationStatus": "ready_electricity_base_prices",
+      "sourceFiles": [
+        "MCASA264.pdf"
+      ],
+      "notes": "Tabela unitária extraída do quadro de preços sem desconto. O comparador deve aplicar o desconto base de 16% e só somar benefícios adicionais se elegíveis. Preços sem IVA, taxas e encargos."
+    },
+    {
+      "id": "endesa-quero-plus-eletricidade-2026",
+      "supplier": "Endesa",
+      "offer": "Quero+",
+      "segment": "residencial",
+      "energy": "electricity",
+      "tariffs": [
+        "simple"
+      ],
+      "powerKva": [
+        1.15,
+        2.3,
+        3.45,
+        4.6,
+        5.75,
+        6.9,
+        10.35,
+        13.8,
+        17.25,
+        20.7
+      ],
+      "dailyPowerEur": {
+        "1.15": 0.332,
+        "2.3": 0.4353,
+        "3.45": 0.5171,
+        "4.6": 0.6738,
+        "5.75": 0.7928,
+        "6.9": 1.0133,
+        "10.35": 1.2342,
+        "13.8": 1.605,
+        "17.25": 1.9982,
+        "20.7": 2.5638
+      },
+      "energyEurKwh": {
+        "simple": {
+          "base": 0.221264
+        }
+      },
+      "defaultDiscountPercent": 14,
+      "discountRatesPercent": [
+        14,
+        16,
+        20
+      ],
+      "discountConditions": [
+        "14% por contratação de uma energia (luz ou gás).",
+        "16% por contratação conjunta de luz e gás.",
+        "20% por luz+gás, débito direto, fatura digital e serviço de assistência; serviços opcionais têm custo.",
+        "Descontos no termo de potência/fixo e energia, sujeitos às condições de manutenção."
+      ],
+      "validFrom": "2026-11-01",
+      "validUntil": "2026-12-02",
+      "fidelity": false,
+      "priceIndexation": false,
+      "calculationStatus": "ready_electricity_base_prices",
+      "sourceFiles": [
+        "F26.0393_FICHA PLUS ENDESA_QUERO+.pdf"
+      ],
+      "notes": "Preços unitários base extraídos da ficha de campanha. Comparação aplica apenas 14% por defeito; 16%/20% dependem de contratar gás e serviços. Acrescem encargos, IEC, audiovisual e IVA."
+    },
+    {
+      "id": "endesa-quero-plus-gas-2026",
+      "supplier": "Endesa",
+      "offer": "Quero+ Gás",
+      "segment": "residencial",
+      "energy": "gas",
+      "gasConsumptionBands": [
+        {
+          "band": 1,
+          "fixedEurDay": 0.2143,
+          "energyEurKwh": 0.138195
+        },
+        {
+          "band": 2,
+          "fixedEurDay": 0.3042,
+          "energyEurKwh": 0.133788
+        },
+        {
+          "band": 3,
+          "fixedEurDay": 0.4934,
+          "energyEurKwh": 0.124621
+        },
+        {
+          "band": 4,
+          "fixedEurDay": 0.8015,
+          "energyEurKwh": 0.123657
+        }
+      ],
+      "defaultDiscountPercent": 14,
+      "discountRatesPercent": [
+        14,
+        16,
+        20
+      ],
+      "discountConditions": [
+        "14% por contratação de uma energia.",
+        "16% por contratação conjunta de luz e gás.",
+        "20% por luz+gás, débito direto, fatura digital e serviço de assistência; serviços opcionais têm custo."
+      ],
+      "validFrom": "2026-11-01",
+      "validUntil": "2026-12-02",
+      "fidelity": false,
+      "priceIndexation": false,
+      "calculationStatus": "ready_gas_base_prices_manual_band",
+      "sourceFiles": [
+        "F26.0393_FICHA PLUS ENDESA_QUERO+.pdf"
+      ],
+      "notes": "Escalões 1–4 conforme ficha; selecionar o escalão indicado na fatura. Acrescem taxa de ocupação de subsolo, IEC e IVA."
+    },
+    {
+      "id": "iberdrola-mais-casa-gas-2026",
+      "supplier": "Iberdrola",
+      "offer": "Plano Mais Casa Gás",
+      "segment": "residencial",
+      "energy": "gas",
+      "gasConsumptionBands": [
+        {
+          "band": 1,
+          "fixedEurDay": 0.1616,
+          "energyEurKwh": 0.1122
+        },
+        {
+          "band": 2,
+          "fixedEurDay": 0.2915,
+          "energyEurKwh": 0.116
+        },
+        {
+          "band": 3,
+          "fixedEurDay": 0.445,
+          "energyEurKwh": 0.1155
+        },
+        {
+          "band": 4,
+          "fixedEurDay": 0.625,
+          "energyEurKwh": 0.115
+        }
+      ],
+      "defaultDiscountPercent": 16,
+      "discountRatesPercent": [
+        16,
+        17,
+        18,
+        19,
+        20
+      ],
+      "discountConditions": [
+        "16% base para sempre.",
+        "+1% com fatura eletrónica e +1% com débito direto.",
+        "+2% com Manutenção Gás Iberdrola; o desconto perde-se se o serviço for cancelado.",
+        "A oferta dual inclui benefício de 20 €, atribuído como 2 € por fatura."
+      ],
+      "validFrom": "2026-01-01",
+      "validUntil": "2026-12-31",
+      "fidelity": false,
+      "priceIndexation": false,
+      "calculationStatus": "ready_gas_base_prices_manual_band",
+      "sourceFiles": [
+        "MCASAGAS267.pdf",
+        "MCASAGAS268_DUALpdf.pdf"
+      ],
+      "notes": "Preços unitários base sem desconto; selecionar escalão 1–4 da fatura. A versão dual inclui benefício de 20 €. Acrescem impostos, taxas e encargos."
+    },
+    {
+      "id": "repsol-viva-gas-20261015",
+      "supplier": "Repsol",
+      "offer": "Viva Gás Natural",
+      "segment": "residencial",
+      "energy": "gas",
+      "gasConsumptionBands": [
+        {
+          "band": 1,
+          "fixedEurDay": 0.1752,
+          "energyEurKwh": 0.115
+        },
+        {
+          "band": 2,
+          "fixedEurDay": 0.235,
+          "energyEurKwh": 0.115
+        },
+        {
+          "band": 3,
+          "fixedEurDay": 0.355,
+          "energyEurKwh": 0.11
+        },
+        {
+          "band": 4,
+          "fixedEurDay": 0.65,
+          "energyEurKwh": 0.11
+        }
+      ],
+      "discountRatesPercent": [
+        0,
+        15
+      ],
+      "discountConditions": [
+        "Até 15% no termo de energia, sujeito a faturação eletrónica, débito direto e serviços adicionais; limitado ao primeiro ano.",
+        "Sem fidelização."
+      ],
+      "validFrom": "2026-10-15",
+      "validUntil": "2026-12-31",
+      "fidelity": false,
+      "priceIndexation": false,
+      "calculationStatus": "ready_gas_base_prices_manual_band",
+      "sourceFiles": [
+        "VIVA_Geral_G_20261015_HQ.pdf"
+      ],
+      "notes": "Preços unitários base extraídos da ficha Repsol; selecionar escalão 1–4. Valores não incluem taxa de ocupação de subsolo, IEC, financiamento da tarifa social e IVA. Conversão indicada no documento: 11,667 kWh/m3."
+    },
+    {
+      "id": "galp-negocios-gas-20261001",
+      "supplier": "Galp",
+      "offer": "Negócios",
+      "segment": "business",
+      "energy": "gas",
+      "gasConsumptionBandsM3Year": [
+        {
+          "band": 1,
+          "min": 0,
+          "max": 220,
+          "fixedEurDay": 0.0917,
+          "energyEurKwh": 0.1185
+        },
+        {
+          "band": 2,
+          "min": 221,
+          "max": 500,
+          "fixedEurDay": 0.1629,
+          "energyEurKwh": 0.1183
+        },
+        {
+          "band": 3,
+          "min": 501,
+          "max": 1000,
+          "fixedEurDay": 0.2338,
+          "energyEurKwh": 0.1168
+        },
+        {
+          "band": 4,
+          "min": 1001,
+          "max": 10000,
+          "fixedEurDay": 0.375,
+          "energyEurKwh": 0.1149
+        }
+      ],
+      "discountRatesPercent": [
+        0,
+        4,
+        6,
+        8,
+        9,
+        10
+      ],
+      "discountConditions": [
+        "1 energia: 4% sem débito direto, 6% com débito direto; serviço opcional pode acrescentar 2%.",
+        "2 energias: 6% sem débito direto, 8% com débito direto; serviço opcional pode acrescentar 2%.",
+        "+1% após 12 meses; descontos por 12 meses e sujeitos a manutenção."
+      ],
+      "validFrom": "2026-10-01",
+      "validUntil": "2026-12-31",
+      "fidelity": null,
+      "calculationStatus": "ready_gas_base_prices",
+      "sourceFiles": [
+        "AF_galp-plano-negocios-tabela-precos-descontos-08_2.pdf"
+      ],
+      "notes": "Tabela Galp Negócios; não confundir com Casa & Estrada residencial. Preços finais incluem acesso às redes; acresce IVA. Serviços 360 Assist/360 Assist+ são pagos."
+    },
+    {
+      "id": "endesa-empresa-a-sua-empresa-eletricidade-2026",
+      "supplier": "Endesa",
+      "offer": "A Sua Empresa",
+      "segment": "business",
+      "energy": "electricity",
+      "tariffs": [
+        "simple",
+        "bi-hourly"
+      ],
+      "powerKva": [
+        1.15,
+        2.3,
+        3.45,
+        4.6,
+        5.75,
+        6.9,
+        10.35,
+        13.8,
+        17.25,
+        20.7
+      ],
+      "dailyPowerEur": {
+        "1.15": 0.1641,
+        "2.3": 0.2457,
+        "3.45": 0.3084,
+        "4.6": 0.4317,
+        "5.75": 0.5268,
+        "6.9": 0.6975,
+        "10.35": 0.8811,
+        "13.8": 1.1763,
+        "17.25": 1.4879,
+        "20.7": 1.9271
+      },
+      "energyEurKwh": {
+        "simple": {
+          "base": 0.196429,
+          "discount8": 0.180715
+        },
+        "biHourly": {
+          "outsidePeak": {
+            "base": 0.232963,
+            "discount8": 0.214326
+          },
+          "offPeak": {
+            "base": 0.169568,
+            "discount8": 0.156003
+          }
+        }
+      },
+      "defaultDiscountPercent": 8,
+      "discountConditions": [
+        "Desconto de 8% no termo de energia indicado na ficha; confirmar elegibilidade e ficha correspondente ao escalão.",
+        "Sem fidelização; preços podem ser atualizados por IPC a 1 de janeiro ou por componentes reguladas."
+      ],
+      "validFrom": "2026-11-01",
+      "validUntil": "2026-12-02",
+      "fidelity": false,
+      "priceIndexation": "IPC_and_regulated_components",
+      "calculationStatus": "ready_business_electricity",
+      "sourceFiles": [
+        "F26.0397_FICHA PLUS ENDESA A SUA EMPRESA_8.pdf"
+      ],
+      "notes": "Tabela A Sua Empresa; preços base e desconto de 8% extraídos da ficha. Para a bi-horária, usar consumos fora de vazio e vazio. Validar sempre a ficha da potência/condições aplicáveis."
     }
   ]
 }
