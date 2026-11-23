@@ -18,8 +18,21 @@ export default async function handler(req, res) {
       method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ systemInstruction: { parts: [{ text: systemInstruction }] }, contents: [{ role: "user", parts: [{ text: fullPrompt }] }], generationConfig: { temperature: 0.3, maxOutputTokens: 900 } })
     });
-    const data = await response.json();
-    if (!response.ok) return res.status(502).json({ error: "O serviço de IA não respondeu corretamente. Tente mais tarde." });
+    const raw = await response.text();
+    let data = {};
+    try { data = raw ? JSON.parse(raw) : {}; } catch { data = {}; }
+    if (!response.ok) {
+      const upstreamMessage = String(data?.error?.message || "").replace(/[\\r\\n]+/g, " ").slice(0, 220);
+      console.error("Gemini API error", response.status, upstreamMessage || "Sem detalhe");
+      const hint = response.status === 401 || response.status === 403
+        ? "Verifique se a chave GEMINI_API_KEY é válida e se a Gemini API está ativa no projeto Google."
+        : response.status === 404
+          ? "O modelo Gemini configurado não está disponível para esta chave ou endpoint."
+          : response.status === 429
+            ? "O limite de pedidos ou quota da API Gemini foi atingido."
+            : "A API Gemini recusou o pedido.";
+      return res.status(502).json({ error: hint, diagnostic: "HTTP " + response.status + (upstreamMessage ? " — " + upstreamMessage : "") });
+    }
     const reply = data?.candidates?.[0]?.content?.parts?.map(p => p.text || "").join("").trim();
     if (!reply) return res.status(502).json({ error: "A IA não devolveu uma resposta. Tente reformular." });
     return res.status(200).json({ reply });
