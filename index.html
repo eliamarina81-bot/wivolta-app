@@ -90,6 +90,11 @@
 #portal-cliente .portal-section-title{margin-top:18px;font-size:16px}
 #portal-cliente .portal-hidden{display:none!important}
 #portal-cliente button:disabled{opacity:.55;cursor:not-allowed}
+#portal-admin table{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px}
+#portal-admin th,#portal-admin td{padding:8px;border-bottom:1px solid #e2e8f0;text-align:left;vertical-align:top}
+#portal-admin th{background:#f1f5f9;color:#0f172a}
+#portal-admin .admin-table-wrap{overflow-x:auto;border:1px solid #e2e8f0;border-radius:10px;margin-top:8px}
+#portal-admin h4{font-size:15px;color:#0f172a}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -164,6 +169,14 @@
     <div id="portal-contracts"></div>
     <h3 class="portal-section-title">Alertas e aprovações</h3>
     <div id="portal-alerts"></div>
+    <section id="portal-admin" class="portal-hidden" style="margin-top:24px;border-top:2px solid #059669;padding-top:18px">
+      <h3 class="portal-section-title">Painel interno Wivolta</h3>
+      <p class="portal-status">Área reservada à equipa. Comissões e documentos não são apresentados aos clientes.</p>
+      <h4 style="margin-top:16px">Tabela interna de remunerações</h4>
+      <div id="portal-commissions"></div>
+      <h4 style="margin-top:20px">Documentos e autorizações de adesão</h4>
+      <div id="portal-documents"></div>
+    </section>
   </div>
 </section>
 
@@ -302,6 +315,51 @@ form.addEventListener("submit",async e=>{e.preventDefault();const prompt=input.v
       });
       card.append(actions);alertsBox.append(card);
     });
+    const staffCheck=await client.rpc("wivolta_is_staff");
+    const adminPanel=byId("portal-admin");
+    if(!staffCheck.error&&staffCheck.data===true&&adminPanel){
+      adminPanel.classList.remove("portal-hidden");
+      const [commissionsResult,documentsResult]=await Promise.all([
+        client.from("comissoes_internas").select("comercializador,segmento,energia,modalidade,valor,moeda,unidade,notas,estado").order("comercializador").order("segmento"),
+        client.from("documentos_adesao").select("comercializador,segmento,energia,categoria,nome_ficheiro_origem,validade_ate,estado,notas").order("comercializador").order("categoria")
+      ]);
+      function renderAdminTable(target,columns,rows,errorText){
+        const box=byId(target);box.replaceChildren();
+        if(errorText){box.append(element("p","portal-status",errorText));return;}
+        if(!rows||!rows.length){box.append(element("p","portal-status","Ainda não existem registos."));return;}
+        const wrap=element("div","admin-table-wrap"),table=element("table","");
+        const head=element("thead",""),headRow=element("tr","");
+        columns.forEach(col=>headRow.append(element("th","",col.label)));
+        head.append(headRow);table.append(head);
+        const body=element("tbody","");
+        rows.forEach(row=>{
+          const tr=element("tr","");
+          columns.forEach(col=>tr.append(element("td","",col.value(row)||"—")));
+          body.append(tr);
+        });
+        table.append(body);wrap.append(table);box.append(wrap);
+      }
+      renderAdminTable("portal-commissions",[
+        {label:"Comercializador",value:r=>r.comercializador},
+        {label:"Segmento",value:r=>r.segmento},
+        {label:"Energia",value:r=>r.energia},
+        {label:"Modalidade",value:r=>r.modalidade},
+        {label:"Valor",value:r=>r.valor===null?"Variável":new Intl.NumberFormat("pt-PT",{style:"currency",currency:r.moeda||"EUR"}).format(Number(r.valor))+" "+(r.unidade||"")},
+        {label:"Notas",value:r=>r.notas},
+        {label:"Estado",value:r=>r.estado}
+      ],commissionsResult.data,commissionsResult.error?"Não foi possível consultar a tabela interna de remunerações.":null);
+      renderAdminTable("portal-documents",[
+        {label:"Comercializador",value:r=>r.comercializador},
+        {label:"Segmento",value:r=>r.segmento},
+        {label:"Energia",value:r=>r.energia},
+        {label:"Tipo",value:r=>r.categoria},
+        {label:"Ficheiro recebido",value:r=>r.nome_ficheiro_origem},
+        {label:"Validade",value:r=>date(r.validade_ate)},
+        {label:"Estado",value:r=>r.estado}
+      ],documentsResult.data,documentsResult.error?"Não foi possível consultar o inventário de documentos.":null);
+    }else if(adminPanel){
+      adminPanel.classList.add("portal-hidden");
+    }
   }
 
   async function start(){
