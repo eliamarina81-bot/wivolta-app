@@ -58,4 +58,4 @@ set("calc-discount", "1000");
 context.calcularCusto();
 assert.match(elements.get("calc-result").innerHTML, /limitado ao subtotal/, "warns when discount exceeds subtotal");
 
-console.log("calculator tests: PASS (10 checks)");
+console.log("calculator tests: PASS (12 checks)");
