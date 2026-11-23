@@ -292,9 +292,9 @@ form.addEventListener("submit",async e=>{e.preventDefault();const prompt=input.v
         button.type="button";
         button.addEventListener("click",async()=>{
           button.disabled=true;
-          const response=await client.rpc("wivolta_aprovar_alerta",{p_alerta_id:a.id,p_decisao:decision});
+          const response=await client.from("alertas_aprovacoes").update({estado:decision,decisao_em:new Date().toISOString()}).eq("id",a.id).eq("estado","pendente").select("id").maybeSingle();
           if(response.error){message("Não foi possível registar a decisão. Tente novamente.");button.disabled=false;return;}
-          if(response.data!==true){message("Este alerta já foi decidido ou não pertence à sua conta.");return;}
+          if(!response.data){message("Este alerta já foi decidido ou não pertence à sua conta.");return;}
           message(decision==="aprovado"?"A sua aprovação foi registada.":"A sua recusa foi registada.");
           await loadDashboard();
         });
