@@ -36,7 +36,7 @@ assert.equal(calc(-1, 0.2, 0.1, 0), null, "rejects negative consumption");
 assert.equal(calc(100, NaN, 0.1, 0), null, "rejects invalid energy price");
 assert.equal(calc(100, 0.2, 0.1, -1), null, "rejects negative discount");
 
-const set = (id, value) => { elements.get(id).value = value; };
+const set = (id, value) => { context.document.getElementById(id).value = value; };
 set("calc-kwh", "3000");
 set("calc-kwhprice", "0.15");
 set("calc-power", "6.9");
