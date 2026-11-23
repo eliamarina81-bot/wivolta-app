@@ -8,7 +8,16 @@ const scripts = [...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)];
 const inline = scripts.map(m => m[1]).find(s => s.includes("function parseFaturaText("));
 assert.ok(inline, "OCR parser must exist in index.html");
 
-const context = { document: { getElementById: () => ({ value: "", textContent: "", innerHTML: "" }) }, Intl, Number, Math };
+const elements = new Map();
+const context = {
+  document: {
+    getElementById: id => {
+      if (!elements.has(id)) elements.set(id, { value: "", textContent: "", innerHTML: "", classList: { remove() {} } });
+      return elements.get(id);
+    }
+  },
+  Intl, Number, Math
+};
 vm.createContext(context);
 vm.runInContext(inline, context);
 const parse = context.parseFaturaText;
@@ -34,6 +43,11 @@ assert.equal(bi.tarifa, "bi-horário");
 assert.equal(bi.fora, "200", "extracts off-peak consumption");
 assert.equal(bi.vazio, "100", "does not duplicate off-peak value into vazio");
 assert.equal(bi.gas, "150", "extracts gas kWh");
+context.mostrarCampos(bi, "synthetic invoice text");
+assert.match(elements.get("ocr-validacao").textContent, /checksum OK/);
+assert.match(elements.get("ocr-validacao").textContent, /CPE: estrutura OK/);
+assert.match(elements.get("ocr-validacao").textContent, /CUI: estrutura OK/);
+assert.equal(elements.get("ocr-nif").value, "123456789");
 
 const tri = parse("Tarifa tri-horária\nPonta 10 kWh\nCheias 20 kWh\nVazio 30 kWh");
 assert.equal(tri.tarifa, "tri-horário");
