@@ -22,6 +22,7 @@ No SQL Editor do projeto Supabase, executar pela ordem:
 
 1. `supabase/migrations/001_wivolta_clientes_contratos.sql`
 2. `supabase/migrations/002_wivolta_portal_integrity.sql`
+3. `supabase/migrations/20261123163516_wivolta_comissoes_documentos_internos.sql`
 
 A segunda migração reforça a ligação entre contrato e cliente, atualiza automaticamente `updated_at` e restringe a função de aprovação a utilizadores autenticados.
 
@@ -47,6 +48,8 @@ A tabela de staff não tem políticas de leitura/escrita para clientes. Não cri
 - O cliente só consegue consultar os seus próprios contratos e alertas, por força das políticas RLS.
 - O cliente pode aprovar ou recusar um alerta pendente através da função SQL.
 - Os contratos e alertas são criados por um processo administrativo autorizado; o portal público não permite inserir contratos.
+- A área interna apresenta a tabela de comissões e o inventário de documentos apenas a utilizadores adicionados a `wivolta_staff`.
+- As tabelas `comissoes_internas` e `documentos_adesao` têm RLS e não permitem acesso anónimo. Os valores de comissão são referências documentais internas, não garantias de pagamento; devem ser confirmados antes de contabilizar remunerações.
 - A aprovação no portal regista a decisão. **Não submete por si só uma mudança de comercializador** nem substitui a autorização/formulário exigido pelo comercializador.
 
 ## 5. Antes de ativar em produção
@@ -60,3 +63,16 @@ A tabela de staff não tem políticas de leitura/escrita para clientes. Não cri
 ## 6. Limites
 
 Esta entrega não configura o projeto Supabase, não aplica migrações remotamente, não cria credenciais nem ativa a produção. Essas ações exigem acesso ao projeto e configuração efetiva das variáveis. A chave `service_role` não é necessária para o portal de cliente descrito acima.
+
+## 7. Catálogo comercial recuperado
+
+O catálogo público `data/catalogo-ofertas.json` contém preços unitários extraídos das fichas disponíveis, com origem e validade. O comparador apresenta apenas ofertas com dados suficientes para o perfil, energia e ciclo selecionados. Fichas sem validade confirmada, simuladores expirados ou tabelas sem preços legíveis ficam excluídos até revisão.
+
+A tabela interna `comissoes_internas` contém os valores de remuneração residencial e empresarial recuperados dos acordos fornecidos. Está protegida por RLS e não é enviada ao comparador público. A tabela `documentos_adesao` inventaria formulários, contratos, autorizações, declarações e mandatos SEPA por comercializador. Os PDFs originais continuam na biblioteca de origem; o inventário não significa que estejam já a ser enviados ou assinados pela aplicação.
+
+## 8. Limites atuais
+
+- A área interna só aparece após autenticação de uma conta adicionada a `wivolta_staff`.
+- A ativação do portal continua desligada até completar a informação legal de privacidade, confirmar o fluxo de autenticação e testar o isolamento de dados.
+- O catálogo contém ofertas com preços atuais e outras marcadas para revisão; não apresentar as últimas como propostas disponíveis.
+- O comparador calcula apenas energia e termo fixo com os dados estruturados; impostos, encargos, serviços opcionais, fidelização e ajustes variáveis devem ser considerados antes da proposta final.
