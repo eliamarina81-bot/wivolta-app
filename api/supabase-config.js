@@ -4,16 +4,21 @@ export default function handler(req, res) {
     return res.status(405).json({ error: "Método não permitido." });
   }
 
-  const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anonKey = process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
   res.setHeader("Cache-Control", "no-store, max-age=0");
   res.setHeader("Vary", "Accept");
+
+  if (process.env.WIVOLTA_PORTAL_ENABLED !== "true") {
+    return res.status(200).json({ configured: false, enabled: false });
+  }
+
+  const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const anonKey = process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   if (!url || !anonKey) {
     return res.status(503).json({
       configured: false,
-      error: "A ligação ao Supabase ainda não está configurada no servidor."
+      enabled: true,
+      error: "Falta configurar o endereço e a chave pública do Supabase no servidor."
     });
   }
 
@@ -26,5 +31,5 @@ export default function handler(req, res) {
     return res.status(500).json({ configured: false, error: "O endereço Supabase configurado não é válido." });
   }
 
-  return res.status(200).json({ configured: true, url, anonKey });
+  return res.status(200).json({ configured: true, enabled: true, url, anonKey });
 }
