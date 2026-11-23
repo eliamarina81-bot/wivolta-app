@@ -69,7 +69,16 @@
         footer { background: #ffffff; border-top: 1px solid #e2e8f0; padding: 20px 16px; text-align: center; font-size: 12px; color: #64748b; }
         footer a { color: #059669; font-weight: 600; }
     </style>
-<style>.ocr-grid{display:grid;grid-template-columns:1fr;gap:12px}@media(min-width:640px){.ocr-grid{grid-template-columns:1fr 1fr}}.ocr-field label{display:block;font-size:13px;font-weight:600;margin-bottom:5px}.ocr-field input{width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:8px}</style><script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script><script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script></head>
+<style>.ocr-grid{display:grid;grid-template-columns:1fr;gap:12px}@media(min-width:640px){.ocr-grid{grid-template-columns:1fr 1fr}}.ocr-field label{display:block;font-size:13px;font-weight:600;margin-bottom:5px}.ocr-field input{width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:8px}</style><script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script><script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>\n<style>
+#wivolta-chat-launch{position:fixed;right:18px;bottom:18px;z-index:99;background:#059669;color:#fff;border:0;border-radius:999px;padding:14px 18px;font-weight:700;box-shadow:0 4px 18px rgba(0,0,0,.18);cursor:pointer}
+#wivolta-chat{position:fixed;right:14px;bottom:78px;z-index:100;width:min(380px,calc(100vw - 28px));height:min(560px,calc(100vh - 110px));background:#fff;border:1px solid #d1d5db;border-radius:16px;box-shadow:0 12px 40px rgba(0,0,0,.2);display:flex;flex-direction:column;overflow:hidden}
+#wivolta-chat.hidden{display:none!important}#wivolta-chat-head{background:#065f46;color:white;padding:14px;font-weight:700;display:flex;justify-content:space-between;align-items:center}
+#wivolta-chat-messages{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px}
+.wivolta-chat-msg{padding:10px 12px;border-radius:12px;max-width:92%;font-size:14px;white-space:pre-wrap;overflow-wrap:anywhere}
+.wivolta-chat-msg.bot{background:#f1f5f9;align-self:flex-start}.wivolta-chat-msg.user{background:#d1fae5;align-self:flex-end}
+#wivolta-chat-form{padding:10px;border-top:1px solid #e5e7eb;display:flex;gap:8px}#wivolta-chat-input{flex:1;min-width:0}
+#wivolta-chat-send{background:#059669;color:white;border:0;border-radius:8px;padding:10px 13px;font-weight:600}
+</style>\n</head>
 <body>
     <header>
         <div class="header-inner">
@@ -160,5 +169,11 @@ function calcularCusto(){
 }
 function limparLeitura(){$("fatura-input").value="";$("ocr-resultados").classList.add("hidden");$("ocr-status").style.display="none";$("ocr-status").textContent="";}
 </script>
-</body>
+\n<div id="wivolta-chat" class="hidden" role="dialog" aria-label="Assistente Wivolta"><div id="wivolta-chat-head"><span>Assistente Wivolta</span><button type="button" id="wivolta-chat-close" aria-label="Fechar chat" style="background:none;color:white;border:0;font-size:22px">×</button></div><div id="wivolta-chat-messages" aria-live="polite"><div class="wivolta-chat-msg bot">Olá! Posso ajudar a compreender tarifas, faturas e conceitos de energia. Não tenho acesso a preços em tempo real nem posso mudar contratos. Não partilhe dados pessoais.</div></div><form id="wivolta-chat-form"><input id="wivolta-chat-input" type="text" maxlength="4000" placeholder="Escreva a sua pergunta…" required><button id="wivolta-chat-send" type="submit">Enviar</button></form></div><button id="wivolta-chat-launch" type="button">💬 Perguntar à Wivolta</button>\n<script>
+(()=>{const box=document.getElementById("wivolta-chat"),launch=document.getElementById("wivolta-chat-launch"),close=document.getElementById("wivolta-chat-close"),form=document.getElementById("wivolta-chat-form"),input=document.getElementById("wivolta-chat-input"),msgs=document.getElementById("wivolta-chat-messages"),send=document.getElementById("wivolta-chat-send");
+function add(text,cls){const d=document.createElement("div");d.className="wivolta-chat-msg "+cls;d.textContent=text;msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;return d;}
+launch.addEventListener("click",()=>{box.classList.remove("hidden");input.focus();});close.addEventListener("click",()=>box.classList.add("hidden"));
+form.addEventListener("submit",async e=>{e.preventDefault();const prompt=input.value.trim();if(!prompt)return;input.value="";add(prompt,"user");send.disabled=true;send.textContent="…";const wait=add("A pensar…","bot");try{const r=await fetch("/api/gemini",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({prompt})});const data=await r.json();wait.textContent=r.ok?(data.reply||"Resposta vazia."):(data.error||"Não foi possível responder. Tente mais tarde.");}catch{wait.textContent="Não foi possível ligar ao assistente. Verifique a ligação e tente novamente.";}finally{send.disabled=false;send.textContent="Enviar";msgs.scrollTop=msgs.scrollHeight;}});
+})();
+</script>\n</body>
 </html>
