@@ -23,6 +23,7 @@ No SQL Editor do projeto Supabase, executar pela ordem:
 1. `supabase/migrations/001_wivolta_clientes_contratos.sql`
 2. `supabase/migrations/002_wivolta_portal_integrity.sql`
 3. `supabase/migrations/20261123163516_wivolta_comissoes_documentos_internos.sql`
+4. `supabase/migrations/20261123164159_wivolta_internal_policy_cleanup.sql`
 
 A segunda migração reforça a ligação entre contrato e cliente, atualiza automaticamente `updated_at` e restringe a função de aprovação a utilizadores autenticados.
 
