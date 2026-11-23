@@ -151,7 +151,8 @@ function calcularCusto(){
   }
   const fmt=n=>new Intl.NumberFormat("pt-PT",{style:"currency",currency:"EUR"}).format(n);
   const aviso=desconto>c.subtotal?"<p>O desconto foi limitado ao subtotal para evitar um custo negativo.</p>":"";
-  $("calc-result").innerHTML="<div><p>Energia anual: "+fmt(c.energy)+"</p><p>Potência anual (365 dias): "+fmt(c.power)+"</p><p>Subtotal: "+fmt(c.subtotal)+"</p><p>Desconto aplicado: −"+fmt(c.discount)+"</p><hr><p><strong>Total estimado: "+fmt(c.total)+" / ano</strong></p><p><strong>Média estimada: "+fmt(c.total/12)+" / mês</strong></p>"+aviso+"<p style=\"font-size:12px;color:#64748b\">Estimativa apenas para os valores introduzidos: não inclui impostos, taxas, outros encargos, diferenças de períodos horários ou variações de tarifa. A potência em kVA é apenas identificativa; o cálculo usa o preço diário indicado.</p></div>";
+  const potenciaLabel=potencia>0?"<p>Potência contratada (referência): "+new Intl.NumberFormat("pt-PT").format(potencia)+" kVA</p>":"";
+  $("calc-result").innerHTML="<div>"+potenciaLabel+"<p>Energia anual: "+fmt(c.energy)+"</p><p>Potência anual (365 dias): "+fmt(c.power)+"</p><p>Subtotal: "+fmt(c.subtotal)+"</p><p>Desconto aplicado: −"+fmt(c.discount)+"</p><hr><p><strong>Total estimado: "+fmt(c.total)+" / ano</strong></p><p><strong>Média estimada: "+fmt(c.total/12)+" / mês</strong></p>"+aviso+"<p style=\"font-size:12px;color:#64748b\">Estimativa apenas para os valores introduzidos: não inclui impostos, taxas, outros encargos, diferenças de períodos horários ou variações de tarifa. A potência em kVA é apenas identificativa; o cálculo usa o preço diário indicado.</p></div>";
 }
 function limparLeitura(){$("fatura-input").value="";$("ocr-resultados").classList.add("hidden");$("ocr-status").style.display="none";$("ocr-status").textContent="";}
 </script>
