@@ -119,6 +119,40 @@ function findKwhPeriod(text,label){const re=new RegExp(label+"[\\s\\S]{0,50}?([0
 function parseFaturaText(text){const tarifa=/tri.?hor[aá]ri/i.test(text)?"tri-horário":(/bi.?hor[aá]ri/i.test(text)||/fora\\s+de\\s+vazio/i.test(text))?"bi-horário":"simples/por confirmar";let fornecedor="";for(const n of ["EDP","Endesa","Galp","Iberdrola","Repsol","MEO","Goldenergy","G9","Ibelectra","Luzboa","Plenitude"])if(new RegExp("\\b"+n+"\\b","i").test(text)){fornecedor=n;break;}const simple=(text.match(/(?:consumo\\s+(?:total|simples)|energia\\s+ativa)[^\\n]{0,45}?([0-9][0-9.,\\s]*)\\s*kWh/i)||[])[1]||"";const gas=(text.match(/g[aá]s[^\\n]{0,45}?([0-9][0-9.,\\s]*)\\s*kWh/i)||[])[1]||"";return {fornecedor,nif:findNif(text),cpe:findCode(text,"CPE"),cui:findCode(text,"CUI"),potencia:findPower(text),tarifa,simples:simple.trim().replace(/\\s/g,""),fora:findKwhPeriod(text,"fora\\s+de\\s+vazio"),vazio:findKwhPeriod(text,"vazio"),cheias:findKwhPeriod(text,"cheias"),ponta:findKwhPeriod(text,"ponta"),gas:gas.trim().replace(/\\s/g,"")};}
 function mostrarCampos(d,text){const keys={fornecedor:"ocr-fornecedor",nif:"ocr-nif",cpe:"ocr-cpe",cui:"ocr-cui",potencia:"ocr-potencia",tarifa:"ocr-tarifa",simples:"ocr-simples",fora:"ocr-fora",vazio:"ocr-vazio",cheias:"ocr-cheias",ponta:"ocr-ponta",gas:"ocr-gas"};for(const [k,id] of Object.entries(keys))$(id).value=d[k]||"";$("ocr-texto").value=text;$("ocr-resultados").classList.remove("hidden");}
 async function processarFatura(event){const file=event.target.files?.[0];if(!file)return;if(!window.Tesseract){alert("A biblioteca OCR não carregou. Verifique a ligação à internet e tente novamente.");return;}const status=$("ocr-status");status.style.display="flex";status.textContent="A preparar OCR local…";let worker=null;try{worker=await Tesseract.createWorker("por",1,{logger:m=>{if(m.status==="recognizing text")status.textContent="A ler fatura… "+Math.round((m.progress||0)*100)+"%";}});let text="";if(file.type==="application/pdf"||file.name.toLowerCase().endsWith(".pdf")){if(!window.pdfjsLib)throw new Error("PDF.js não carregou.");pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js";const pdf=await pdfjsLib.getDocument({data:await file.arrayBuffer()}).promise;const pages=Math.min(pdf.numPages,3);for(let p=1;p<=pages;p++){status.textContent="OCR local: página "+p+" de "+pages+"…";const page=await pdf.getPage(p),viewport=page.getViewport({scale:1.6}),canvas=document.createElement("canvas");canvas.width=viewport.width;canvas.height=viewport.height;await page.render({canvasContext:canvas.getContext("2d"),viewport}).promise;const result=await worker.recognize(canvas);text+="\\n"+result.data.text;}if(pdf.numPages>3)text+="\\n[Nota: apenas as primeiras 3 páginas foram lidas.]";}else{status.textContent="OCR local a processar imagem…";const result=await worker.recognize(file);text=result.data.text;}await worker.terminate();worker=null;mostrarCampos(parseFaturaText(text),text);status.textContent="Leitura terminada. Confirme manualmente cada campo; nada foi enviado.";}catch(e){if(worker)await worker.terminate();status.textContent="Falha de leitura: "+(e?.message||e);alert("Não foi possível ler esta fatura. Pode confirmar os campos manualmente.");}}
+function calculateAnnualCost(consumptionKwh, energyPrice, powerDaily, discount=0){
+  const values=[consumptionKwh,energyPrice,powerDaily,discount];
+  if(values.some(v=>typeof v!=="number"||!Number.isFinite(v)||v<0))return null;
+  const energy=consumptionKwh*energyPrice;
+  const power=powerDaily*365;
+  const subtotal=energy+power;
+  const appliedDiscount=Math.min(discount,subtotal);
+  return {energy,power,subtotal,discount:appliedDiscount,total:subtotal-appliedDiscount};
+}
+function calcularCusto(){
+  const read=(id,optional=false)=>{
+    const raw=$(id).value.trim();
+    if(raw==="")return optional?0:null;
+    const n=Number(raw.replace(",","."));
+    return Number.isFinite(n)&&n>=0?n:null;
+  };
+  const consumo=read("calc-kwh");
+  const preco=read("calc-kwhprice");
+  const potenciaDia=read("calc-powerprice");
+  const desconto=read("calc-discount",true);
+  const potencia=read("calc-power",true);
+  if(consumo===null||preco===null||potenciaDia===null||desconto===null||potencia===null){
+    $("calc-result").innerHTML="<p role=\"alert\">Preencha consumo, preço de energia e preço diário de potência com valores válidos (não negativos).</p>";
+    return;
+  }
+  const c=calculateAnnualCost(consumo,preco,potenciaDia,desconto);
+  if(!c){
+    $("calc-result").innerHTML="<p role=\"alert\">Valores inválidos. Verifique os campos.</p>";
+    return;
+  }
+  const fmt=n=>new Intl.NumberFormat("pt-PT",{style:"currency",currency:"EUR"}).format(n);
+  const aviso=desconto>c.subtotal?"<p>O desconto foi limitado ao subtotal para evitar um custo negativo.</p>":"";
+  $("calc-result").innerHTML="<div><p>Energia anual: "+fmt(c.energy)+"</p><p>Potência anual (365 dias): "+fmt(c.power)+"</p><p>Subtotal: "+fmt(c.subtotal)+"</p><p>Desconto aplicado: −"+fmt(c.discount)+"</p><hr><p><strong>Total estimado: "+fmt(c.total)+" / ano</strong></p><p><strong>Média estimada: "+fmt(c.total/12)+" / mês</strong></p>"+aviso+"<p style=\"font-size:12px;color:#64748b\">Estimativa apenas para os valores introduzidos: não inclui impostos, taxas, outros encargos, diferenças de períodos horários ou variações de tarifa. A potência em kVA é apenas identificativa; o cálculo usa o preço diário indicado.</p></div>";
+}
 function limparLeitura(){$("fatura-input").value="";$("ocr-resultados").classList.add("hidden");$("ocr-status").style.display="none";$("ocr-status").textContent="";}
 </script>
 </body>
