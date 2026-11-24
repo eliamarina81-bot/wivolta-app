@@ -186,32 +186,43 @@ function validateCpe(value){return validateInstallCode(value,"CPE");}
 function validateCui(value){return validateInstallCode(value,"CUI");}
 function findPower(text){let m=text.match(/pot[eê]ncia(?:\s+contratada)?[^\n]{0,50}?(\d{1,2}[,.]\d{1,2})\s*kVA/i);if(!m)m=text.match(/(\d{1,2}[,.]\d{1,2})\s*kVA/i);return m?m[1].replace(",","."):"";}
 function cleanNum(v){return (v||"").replace(/[^0-9,.-]/g,"").replace(/\s/g,"").replace(/,(?=\d{1,2}$)/,".");}
+function normalizeOcrLine(value){
+ return String(value||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/\s+/g," ").trim();
+}
+function extractKwhValue(value){
+ const line=String(value||"").replace(/\u00a0/g," ");
+ const match=line.match(/(?:^|\s)(\d{1,3}(?:[ .]\d{3})+(?:[,\.]\d{1,3})?|\d+(?:[,\.]\d{1,3})?)\s*kwh\b/i);
+ if(!match)return "";
+ return match[1].replace(/[ .](?=\d{3}(?:[,\.]|$))/g,"").replace(",",".");
+}
 function findKwhPeriod(text,label){
- const lines=text.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
- const aliases={fora:["fora de vazio","fora-vazio","fora vazio","off peak","offpeak"],vazio:["vazio","energia vazio","consumo vazio"],cheias:["cheias","energia cheias","consumo cheias"],ponta:["ponta","energia ponta","consumo ponta"]};
- const names=aliases[label]||[label];
- for(let i=0;i<lines.length;i++){let line=lines[i].toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
-   for(const name of names){const n=name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");if(line.includes(n)){
-     const candidates=[lines[i],lines[i+1]||"",lines[i-1]||""].join(" ");
-     const m=candidates.match(/(?:\b\d{1,3}(?:[ .]\d{3})*|\b\d+)[,.]?\d*\s*(?:kwh)?/i);
-     if(m){const val=m[0].replace(/\s/g,"").replace(/kwh/i,"");if(/[0-9]/.test(val))return val;}
-   }}
+ const lines=String(text||"").split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
+ const aliases={fora:["fora de vazio","fora-vazio","fora vazio"],vazio:["vazio","energia vazio","consumo vazio"],cheias:["cheias","energia cheias","consumo cheias"],ponta:["ponta","energia ponta","consumo ponta"]};
+ const names=(aliases[label]||[label]).map(normalizeOcrLine);
+ for(let i=0;i<lines.length;i++){
+  const normalized=normalizeOcrLine(lines[i]);
+  if(label==="vazio" && /fora[- ]de[- ]vazio|fora vazio/.test(normalized))continue;
+  if(!names.some(name=>normalized===name || normalized.startsWith(name+" ") || normalized.includes(name+":")))continue;
+  for(const candidate of [lines[i],lines[i+1]||"",lines[i-1]||""]){
+   const value=extractKwhValue(candidate);
+   if(value)return value;
+  }
  }
- // Layouts with the period label and value on adjacent lines
- for(let i=0;i<lines.length;i++){const n=lines[i].toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");if(names.some(name=>n.includes(name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"")))){for(const candidate of [lines[i+1],lines[i-1]]){if(candidate){const m=candidate.match(/[0-9][0-9 .]*[,\.]?[0-9]*\s*(?:kwh)?/i);if(m)return m[0].replace(/\s|kwh/gi,"");}}}}
  return "";
 }
 function parseFaturaText(text){
- const clean=text.replace(/\u00a0/g," ");
- const tarifa=/tri.?hor[aá]ri|ponta[\s\S]{0,120}cheias[\s\S]{0,120}vazio/i.test(clean)?"tri-horário":(/bi.?hor[aá]ri|fora\s+de\s+vazio/i.test(clean))?"bi-horário":"simples/por confirmar";
+ const clean=String(text||"").replace(/\u00a0/g," ");
+ const normalized=normalizeOcrLine(clean);
+ const tarifa=/tri.?horari|ponta[\s\S]{0,120}cheias[\s\S]{0,120}vazio/.test(normalized)?"tri-horário":(/bi.?horari|fora de vazio/.test(normalized))?"bi-horário":"simples/por confirmar";
  let fornecedor="";for(const n of ["EDP","Endesa","Galp","Iberdrola","Repsol","MEO","Goldenergy","G9","Ibelectra","Luzboa","Plenitude","Eni"])if(new RegExp("\\b"+n+"\\b","i").test(clean)){fornecedor=n;break;}
- const simple=(clean.match(/(?:consumo\s+(?:total|simples)|energia\s+ativa|total\s+(?:de\s+)?energia)[^\n]{0,70}?([0-9][0-9.,\s]*)\s*kWh/i)||[])[1]||"";
- const gas=(clean.match(/(?:consumo\s+de\s+)?g[aá]s[^\n]{0,70}?([0-9][0-9.,\s]*)\s*kWh/i)||[])[1]||"";
+ const simpleMatch=clean.match(/(?:consumo\s+(?:total|simples)|energia\s+ativa|total\s+(?:de\s+)?energia)[^\n]{0,70}?([0-9][0-9., ]*)\s*kWh/i);
+ const gasMatch=clean.match(/(?:consumo\s+de\s+)?g[aá]s[^\n]{0,70}?([0-9][0-9., ]*)\s*kWh/i);
+ const cleanValue=v=>String(v||"").replace(/\s/g,"").replace(",",".");
  const nif=findNif(clean),cpe=findCode(clean,"CPE"),cui=findCode(clean,"CUI");
- return {fornecedor,nif,cpe,cui,potencia:findPower(clean),tarifa,simples:simple.trim().replace(/\s/g,""),fora:findKwhPeriod(clean,"fora"),vazio:findKwhPeriod(clean,"vazio"),cheias:findKwhPeriod(clean,"cheias"),ponta:findKwhPeriod(clean,"ponta"),gas:gas.trim().replace(/\s/g,""),validacao:{nif:validateNif(nif),cpe:validateCpe(cpe),cui:validateCui(cui)}};
+ return {fornecedor,nif,cpe,cui,potencia:findPower(clean),tarifa,simples:cleanValue(simpleMatch?.[1]),fora:findKwhPeriod(clean,"fora"),vazio:findKwhPeriod(clean,"vazio"),cheias:findKwhPeriod(clean,"cheias"),ponta:findKwhPeriod(clean,"ponta"),gas:cleanValue(gasMatch?.[1]),validacao:{nif:validateNif(nif),cpe:validateCpe(cpe),cui:validateCui(cui)}};
 }
 function mostrarCampos(d,text){const keys={fornecedor:"ocr-fornecedor",nif:"ocr-nif",cpe:"ocr-cpe",cui:"ocr-cui",potencia:"ocr-potencia",tarifa:"ocr-tarifa",simples:"ocr-simples",fora:"ocr-fora",vazio:"ocr-vazio",cheias:"ocr-cheias",ponta:"ocr-ponta",gas:"ocr-gas"};for(const [k,id] of Object.entries(keys))$(id).value=d[k]||"";const status=[];if(d.nif)status.push("NIF/NIPC: "+(d.validacao.nif?"checksum OK":"checksum inválido"));if(d.cpe)status.push("CPE: "+(d.validacao.cpe?"estrutura OK":"estrutura inválida"));if(d.cui)status.push("CUI: "+(d.validacao.cui?"estrutura OK":"estrutura inválida"));$("ocr-validacao").textContent=status.length?status.join(" · ")+" (CPE/CUI sem validação de dígitos de controlo)":"Não foram detetados códigos para validar.";$("ocr-texto").value=text;$("ocr-resultados").classList.remove("hidden");}
-async function processarFatura(event){const file=event.target.files?.[0];if(!file)return;if(!window.Tesseract){alert("A biblioteca OCR não carregou. Verifique a ligação à internet e tente novamente.");return;}const status=$("ocr-status");status.style.display="flex";status.textContent="A preparar OCR local…";let worker=null;try{worker=await Tesseract.createWorker("por",1,{logger:m=>{if(m.status==="recognizing text")status.textContent="A ler fatura… "+Math.round((m.progress||0)*100)+"%";}});let text="";if(file.type==="application/pdf"||file.name.toLowerCase().endsWith(".pdf")){if(!window.pdfjsLib)throw new Error("PDF.js não carregou.");pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js";const pdf=await pdfjsLib.getDocument({data:await file.arrayBuffer()}).promise;const pages=Math.min(pdf.numPages,5);for(let p=1;p<=pages;p++){status.textContent="OCR local: página "+p+" de "+pages+"…";const page=await pdf.getPage(p),viewport=page.getViewport({scale:2.2}),canvas=document.createElement("canvas");canvas.width=viewport.width;canvas.height=viewport.height;await page.render({canvasContext:canvas.getContext("2d"),viewport}).promise;const result=await worker.recognize(canvas);text+="\\n"+result.data.text;}if(pdf.numPages>5)text+="\\n[Nota: apenas as primeiras 5 páginas foram lidas.]";}else{status.textContent="OCR local a processar imagem…";const result=await worker.recognize(file);text=result.data.text;}await worker.terminate();worker=null;mostrarCampos(parseFaturaText(text),text);status.textContent="Leitura terminada. Confirme manualmente cada campo; nada foi enviado.";}catch(e){if(worker)await worker.terminate();status.textContent="Falha de leitura: "+(e?.message||e);alert("Não foi possível ler esta fatura. Pode confirmar os campos manualmente.");}}
+async function processarFatura(event){const file=event.target.files?.[0];if(!file)return;if(!window.Tesseract){alert("A biblioteca OCR não carregou. Verifique a ligação à internet e tente novamente.");return;}const status=$("ocr-status");status.style.display="flex";status.textContent="A preparar OCR local…";let worker=null;try{worker=await Tesseract.createWorker("por",1,{logger:m=>{if(m.status==="recognizing text")status.textContent="A ler fatura… "+Math.round((m.progress||0)*100)+"%";}});let text="";if(file.type==="application/pdf"||file.name.toLowerCase().endsWith(".pdf")){if(!window.pdfjsLib)throw new Error("PDF.js não carregou.");pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js";const pdf=await pdfjsLib.getDocument({data:await file.arrayBuffer()}).promise;const pages=Math.min(pdf.numPages,5);for(let p=1;p<=pages;p++){status.textContent="OCR local: página "+p+" de "+pages+"…";const page=await pdf.getPage(p),viewport=page.getViewport({scale:2.2}),canvas=document.createElement("canvas");canvas.width=viewport.width;canvas.height=viewport.height;await page.render({canvasContext:canvas.getContext("2d"),viewport}).promise;const result=await worker.recognize(canvas);text+="\n"+result.data.text;}if(pdf.numPages>5)text+="\n[Nota: apenas as primeiras 5 páginas foram lidas.]";}else{status.textContent="OCR local a processar imagem…";const result=await worker.recognize(file);text=result.data.text;}await worker.terminate();worker=null;mostrarCampos(parseFaturaText(text),text);status.textContent="Leitura terminada. Confirme manualmente cada campo; nada foi enviado.";}catch(e){if(worker)await worker.terminate();status.textContent="Falha de leitura: "+(e?.message||e);alert("Não foi possível ler esta fatura. Pode confirmar os campos manualmente.");}}
 function calculateAnnualCost(consumptionKwh, energyPrice, powerDaily, discount=0){
   const values=[consumptionKwh,energyPrice,powerDaily,discount];
   if(values.some(v=>typeof v!=="number"||!Number.isFinite(v)||v<0))return null;
