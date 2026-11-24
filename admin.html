@@ -19,7 +19,7 @@
 <form id="login-form">
 <div class="field"><label for="email">Email</label><input id="email" type="email" autocomplete="username" required value="wivolta.parceiros@gmail.com"></div>
 <div class="field"><label for="password">Palavra-passe</label><input id="password" type="password" autocomplete="current-password" required></div>
-<button id="login-btn" type="submit">Entrar</button>
+<div class="row"><button id="login-btn" type="submit">Entrar</button><button id="signup-btn" class="secondary" type="button">Criar a minha conta de acesso</button></div>
 </form>
 <div id="login-status" aria-live="polite"></div>
 </section>
@@ -49,7 +49,7 @@
   if(!staff){await db.auth.signOut();message("login-status","Este utilizador ainda não tem permissões de equipa Wivolta. Contacta a administração para ativar o acesso.",true);return;}
   showDashboard(session.user);
  }
- $("login-form").addEventListener("submit",async e=>{
+ $("signup-btn").addEventListener("click",async()=>{const email=$("email").value.trim(),password=$("password").value;if(!email||password.length<8){message("login-status","Indica o email e uma palavra-passe com pelo menos 8 caracteres.",true);return;} $("signup-btn").disabled=true;message("login-status","A criar conta…");const {data,error}=await db.auth.signUp({email,password});$("signup-btn").disabled=false;if(error){message("login-status","Não foi possível criar a conta: "+error.message,true);return;}message("login-status",data.session?"Conta criada. Aguarda a ativação manual do acesso Wivolta.":"Conta criada. Confirma o email recebido. Depois ativaremos o acesso privado da equipa.");});\n $("login-form").addEventListener("submit",async e=>{
   e.preventDefault();$("login-btn").disabled=true;message("login-status","A validar acesso…");
   const {data,error}=await db.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});
   $("login-btn").disabled=false;
