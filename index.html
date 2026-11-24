@@ -206,7 +206,52 @@ function parseFaturaText(text){
  return {fornecedor,nif,cpe,cui,potencia:findPower(clean),tarifa,simples:cleanValue(simpleMatch?.[1]),fora:findKwhPeriod(clean,"fora"),vazio:findKwhPeriod(clean,"vazio"),cheias:findKwhPeriod(clean,"cheias"),ponta:findKwhPeriod(clean,"ponta"),gas:cleanValue(gasMatch?.[1]),validacao:{nif:validateNif(nif),cpe:validateCpe(cpe),cui:validateCui(cui)}};
 }
 function mostrarCampos(d,text){const keys={fornecedor:"ocr-fornecedor",nif:"ocr-nif",cpe:"ocr-cpe",cui:"ocr-cui",potencia:"ocr-potencia",tarifa:"ocr-tarifa",simples:"ocr-simples",fora:"ocr-fora",vazio:"ocr-vazio",cheias:"ocr-cheias",ponta:"ocr-ponta",gas:"ocr-gas"};for(const [k,id] of Object.entries(keys))$(id).value=d[k]||"";const status=[];if(d.nif)status.push("NIF/NIPC: "+(d.validacao.nif?"checksum OK":"checksum inválido"));if(d.cpe)status.push("CPE: "+(d.validacao.cpe?"estrutura OK":"estrutura inválida"));if(d.cui)status.push("CUI: "+(d.validacao.cui?"estrutura OK":"estrutura inválida"));$("ocr-validacao").textContent=status.length?status.join(" · ")+" (CPE/CUI sem validação de dígitos de controlo)":"Não foram detetados códigos para validar.";$("ocr-texto").value=text;$("ocr-resultados").classList.remove("hidden");}
-async function processarFatura(event){const file=event.target.files?.[0];if(!file)return;if(!window.Tesseract){alert("A biblioteca OCR não carregou. Verifique a ligação à internet e tente novamente.");return;}const status=$("ocr-status");status.style.display="flex";status.textContent="A preparar OCR local…";let worker=null;try{worker=await Tesseract.createWorker("por",1,{logger:m=>{if(m.status==="recognizing text")status.textContent="A ler fatura… "+Math.round((m.progress||0)*100)+"%";}});let text="";if(file.type==="application/pdf"||file.name.toLowerCase().endsWith(".pdf")){if(!window.pdfjsLib)throw new Error("PDF.js não carregou.");pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js";const pdf=await pdfjsLib.getDocument({data:await file.arrayBuffer()}).promise;const pages=Math.min(pdf.numPages,5);for(let p=1;p<=pages;p++){status.textContent="OCR local: página "+p+" de "+pages+"…";const page=await pdf.getPage(p),viewport=page.getViewport({scale:2.2}),canvas=document.createElement("canvas");canvas.width=viewport.width;canvas.height=viewport.height;await page.render({canvasContext:canvas.getContext("2d"),viewport}).promise;const result=await worker.recognize(canvas);text+="\n"+result.data.text;}if(pdf.numPages>5)text+="\n[Nota: apenas as primeiras 5 páginas foram lidas.]";}else{status.textContent="OCR local a processar imagem…";const result=await worker.recognize(file);text=result.data.text;}await worker.terminate();worker=null;mostrarCampos(parseFaturaText(text),text);status.textContent="Leitura terminada. Confirme manualmente cada campo; nada foi enviado.";}catch(e){if(worker)await worker.terminate();status.textContent="Falha de leitura: "+(e?.message||e);alert("Não foi possível ler esta fatura. Pode confirmar os campos manualmente.");}}
+function extrairTextoPdf(page){
+ return page.getTextContent().then(content=>{
+  const rows=[];
+  for(const item of (content.items||[])){
+   const value=String(item.str||"").trim();if(!value)continue;
+   const y=Number(item.transform?.[5]||0),x=Number(item.transform?.[4]||0);
+   let row=rows.find(r=>Math.abs(r.y-y)<2.5);
+   if(!row){row={y,items:[]};rows.push(row);}
+   row.items.push({x,value});
+  }
+  return rows.sort((a,b)=>b.y-a.y).map(r=>r.items.sort((a,b)=>a.x-b.x).map(i=>i.value).join(" ")).join("\\n");
+ });
+}
+async function processarFatura(event){
+ const file=event.target.files?.[0];if(!file)return;
+ if(!window.Tesseract){alert("A biblioteca OCR não carregou. Verifique a ligação à internet e tente novamente.");return;}
+ const status=$("ocr-status");status.style.display="flex";status.textContent="A preparar leitura local…";
+ let worker=null;
+ try{
+  let text="";
+  if(file.type==="application/pdf"||file.name.toLowerCase().endsWith(".pdf")){
+   if(!window.pdfjsLib)throw new Error("PDF.js não carregou.");
+   pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js";
+   const pdf=await pdfjsLib.getDocument({data:await file.arrayBuffer()}).promise;
+   const pages=Math.min(pdf.numPages,5);
+   for(let p=1;p<=pages;p++){status.textContent="A extrair texto original do PDF: página "+p+" de "+pages+"…";const page=await pdf.getPage(p);text+="\\n"+await extrairTextoPdf(page);}
+   const hasUsefulText=text.replace(/\\s/g,"").length>80&&/k\\s*w\\s*h/i.test(text);
+   if(!hasUsefulText){
+    status.textContent="PDF sem texto suficiente. A ativar OCR nas páginas…";
+    worker=await Tesseract.createWorker("por",1,{logger:m=>{if(m.status==="recognizing text")status.textContent="OCR: "+Math.round((m.progress||0)*100)+"%";}});
+    let ocrText="";
+    for(let p=1;p<=pages;p++){status.textContent="OCR local: página "+p+" de "+pages+"…";const page=await pdf.getPage(p),viewport=page.getViewport({scale:2.8}),canvas=document.createElement("canvas");canvas.width=viewport.width;canvas.height=viewport.height;await page.render({canvasContext:canvas.getContext("2d"),viewport}).promise;const result=await worker.recognize(canvas);ocrText+="\\n"+result.data.text;}
+    text=ocrText;
+   }
+   if(pdf.numPages>5)text+="\\n[Nota: apenas as primeiras 5 páginas foram lidas.]";
+  }else{
+   status.textContent="OCR local a processar imagem…";
+   worker=await Tesseract.createWorker("por",1,{logger:m=>{if(m.status==="recognizing text")status.textContent="A ler fatura… "+Math.round((m.progress||0)*100)+"%";}});
+   const result=await worker.recognize(file);text=result.data.text;
+  }
+  if(worker){await worker.terminate();worker=null;}
+  const parsed=parseFaturaText(text);mostrarCampos(parsed,text);
+  const found=[parsed.simples,parsed.fora,parsed.vazio,parsed.cheias,parsed.ponta,parsed.gas].filter(Boolean).length;
+  status.textContent=found?"Leitura concluída: "+found+" campo(s) de consumo detetado(s). Confirme os valores antes de utilizar.":"Não foram detetados consumos com segurança. Consulte o texto reconhecido e confirme os campos manualmente.";
+ }catch(e){if(worker)await worker.terminate();status.textContent="Falha de leitura: "+(e?.message||e);alert("Não foi possível ler esta fatura. Pode confirmar os campos manualmente.");}
+}
 function calculateAnnualCost(consumptionKwh, energyPrice, powerDaily, discount=0){
   const values=[consumptionKwh,energyPrice,powerDaily,discount];
   if(values.some(v=>typeof v!=="number"||!Number.isFinite(v)||v<0))return null;
