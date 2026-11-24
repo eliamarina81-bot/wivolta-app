@@ -261,21 +261,21 @@ async function processarFatura(event){
  }catch(e){if(worker)await worker.terminate();status.textContent="Falha de leitura: "+(e?.message||e);alert("Não foi possível ler esta fatura. Pode confirmar os campos manualmente.");}
 }
 function anonymizeInvoiceTextForGemini(raw){
- const lines=String(raw||"").split(/\\r?\\n/);
+ const lines=String(raw||"").split(/\r?\n/);
  const safe=[];
- const privateLine=/^(?:titular|nome(?: do cliente)?|cliente|morada|endereco|local de consumo|morada de fornecimento|nif|nipc|cpe|cui|iban|telefone|telemovel|email|contacto)\\b/i;
+ const privateLine=/^(?:titular|nome(?: do cliente)?|cliente|morada|endereco|local de consumo|morada de fornecimento|nif|nipc|cpe|cui|iban|telefone|telemovel|email|contacto)\b/i;
  for(let line of lines){
   line=line.trim();if(!line)continue;
   if(privateLine.test(line))continue;
-  line=line.replace(/\\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}\\b/gi,"[EMAIL]");
-  line=line.replace(/\\b(?:PT)?\\d{9}\\b/g,"[ID]");
-  line=line.replace(/\\bPT\\d{4}\\d{12}[A-Z]{2}\\b/gi,"[CÓDIGO]");
-  line=line.replace(/\\b(?:IBAN\\s*)?PT50(?:[\\s\\d-]{20,})/gi,"[IBAN]");
-  line=line.replace(/\\b(?:9[1236]\\d{7}|2\\d{8})\\b/g,"[TELEFONE]");
-  line=line.replace(/\\b\\d{4}-\\d{3}\\s+[A-ZÀ-ÿ].{0,70}$/i,"[MORADA REMOVIDA]");
+  line=line.replace(/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi,"[EMAIL]");
+  line=line.replace(/\b(?:PT)?\d{9}\b/g,"[ID]");
+  line=line.replace(/\bPT\d{4}\d{12}[A-Z]{2}\b/gi,"[CÓDIGO]");
+  line=line.replace(/\b(?:IBAN\s*)?PT50(?:[\s\d-]{20,})/gi,"[IBAN]");
+  line=line.replace(/\b(?:9[1236]\d{7}|2\d{8})\b/g,"[TELEFONE]");
+  line=line.replace(/\b\d{4}-\d{3}\s+[A-ZÀ-ÿ].{0,70}$/i,"[MORADA REMOVIDA]");
   safe.push(line);
  }
- return safe.join("\\n").slice(0,14000);
+ return safe.join("\n").slice(0,14000);
 }
 async function analisarComGemini(){
  const consent=$("ocr-gemini-consent"),status=$("ocr-gemini-status"),button=$("ocr-gemini-button");
