@@ -202,10 +202,10 @@ function parseFaturaText(text){
  // Nas faturas Galp, "Energia Simples (medida)" pode surgir em duas linhas,
  // separadas pela taxa de IVA. Somamos apenas essas parcelas e ignoramos
  // a linha ISPE, que repete o total para efeitos fiscais.
- const measuredSimpleRows=[...clean.matchAll(/energia\\s+simples\\s*\\(\\s*medida\\s*\\)[^\\n]{0,180}?((?:\\d{1,3}(?:[ .]\\d{3})+|\\d+)(?:[,\\.]\\d{1,3})?)\\s*k\\s*w\\s*h/gi)];
- const parseKwhNumber=value=>Number(String(value||"").replace(/[ .](?=\\d{3}(?:[,\\.]|$))/g,"").replace(",","."));
+ const measuredSimpleRows=[...clean.matchAll(/energia\s+simples\s*\(\s*medida\s*\)[^\n]{0,180}?((?:\d{1,3}(?:[ .]\d{3})+|\d+)(?:[,\.]\d{1,3})?)\s*k\s*w\s*h/gi)];
+ const parseKwhNumber=value=>Number(String(value||"").replace(/[ .](?=\d{3}(?:[,\.]|$))/g,"").replace(",","."));
  const measuredSimpleTotal=measuredSimpleRows.reduce((sum,row)=>sum+parseKwhNumber(row[1]),0);
- const simpleMatch=measuredSimpleRows.length?null:clean.match(/(?:consumo\\s+(?:total|simples|real|medido)|energia\\s+ativa(?:\\s+total)?|total\\s+(?:de\\s+)?energia)[^\\n]{0,100}?((?:\\d{1,3}(?:[ .]\\d{3})+|\\d+)(?:[,\\.]\\d{1,3})?)\\s*k\\s*w\\s*h/i);
+ const simpleMatch=measuredSimpleRows.length?null:clean.match(/(?:consumo\s+(?:total|simples|real|medido)|energia\s+ativa(?:\s+total)?|total\s+(?:de\s+)?energia)[^\n]{0,100}?((?:\d{1,3}(?:[ .]\d{3})+|\d+)(?:[,\.]\d{1,3})?)\s*k\s*w\s*h/i);
  const gasMatch=clean.match(/(?:consumo\s+(?:total\s+)?de\s+)?g[aá]s[^\n]{0,100}?((?:\d{1,3}(?:[ .]\d{3})+|\d+)(?:[,\.]\d{1,3})?)\s*kwh/i);
  const cleanValue=v=>String(v||"").replace(/[ ]/g,"").replace(",",".");
  const nif=findNif(clean),cpe=findCode(clean,"CPE"),cui=findCode(clean,"CUI");
