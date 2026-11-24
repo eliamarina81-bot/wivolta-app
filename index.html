@@ -135,8 +135,39 @@ S.auth.onAuthStateChange((event,session)=>{setTimeout(()=>load(session),0);});S.
         <!-- 3. Secção Auto-Switch -->
         <section id="auto-switch" class="autoswitch-card"><h2 style="color:#fff;margin-top:8px">Acompanhamento Auto-Switch</h2><p style="font-size:14px;color:#d1fae5;margin-top:4px">O objetivo é rever cada contrato a cada 90 dias, sinalizar campanhas 15 dias antes do fim e só apresentar alternativas com poupança estimada mínima de 30 €/ano, respeitando fidelização e condições.</p><div class="as-grid"><div class="as-step"><strong style="color:#6ee7b7">Revisão trimestral</strong><p style="font-size:12px;color:#d1fae5;margin-top:4px">Agenda e alertas estão em desenvolvimento.</p></div><div class="as-step"><strong style="color:#6ee7b7">Aviso prévio</strong><p style="font-size:12px;color:#d1fae5;margin-top:4px">Objetivo: alertar antes do fim de desconto ou fidelização.</p></div><div class="as-step"><strong style="color:#6ee7b7">Mudança segura</strong><p style="font-size:12px;color:#d1fae5;margin-top:4px">Não muda contratos automaticamente. Exige confirmação e autorização válida do titular.</p></div></div></section>
 
-        <!-- 4. Adesão com Assinatura Digital e Envio por WhatsApp -->
-        <section id="adesao" class="card"><h2>Contacto e adesão</h2><p class="subtitle">Esta versão não recolhe nem envia faturas, dados pessoais ou assinaturas. A receção segura de documentos e o processo de autorização ainda não estão ativados.</p><p>Para dúvidas gerais, escreva para <a href="mailto:wivolta.parceiros@gmail.com">wivolta.parceiros@gmail.com</a>. Não envie documentos com dados pessoais até o processo estar validado.</p></section>
+        <!-- 4. Contacto Wivolta: abre uma mensagem no email do visitante -->
+        <section id="adesao" class="card">
+          <h2>Fale connosco</h2>
+          <p class="subtitle">Peça uma análise ou esclareça dúvidas. A mensagem será preparada no seu programa de email para a enviar depois de a rever.</p>
+          <form id="wivolta-contact-form">
+            <div class="form-grid">
+              <div><label for="contact-name">Nome</label><input id="contact-name" type="text" maxlength="120" autocomplete="name" required></div>
+              <div><label for="contact-email">O seu email</label><input id="contact-email" type="email" maxlength="160" autocomplete="email" required></div>
+              <div><label for="contact-phone">Telefone (opcional)</label><input id="contact-phone" type="tel" maxlength="40" autocomplete="tel"></div>
+              <div><label for="contact-topic">Assunto</label><select id="contact-topic"><option>Análise da fatura</option><option>Comparar tarifas</option><option>Pedido de contacto</option><option>Outra questão</option></select></div>
+            </div>
+            <div><label for="contact-message">Mensagem</label><textarea id="contact-message" rows="4" maxlength="2500" required style="width:100%;border:1px solid #cbd5e1;border-radius:8px;padding:10px 12px;font:inherit"></textarea></div>
+            <p style="font-size:12px;color:#64748b;margin:12px 0">Não anexe faturas nem documentos com dados pessoais nesta fase. Ao carregar em preparar email, abre-se a sua aplicação de correio; terá de carregar em Enviar.</p>
+            <button class="btn-primary" type="submit" style="background:#059669">Preparar email para a Wivolta</button>
+            <p id="contact-status" role="status" style="font-size:13px;margin-top:10px"></p>
+          </form>
+          <p style="margin-top:14px">Também pode escrever diretamente para <a href="mailto:wivolta.parceiros@gmail.com">wivolta.parceiros@gmail.com</a>.</p>
+        </section>
+        <script>
+        (function(){
+          const form=document.getElementById("wivolta-contact-form");
+          if(!form)return;
+          form.addEventListener("submit",function(event){
+            event.preventDefault();
+            const val=id=>document.getElementById(id).value.trim();
+            const subject="[Wivolta] "+val("contact-topic");
+            const body=["Nome: "+val("contact-name"),"Email: "+val("contact-email"),"Telefone: "+(val("contact-phone")||"Não indicado"),"Assunto: "+val("contact-topic"),"","Mensagem:",val("contact-message")].join("\\n");
+            const link="mailto:wivolta.parceiros@gmail.com?subject="+encodeURIComponent(subject)+"&body="+encodeURIComponent(body);
+            document.getElementById("contact-status").textContent="A abrir o seu email. Reveja a mensagem e carregue em Enviar para a Wivolta.";
+            window.location.href=link;
+          });
+        })();
+        </script>
     </main>
 
     <footer>
