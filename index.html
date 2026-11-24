@@ -105,11 +105,13 @@
 
     <main>
 <section id="portal" class="card" style="border:2px solid #059669">
-<h2>Área privada Wivolta</h2><p class="subtitle">Acesso seguro a perfil, contratos e aprovações.</p>
-<div id="portal-auth"><div class="form-grid"><div><label>Email</label><input id="portal-email" type="email" autocomplete="email"></div><div><label>Palavra-passe</label><input id="portal-password" type="password" autocomplete="current-password"></div></div><div style="display:flex;gap:10px;flex-wrap:wrap"><button class="seg-btn active" id="portal-login">Entrar</button><button class="seg-btn" id="portal-signup">Criar conta</button></div><p id="portal-status" role="status" style="margin-top:10px"></p></div>
-<div id="portal-content" class="hidden"><div style="display:flex;justify-content:space-between;gap:12px;align-items:center"><strong id="portal-welcome"></strong><button class="seg-btn" id="portal-logout">Terminar sessão</button></div><div id="portal-profile" style="margin-top:16px"></div><div id="portal-data" style="margin-top:16px"></div></div>
+<h2>Acompanhamento Wivolta</h2>
+<p class="subtitle">Sem registos nem palavras-passe. Fala diretamente connosco pelo WhatsApp Business.</p>
+<div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+<a class="btn-primary" style="text-decoration:none;max-width:420px" href="https://wa.me/351913629339?text=Ol%C3%A1%2C%20quero%20acompanhar%20a%20minha%20simula%C3%A7%C3%A3o%20com%20a%20Wivolta." target="_blank" rel="noopener">💬 Contactar Wivolta no WhatsApp</a>
+</div>
+<p style="margin-top:12px">O acompanhamento é feito pessoalmente. Envia-nos mensagem para esclarecer dúvidas, rever propostas ou avançar com a adesão.</p>
 </section>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 (()=>{const S=window.supabase.createClient("https://awhfvgzajfkxwtridqft.supabase.co","sb_publishable_lgP_OLkaHrXtc1NKJmMUww_KMH0UETf");const $=id=>document.getElementById(id),status=$("portal-status");const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));const fmt=x=>x?new Date(x).toLocaleDateString("pt-PT"):"—";
 $("portal-login").onclick=async()=>{status.textContent="A entrar…";let{error}=await S.auth.signInWithPassword({email:$("portal-email").value.trim(),password:$("portal-password").value});status.textContent=error?error.message:"";};
