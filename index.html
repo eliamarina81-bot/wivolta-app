@@ -161,7 +161,7 @@ S.auth.onAuthStateChange((event,session)=>{setTimeout(()=>load(session),0);});S.
             event.preventDefault();
             const val=id=>document.getElementById(id).value.trim();
             const subject="[Wivolta] "+val("contact-topic");
-            const body=["Nome: "+val("contact-name"),"Email: "+val("contact-email"),"Telefone: "+(val("contact-phone")||"Não indicado"),"Assunto: "+val("contact-topic"),"","Mensagem:",val("contact-message")].join("\\n");
+            const body=["Nome: "+val("contact-name"),"Email: "+val("contact-email"),"Telefone: "+(val("contact-phone")||"Não indicado"),"Assunto: "+val("contact-topic"),"","Mensagem:",val("contact-message")].join("\n");
             const link="mailto:wivolta.parceiros@gmail.com?subject="+encodeURIComponent(subject)+"&body="+encodeURIComponent(body);
             document.getElementById("contact-status").textContent="A abrir o seu email. Reveja a mensagem e carregue em Enviar para a Wivolta.";
             window.location.href=link;
