@@ -266,13 +266,14 @@ async function processarFatura(event){
    const pdf=await pdfjsLib.getDocument({data:await file.arrayBuffer()}).promise;
    const pages=Math.min(pdf.numPages,5);
    for(let p=1;p<=pages;p++){status.textContent="A extrair texto original do PDF: página "+p+" de "+pages+"…";const page=await pdf.getPage(p);text+="\n"+await extrairTextoPdf(page);}
-   const hasUsefulText=text.replace(/\s/g,"").length>80&&/k\s*w\s*h/i.test(text);
-   if(!hasUsefulText){
-    status.textContent="PDF sem texto suficiente. A ativar OCR nas páginas…";
+   const consumoDetetado=value=>[value?.simples,value?.fora,value?.vazio,value?.cheias,value?.ponta,value?.gas].filter(v=>String(v||"").trim()!=="").length;
+   const textoPdfTemConsumos=text.replace(/\s/g,"").length>80&&/k\s*w\s*h/i.test(text)&&consumoDetetado(parseFaturaText(text))>0;
+   if(!textoPdfTemConsumos){
+    status.textContent="O PDF não revelou consumos estruturados. A ativar OCR visual nas páginas…";
     worker=await Tesseract.createWorker("por",1,{logger:m=>{if(m.status==="recognizing text")status.textContent="OCR: "+Math.round((m.progress||0)*100)+"%";}});
     let ocrText="";
     for(let p=1;p<=pages;p++){status.textContent="OCR local: página "+p+" de "+pages+"…";const page=await pdf.getPage(p),viewport=page.getViewport({scale:2.8}),canvas=document.createElement("canvas");canvas.width=viewport.width;canvas.height=viewport.height;await page.render({canvasContext:canvas.getContext("2d"),viewport}).promise;const result=await worker.recognize(canvas);ocrText+="\n"+result.data.text;}
-    text=ocrText;
+    if(consumoDetetado(parseFaturaText(ocrText))>consumoDetetado(parseFaturaText(text)))text=ocrText;
    }
    if(pdf.numPages>5)text+="\n[Nota: apenas as primeiras 5 páginas foram lidas.]";
   }else{
