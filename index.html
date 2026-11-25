@@ -305,7 +305,10 @@ function parseFaturaText(text){
  // Nas faturas Galp, "Energia Simples (medida)" pode surgir em duas linhas,
  // separadas pela taxa de IVA. Somamos apenas essas parcelas e ignoramos
  // a linha ISPE, que repete o total para efeitos fiscais.
- const measuredSimpleRows=[...clean.matchAll(/energia\s+simples\s*\(\s*medida\s*\)[^\n]{0,180}?((?:\d{1,3}(?:[ .]\d{3})+|\d+)(?:[,\.]\d{1,3})?)\s*k\s*w\s*h/gi)];
+ const galpCommercialSection=/\bgalp\b/i.test(clean)&&/comercializa[cç][aã]o/i.test(clean)&&/tarifas? de acesso/i.test(clean)
+  ? clean.split(/tarifas? de acesso/i)[0]
+  : clean;
+ const measuredSimpleRows=[...galpCommercialSection.matchAll(/energia\s+simples\s*\(\s*medida\s*\)[^\n]{0,180}?((?:\d{1,3}(?:[ .]\d{3})+|\d+)(?:[,\.]\d{1,3})?)\s*k\s*w\s*h/gi)];
  const parseKwhNumber=value=>Number(String(value||"").replace(/[ .](?=\d{3}(?:[,\.]|$))/g,"").replace(",","."));
  const measuredSimpleTotal=measuredSimpleRows.reduce((sum,row)=>sum+parseKwhNumber(row[1]),0);
  const simpleMatch=measuredSimpleRows.length?null:clean.match(/(?:consumo\s+(?:total|simples|real|medido)|energia\s+ativa(?:\s+total)?|total\s+(?:de\s+)?energia)[^\n]{0,100}?((?:\d{1,3}(?:[ .]\d{3})+|\d+)(?:[,\.]\d{1,3})?)\s*k\s*w\s*h/i);
@@ -361,9 +364,10 @@ async function processarFatura(event){
    const result=await worker.recognize(file);text=result.data.text;
   }
   if(worker){await worker.terminate();worker=null;}
-  window.wivoltaOcrText=text;const parsed=parseFaturaText(text);mostrarCampos(parsed,text);$("ocr-gemini-status").textContent="Leitura local concluída. Se quiser, autorize a análise complementar pela Gemini.";
+  window.wivoltaOcrText=text;const parsed=parseFaturaText(text);mostrarCampos(parsed,text);$("ocr-gemini-status").textContent="Leitura local concluída. A análise IA complementar está disponível mediante autorização.";
   const found=[parsed.simples,parsed.fora,parsed.vazio,parsed.cheias,parsed.ponta,parsed.gas].filter(Boolean).length;
   status.textContent=found?"Leitura concluída: "+found+" campo(s) de consumo detetado(s). Confirme os valores antes de utilizar.":"Não foram detetados consumos com segurança. Consulte o texto reconhecido e confirme os campos manualmente.";
+  if($("ocr-groq-consent")?.checked){status.textContent+=" A iniciar validação complementar com IA autorizada…";await analisarComGroq();}
  }catch(e){if(worker)await worker.terminate();status.textContent="Falha de leitura: "+(e?.message||e);alert("Não foi possível ler esta fatura. Pode confirmar os campos manualmente.");}
 }
 function anonymizeInvoiceTextForGemini(raw){
@@ -425,10 +429,16 @@ async function analisarComGroq(){
   if(!response.ok)throw new Error(data.error||"Falha na análise Groq.");
   const d=data.extracted||{};
   const fields={fornecedor:"ocr-fornecedor",potencia:"ocr-potencia",tarifa:"ocr-tarifa",simples:"ocr-simples",fora:"ocr-fora",vazio:"ocr-vazio",cheias:"ocr-cheias",ponta:"ocr-ponta",gas:"ocr-gas"};
-  let count=0;
-  for(const [key,id] of Object.entries(fields)){if(typeof d[key]==="string"&&d[key].trim()){ $(id).value=d[key].trim();count++;}}
+  let count=0,conflicts=[];
+  for(const [key,id] of Object.entries(fields)){
+   const ai=typeof d[key]==="string"?d[key].trim():"";
+   if(!ai)continue;
+   const local=$(id).value.trim();
+   if(!local){$(id).value=ai;count++;}
+   else if(["simples","fora","vazio","cheias","ponta","gas"].includes(key)&&Number(local.replace(",","."))!==Number(ai.replace(",","."))){conflicts.push(key);}
+  }
   const notes=d.observacoes?(" "+d.observacoes):"";
-  status.textContent="Análise Groq concluída: "+count+" campo(s) preenchido(s). Confiança indicada: "+(d.confianca||"não indicada")+". Confirme os valores com a fatura."+notes;
+  status.textContent="Análise Groq concluída: "+count+" campo(s) em falta preenchido(s)."+(conflicts.length?" ATENÇÃO: a IA divergiu da leitura local em "+conflicts.join(", ")+". Nenhum valor divergente foi substituído; confirme na fatura.":"") +" Confiança indicada: "+(d.confianca||"não indicada")+". Confirme os valores com a fatura."+notes;
   const validation=$("ocr-validacao");if(validation)validation.textContent+=" · Leitura assistida por Groq; confirmar todos os valores.";
  }catch(error){status.textContent="Não foi possível analisar com Groq: "+(error.message||"erro").toString()+" A leitura local mantém-se disponível.";}
  finally{button.disabled=false;button.textContent="✨ Analisar consumos com Groq";}
