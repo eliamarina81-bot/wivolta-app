@@ -61,6 +61,18 @@ assert.equal(simple.validacao.nif, false, "flags invalid NIF checksum");
 assert.equal(simple.potencia, "3.45");
 assert.equal(simple.simples, "1200");
 
+const galp = parse([
+  "Galp",
+  "Tarifa 6.9 kVA Social Simples Sem Ciclo",
+  "Energia Simples (medida) 200 kWh 0,10330000 €/kWh",
+  "Energia Simples (medida) 171 kWh 0,10330000 €/kWh",
+  "ISPE 371 kWh 0,00000000 €/kWh"
+].join("\n"));
+assert.equal(galp.fornecedor, "Galp");
+assert.equal(galp.potencia, "6.9");
+assert.equal(galp.tarifa, "simples/por confirmar");
+assert.equal(galp.simples, "371", "adds the two Galp simple-energy lines and ignores the duplicate ISPE total");
+
 const wrongCpe = parse("CPE PT1002123456789123AB");
 assert.equal(wrongCpe.validacao.cpe, false, "rejects gas operator prefix in CPE");
 const wrongCui = parse("CUI PT0002123456789123AB");
