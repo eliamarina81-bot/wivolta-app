@@ -259,12 +259,13 @@ function extrairTextoPdf(page){
 }
 async function processarFatura(event){
  const file=event.target.files?.[0];if(!file)return;
- if(!window.Tesseract){alert("A biblioteca OCR não carregou. Verifique a ligação à internet e tente novamente.");return;}
+ const isPdf=file.type==="application/pdf"||file.name.toLowerCase().endsWith(".pdf");
+ if(!window.Tesseract&&!isPdf){alert("A biblioteca OCR não carregou. Verifique a ligação à internet e tente novamente.");return;}
  const status=$("ocr-status");status.style.display="flex";status.textContent="A preparar leitura local…";
  let worker=null;
  try{
   let text="";
-  if(file.type==="application/pdf"||file.name.toLowerCase().endsWith(".pdf")){
+  if(isPdf){
    if(!window.pdfjsLib)throw new Error("PDF.js não carregou.");
    pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js";
    const pdf=await pdfjsLib.getDocument({data:await file.arrayBuffer()}).promise;
@@ -273,6 +274,7 @@ async function processarFatura(event){
    const consumoDetetado=value=>[value?.simples,value?.fora,value?.vazio,value?.cheias,value?.ponta,value?.gas].filter(v=>String(v||"").trim()!=="").length;
    const textoPdfTemConsumos=text.replace(/\s/g,"").length>80&&/k\s*w\s*h/i.test(text)&&consumoDetetado(parseFaturaText(text))>0;
    if(!textoPdfTemConsumos){
+    if(!window.Tesseract)throw new Error("Este PDF não revelou texto de consumo suficiente e a biblioteca OCR visual não está disponível. Tente novamente quando houver ligação à internet.");
     status.textContent="O PDF não revelou consumos estruturados. A ativar OCR visual nas páginas…";
     worker=await Tesseract.createWorker("por",1,{logger:m=>{if(m.status==="recognizing text")status.textContent="OCR: "+Math.round((m.progress||0)*100)+"%";}});
     let ocrText="";
@@ -281,6 +283,7 @@ async function processarFatura(event){
    }
    if(pdf.numPages>5)text+="\n[Nota: apenas as primeiras 5 páginas foram lidas.]";
   }else{
+   if(!window.Tesseract)throw new Error("A biblioteca OCR não carregou. Verifique a ligação à internet e tente novamente.");
    status.textContent="OCR local a processar imagem…";
    worker=await Tesseract.createWorker("por",1,{logger:m=>{if(m.status==="recognizing text")status.textContent="A ler fatura… "+Math.round((m.progress||0)*100)+"%";}});
    const result=await worker.recognize(file);text=result.data.text;
@@ -379,7 +382,7 @@ function calcularCusto(){
   const potenciaLabel=potencia>0?"<p>Potência contratada (referência): "+new Intl.NumberFormat("pt-PT").format(potencia)+" kVA</p>":"";
   $("calc-result").innerHTML="<div>"+potenciaLabel+"<p>Energia anual: "+fmt(c.energy)+"</p><p>Potência anual (365 dias): "+fmt(c.power)+"</p><p>Subtotal: "+fmt(c.subtotal)+"</p><p>Desconto aplicado: −"+fmt(c.discount)+"</p><hr><p><strong>Total estimado: "+fmt(c.total)+" / ano</strong></p><p><strong>Média estimada: "+fmt(c.total/12)+" / mês</strong></p>"+aviso+"<p style=\"font-size:12px;color:#64748b\">Estimativa apenas para os valores introduzidos: não inclui impostos, taxas, outros encargos, diferenças de períodos horários ou variações de tarifa. A potência em kVA é apenas identificativa; o cálculo usa o preço diário indicado.</p></div>";
 }
-function limparLeitura(){$("fatura-input").value="";$("ocr-resultados").classList.add("hidden");$("ocr-status").style.display="none";$("ocr-status").textContent="";}
+function limparLeitura(){window.wivoltaOcrText="";$("fatura-input").value="";$("ocr-texto").value="";["ocr-fornecedor","ocr-titular","ocr-morada","ocr-nif","ocr-cpe","ocr-cui","ocr-potencia","ocr-tarifa","ocr-simples","ocr-fora","ocr-vazio","ocr-cheias","ocr-ponta","ocr-gas"].forEach(id=>$(id).value="");$("ocr-resultados").classList.add("hidden");$("ocr-status").style.display="none";$("ocr-status").textContent="";$("ocr-gemini-status").textContent="A leitura local continua disponível sem autorizar o envio.";}
 </script>
 \n<div id="wivolta-chat" class="hidden" role="dialog" aria-label="Assistente Wivolta"><div id="wivolta-chat-head"><span>Assistente Wivolta</span><button type="button" id="wivolta-chat-close" aria-label="Fechar chat" style="background:none;color:white;border:0;font-size:22px">×</button></div><div id="wivolta-chat-messages" aria-live="polite"><div class="wivolta-chat-msg bot">Olá! Posso ajudar a compreender tarifas, faturas e conceitos de energia. Não tenho acesso a preços em tempo real nem posso mudar contratos. Não partilhe dados pessoais.</div></div><form id="wivolta-chat-form"><input id="wivolta-chat-input" type="text" maxlength="4000" placeholder="Escreva a sua pergunta…" required><button id="wivolta-chat-send" type="submit">Enviar</button></form></div><button id="wivolta-chat-launch" type="button">💬 Perguntar à Wivolta</button>\n<script>
 (()=>{const box=document.getElementById("wivolta-chat"),launch=document.getElementById("wivolta-chat-launch"),close=document.getElementById("wivolta-chat-close"),form=document.getElementById("wivolta-chat-form"),input=document.getElementById("wivolta-chat-input"),msgs=document.getElementById("wivolta-chat-messages"),send=document.getElementById("wivolta-chat-send");
