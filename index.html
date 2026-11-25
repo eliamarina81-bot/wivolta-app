@@ -210,7 +210,7 @@ function parseHourlyConsumptionTable(text){
   const tri=hasLabel(header,"vazio")&&hasLabel(header,"cheias")&&hasLabel(header,"ponta");
   const bi=hasLabel(header,"vazio")&&(header.includes("fora de vazio")||header.includes("fora vazio"));
   if(!tri&&!bi)continue;
-  const labels=(tri?["vazio","ponta","cheias"]:["vazio","fora"]).sort((a,b)=>header.indexOf(a)-header.indexOf(a==="fora"?"fora":""));
+  const labels=(tri?["vazio","ponta","cheias"]:["vazio","fora"]).sort((a,b)=>header.indexOf(a)-header.indexOf(b));
   // Localiza a linha total de consumos, admitindo cabeçalho e unidade em linhas separadas.
   for(let j=i+1;j<Math.min(lines.length,i+10);j++){
    const row=norm(lines[j]);
