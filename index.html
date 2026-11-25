@@ -204,7 +204,7 @@ function parseHourlyConsumptionTable(text){
   const tri=h.includes("vazio")&&h.includes("cheias")&&h.includes("ponta");
   const bi=h.includes("vazio")&&(h.includes("fora de vazio")||h.includes("fora vazio")||h.includes("fora-de-vazio"));
   if(!tri&&!bi)continue;
-  const labels=tri?["vazio","ponta","cheias"]:(h.indexOf("vazio")<h.indexOf("fora")?["vazio","fora"]:["fora","vazio"]);
+  const labels=(tri?["vazio","ponta","cheias"]:["vazio","fora"]).sort((a,b)=>h.indexOf(a)-h.indexOf(a==="fora"?"fora":a));
   for(let j=i+1;j<Math.min(lines.length,i+5);j++){
    const row=norm(lines[j]);
    if(!/(total|consumo|energia)/.test(row)||!/(kwh|kw h)/.test(row))continue;
