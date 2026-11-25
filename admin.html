@@ -78,6 +78,7 @@
   const rows=requests.filter(x=>[x.nome,x.email,x.telefone,x.comercializador_atual].some(v=>String(v||"").toLowerCase().includes(term)));
   if(!rows.length){$("requests").innerHTML="<p>"+(term?"Não foram encontrados pedidos para esta pesquisa.":"Ainda não recebeu pedidos de acompanhamento. Quando chegar o primeiro pedido, os dados aparecerão aqui.")+"</p>";return;}
   $("requests").innerHTML=rows.map(x=>'<article class="item"><div class="topline"><h3>'+esc(x.nome)+'</h3><span class="pill">'+esc(x.status||"recebido")+'</span></div><p><b>Contacto:</b> '+esc(x.telefone)+' · '+esc(x.email||"Sem email")+'</p><p><b>Cliente:</b> '+esc(x.segmento_cliente||"residencial")+' · <b>Energia:</b> '+esc(x.energia)+' · <b>Comercializador:</b> '+esc(x.comercializador_atual||"—")+' · <b>Tarifa:</b> '+esc(x.tarifa_atual||"—")+'</p><p><b>Potência:</b> '+esc(x.potencia_kva??"—")+' kVA · <b>Preço simples:</b> '+esc(x.preco_kwh??"—")+' · <b>Fora vazio:</b> '+esc(x.preco_fora_vazio_atual??"—")+' · <b>Vazio:</b> '+esc(x.preco_vazio_atual??"—")+' · <b>Cheias:</b> '+esc(x.preco_cheias_atual??"—")+' · <b>Ponta:</b> '+esc(x.preco_ponta_atual??"—")+' · <b>Termo diário:</b> '+esc(x.termo_fixo_dia??"—")+'</p><p><b>Consumos (kWh):</b> Simples '+esc(x.consumo_simples_kwh??"—")+' · Fora vazio '+esc(x.consumo_fora_vazio_kwh??"—")+' · Vazio '+esc(x.consumo_vazio_kwh??"—")+' · Cheias '+esc(x.consumo_cheias_kwh??"—")+' · Ponta '+esc(x.consumo_ponta_kwh??"—")+'</p><p><b>Fim desconto:</b> '+esc(x.fim_desconto||"—")+' · <b>Fim fidelização:</b> '+esc(x.fim_fidelizacao||"—")+'</p><p><b>Recebido:</b> '+esc(date(x.created_at))+' · <b>Consentimento RGPD:</b> '+(x.consentimento_rgpd?"Sim":"Não")+' · <b>Acompanhamento:</b> '+(x.consentimento_acompanhamento?"Sim":"Não")+'</p><details><summary>Texto da autorização e assinatura</summary><p>'+esc(x.autorizacao_texto||"—")+'</p>'+(x.assinatura_data_url?'<img class="signature" alt="Assinatura do cliente" src="'+esc(x.assinatura_data_url)+'">':"<p>Sem assinatura digital anexada.</p>")+'</details><div class="client-docs" id="docs-'+esc(x.id)+'"><p class="muted">A carregar documentos…</p></div></article>').join("");
+  rows.forEach(x=>loadClientDocs(x.id));
  }
 
  async function loadClientDocs(requestId){
@@ -107,7 +108,7 @@
   const b=e.target.closest(".doc-open");if(!b)return;
   const {data,error}=await db.storage.from("wivolta-documentos-clientes").createSignedUrl(b.dataset.path,120);
   if(error){alert(error.message);return;}window.open(data.signedUrl,"_blank","noopener");
-  rows.forEach(x=>loadClientDocs(x.id));
+
  });
  function renderReviews(rows){
   if(!rows.length){$("reviews").innerHTML="<p>Ainda não existem revisões registadas.</p>";return;}
