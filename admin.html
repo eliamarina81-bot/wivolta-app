@@ -76,8 +76,38 @@
   const term=$("filter").value.trim().toLowerCase();
   const rows=requests.filter(x=>[x.nome,x.email,x.telefone,x.comercializador_atual].some(v=>String(v||"").toLowerCase().includes(term)));
   if(!rows.length){$("requests").innerHTML="<p>"+(term?"Não foram encontrados pedidos para esta pesquisa.":"Ainda não recebeu pedidos de acompanhamento. Quando chegar o primeiro pedido, os dados aparecerão aqui.")+"</p>";return;}
-  $("requests").innerHTML=rows.map(x=>'<article class="item"><div class="topline"><h3>'+esc(x.nome)+'</h3><span class="pill">'+esc(x.status||"recebido")+'</span></div><p><b>Contacto:</b> '+esc(x.telefone)+' · '+esc(x.email||"Sem email")+'</p><p><b>Energia:</b> '+esc(x.energia)+' · <b>Comercializador:</b> '+esc(x.comercializador_atual||"—")+' · <b>Tarifa:</b> '+esc(x.tarifa_atual||"—")+'</p><p><b>Potência:</b> '+esc(x.potencia_kva??"—")+' kVA · <b>Preço kWh:</b> '+esc(x.preco_kwh??"—")+' · <b>Termo diário:</b> '+esc(x.termo_fixo_dia??"—")+'</p><p><b>Consumos (kWh):</b> Simples '+esc(x.consumo_simples_kwh??"—")+' · Fora vazio '+esc(x.consumo_fora_vazio_kwh??"—")+' · Vazio '+esc(x.consumo_vazio_kwh??"—")+' · Cheias '+esc(x.consumo_cheias_kwh??"—")+' · Ponta '+esc(x.consumo_ponta_kwh??"—")+'</p><p><b>Fim desconto:</b> '+esc(x.fim_desconto||"—")+' · <b>Fim fidelização:</b> '+esc(x.fim_fidelizacao||"—")+'</p><p><b>Recebido:</b> '+esc(date(x.created_at))+' · <b>Consentimento RGPD:</b> '+(x.consentimento_rgpd?"Sim":"Não")+' · <b>Acompanhamento:</b> '+(x.consentimento_acompanhamento?"Sim":"Não")+'</p><details><summary>Texto da autorização e assinatura</summary><p>'+esc(x.autorizacao_texto||"—")+'</p>'+(x.assinatura_data_url?'<img class="signature" alt="Assinatura do cliente" src="'+esc(x.assinatura_data_url)+'">':"<p>Sem assinatura digital anexada.</p>")+'</details></article>').join("");
+  $("requests").innerHTML=rows.map(x=>'<article class="item"><div class="topline"><h3>'+esc(x.nome)+'</h3><span class="pill">'+esc(x.status||"recebido")+'</span></div><p><b>Contacto:</b> '+esc(x.telefone)+' · '+esc(x.email||"Sem email")+'</p><p><b>Energia:</b> '+esc(x.energia)+' · <b>Comercializador:</b> '+esc(x.comercializador_atual||"—")+' · <b>Tarifa:</b> '+esc(x.tarifa_atual||"—")+'</p><p><b>Potência:</b> '+esc(x.potencia_kva??"—")+' kVA · <b>Preço kWh:</b> '+esc(x.preco_kwh??"—")+' · <b>Termo diário:</b> '+esc(x.termo_fixo_dia??"—")+'</p><p><b>Consumos (kWh):</b> Simples '+esc(x.consumo_simples_kwh??"—")+' · Fora vazio '+esc(x.consumo_fora_vazio_kwh??"—")+' · Vazio '+esc(x.consumo_vazio_kwh??"—")+' · Cheias '+esc(x.consumo_cheias_kwh??"—")+' · Ponta '+esc(x.consumo_ponta_kwh??"—")+'</p><p><b>Fim desconto:</b> '+esc(x.fim_desconto||"—")+' · <b>Fim fidelização:</b> '+esc(x.fim_fidelizacao||"—")+'</p><p><b>Recebido:</b> '+esc(date(x.created_at))+' · <b>Consentimento RGPD:</b> '+(x.consentimento_rgpd?"Sim":"Não")+' · <b>Acompanhamento:</b> '+(x.consentimento_acompanhamento?"Sim":"Não")+'</p><details><summary>Texto da autorização e assinatura</summary><p>'+esc(x.autorizacao_texto||"—")+'</p>'+(x.assinatura_data_url?'<img class="signature" alt="Assinatura do cliente" src="'+esc(x.assinatura_data_url)+'">':"<p>Sem assinatura digital anexada.</p>")+'</details><div class="client-docs" id="docs-'+esc(x.id)+'"><p class="muted">A carregar documentos…</p></div></article>').join("");
  }
+
+ async function loadClientDocs(requestId){
+  const host=$("docs-"+requestId);if(!host)return;
+  const {data,error}=await db.from("wivolta_documentos_cliente").select("*").eq("pedido_id",requestId).order("created_at",{ascending:false});
+  if(error){host.textContent="Erro ao carregar documentos: "+error.message;return;}
+  const docs=data||[];
+  host.innerHTML='<hr><h3>Documentos assinados recebidos</h3><p class="muted">Guarda aqui o ficheiro recebido pelo WhatsApp. O original fica numa área privada.</p><form class="doc-upload-form" data-request="'+requestId+'"><label>Fornecedor<select name="comercializador" required><option value="">Selecionar</option>'+["EDP","Endesa","Galp","Iberdrola","MEO","Repsol","Outro"].map(v=>'<option>'+v+'</option>').join("")+'</select></label><label>Energia<select name="energia"><option value="eletricidade">Eletricidade</option><option value="gas">Gás</option><option value="dual">Dual</option></select></label><label>Documento<select name="tipo_documento"><option value="adesao_assinada">Adesão assinada</option><option value="autorizacao_assinada">Autorização assinada</option><option value="contrato_assinado">Contrato assinado</option><option value="outro">Outro</option></select></label><label>Ficheiro PDF/JPG/PNG (máx. 20 MB)<input type="file" name="documento" accept=".pdf,application/pdf,image/jpeg,image/png" required></label><button type="submit">Guardar documento assinado</button></form><div>'+(docs.length?docs.map(d=>'<p>'+esc(d.comercializador)+' · '+esc(d.energia)+' · '+esc(d.nome_ficheiro)+' <button type="button" class="secondary doc-open" data-path="'+esc(d.storage_path)+'">Abrir</button></p>').join(""):'<p class="muted">Ainda sem documentos anexados.</p>')+'</div>';
+ }
+ document.addEventListener("submit",async e=>{
+  const f=e.target.closest(".doc-upload-form");if(!f)return;e.preventDefault();
+  const file=f.elements.documento.files[0],rid=f.dataset.request;if(!file)return;
+  if(file.size>20*1024*1024||!["application/pdf","image/jpeg","image/png"].includes(file.type)){alert("Ficheiro inválido: usa PDF, JPG ou PNG até 20 MB.");return;}
+  const btn=f.querySelector('button[type="submit"]');btn.disabled=true;
+  try{
+   const name=file.name.normalize("NFKD").replace(/[^a-zA-Z0-9._-]+/g,"_").slice(-100)||"documento";
+   const path=rid+"/"+crypto.randomUUID()+"-"+name;
+   const {data,error}=await db.storage.from("wivolta-documentos-clientes").upload(path,file,{contentType:file.type});
+   if(error)throw error;
+   const user=(await db.auth.getUser()).data.user;
+   const {error:saveError}=await db.from("wivolta_documentos_cliente").insert({pedido_id:rid,comercializador:f.elements.comercializador.value,energia:f.elements.energia.value,tipo_documento:f.elements.tipo_documento.value,nome_ficheiro:file.name,storage_path:data.path,assinado:true,estado:"recebido",uploaded_by:user.id});
+   if(saveError){await db.storage.from("wivolta-documentos-clientes").remove([data.path]);throw saveError;}
+   await loadClientDocs(rid);
+  }catch(err){alert("Erro ao guardar documento: "+err.message);}finally{btn.disabled=false;}
+ });
+ document.addEventListener("click",async e=>{
+  const b=e.target.closest(".doc-open");if(!b)return;
+  const {data,error}=await db.storage.from("wivolta-documentos-clientes").createSignedUrl(b.dataset.path,120);
+  if(error){alert(error.message);return;}window.open(data.signedUrl,"_blank","noopener");
+  rows.forEach(x=>loadClientDocs(x.id));
+ });
  function renderReviews(rows){
   if(!rows.length){$("reviews").innerHTML="<p>Ainda não existem revisões registadas.</p>";return;}
   $("reviews").innerHTML=rows.map(x=>'<article class="item"><h3>'+esc(x.oferta_comercializador||"Oferta por definir")+' · '+esc(x.oferta_plano||"Sem plano")+'</h3><p><b>Pedido:</b> '+esc(x.pedido_id)+' · <b>Poupança anual estimada:</b> '+esc(x.poupanca_anual_estimada??"—")+' €</p><p><b>Estado:</b> '+esc(x.estado)+' · <b>Próxima revisão:</b> '+esc(x.proxima_revisao||"—")+'</p><p>'+esc(x.notas||"")+'</p></article>').join("");
