@@ -35,15 +35,21 @@ Regras obrigatórias:
       contents: [{ role: "user", parts: [{ text: "Texto da fatura já filtrado de dados pessoais:\\n" + text }] }],
       generationConfig: { temperature: 0.1, maxOutputTokens: 1200, responseMimeType: "application/json" }
     });
+    const callGemini = async (model) => fetch("https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent?key=" + encodeURIComponent(apiKey), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: requestBody
+    });
     let response;
-    for (let attempt = 0; attempt < 3; attempt++) {
-      response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=" + encodeURIComponent(apiKey), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: requestBody
-      });
-      if (response.status !== 503 && response.status !== 429 && response.status < 500) break;
-      if (attempt < 2) await new Promise(resolve => setTimeout(resolve, 700 * (2 ** attempt)));
+    // Primeiro tenta o modelo principal; se estiver sobrecarregado, muda de modelo.
+    for (let attempt = 0; attempt < 2; attempt++) {
+      response = await callGemini("gemini-3.8-flash");
+      if (response.status !== 503 && response.status !== 429) break;
+      if (attempt === 0) await new Promise(resolve => setTimeout(resolve, 900));
+    }
+    if (response.status === 503 || response.status === 429) {
+      console.warn("Gemini 3.8 indisponível; a tentar modelo alternativo", response.status);
+      response = await callGemini("gemini-2.5-flash");
     }
 
     const raw = await response.text();
