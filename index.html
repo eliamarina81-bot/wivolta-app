@@ -202,23 +202,29 @@ function parseHourlyConsumptionTable(text){
  const lines=String(text||"").split(/\r?\n/).map(x=>x.replace(/\u00a0/g," ").trim()).filter(Boolean);
  const norm=s=>normalizeOcrLine(s).replace(/[^a-z0-9 ]/g," ").replace(/\s+/g," ").trim();
  const numberTokens=s=>(String(s||"").match(/\d{1,3}(?:[ .]\d{3})+(?:[,\.]\d+)?|\d+(?:[,\.]\d+)?/g)||[]).map(v=>v.replace(/[ .](?=\d{3}(?:[,\.]|$))/g,"").replace(",","."));
+ const hasLabel=(s,label)=>new RegExp("(^| )"+label+"( |$)").test(s);
  for(let i=0;i<lines.length;i++){
-  const h=norm(lines[i]);
-  const tri=h.includes("vazio")&&h.includes("cheias")&&h.includes("ponta");
-  const bi=h.includes("vazio")&&(h.includes("fora de vazio")||h.includes("fora vazio")||h.includes("fora-de-vazio"));
+  // PDF.js e OCR podem separar os cabeçalhos das colunas por várias linhas.
+  const headerParts=lines.slice(i,Math.min(lines.length,i+3));
+  const header=norm(headerParts.join(" "));
+  const tri=hasLabel(header,"vazio")&&hasLabel(header,"cheias")&&hasLabel(header,"ponta");
+  const bi=hasLabel(header,"vazio")&&(header.includes("fora de vazio")||header.includes("fora vazio"));
   if(!tri&&!bi)continue;
-  const labels=(tri?["vazio","ponta","cheias"]:["vazio","fora"]).sort((a,b)=>h.indexOf(a)-h.indexOf(b));
-  for(let j=i+1;j<Math.min(lines.length,i+5);j++){
+  const labels=(tri?["vazio","ponta","cheias"]:["vazio","fora"]).sort((a,b)=>header.indexOf(a)-header.indexOf(a==="fora"?"fora":""));
+  // Localiza a linha total de consumos, admitindo cabeçalho e unidade em linhas separadas.
+  for(let j=i+1;j<Math.min(lines.length,i+10);j++){
    const row=norm(lines[j]);
-   if(!/(total|consumo|energia)/.test(row)||!/(kwh|kw h)/.test(row))continue;
-   const tail=lines[j].slice(Math.max(0,lines[j].search(/k\s*w\s*h/i)+4));
-   let nums=numberTokens(tail);
-   if(nums.length<labels.length){
-    const all=numberTokens(lines[j]);
-    if(all.length>=labels.length)nums=all.slice(-labels.length);
-   }
+   if(!/(total|consumo|energia)/.test(row))continue;
+   const combined=lines.slice(j,Math.min(lines.length,j+2)).join(" ");
+   if(!/k\s*w\s*h/i.test(combined))continue;
+   const all=numberTokens(lines[j]);
+   let nums=all;
+   // Se a unidade e os números estiverem em linhas distintas, recolhe os números da linha seguinte.
+   if(nums.length<labels.length&&j+1<lines.length)nums=numberTokens(lines[j+1]);
    if(nums.length<labels.length)continue;
-   const values={};labels.forEach((label,k)=>values[label==="fora"?"fora":label]=nums[k]);
+   // Em linhas de total, os últimos N valores correspondem às colunas horárias; evita datas/IDs anteriores.
+   nums=nums.slice(-labels.length);
+   const values={};labels.forEach((label,k)=>values[label]=nums[k]);
    return {values,tarifa:tri?"tri-horário":"bi-horário"};
   }
  }
