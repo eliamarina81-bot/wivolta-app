@@ -30,15 +30,21 @@ Regras obrigatórias:
 - Não devolvas nomes, moradas, NIF, CPE, CUI, telefone, email ou outros dados pessoais.
 - Se houver valores contraditórios, deixa o campo vazio e explica em observações.`;
 
-    const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=" + encodeURIComponent(apiKey), {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        systemInstruction: { parts: [{ text: instructions }] },
-        contents: [{ role: "user", parts: [{ text: "Texto da fatura já filtrado de dados pessoais:\n" + text }] }],
-        generationConfig: { temperature: 0.1, maxOutputTokens: 1200, responseMimeType: "application/json" }
-      })
+    const requestBody = JSON.stringify({
+      systemInstruction: { parts: [{ text: instructions }] },
+      contents: [{ role: "user", parts: [{ text: "Texto da fatura já filtrado de dados pessoais:\\n" + text }] }],
+      generationConfig: { temperature: 0.1, maxOutputTokens: 1200, responseMimeType: "application/json" }
     });
+    let response;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=" + encodeURIComponent(apiKey), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: requestBody
+      });
+      if (response.status !== 503 && response.status !== 429 && response.status < 500) break;
+      if (attempt < 2) await new Promise(resolve => setTimeout(resolve, 700 * (2 ** attempt)));
+    }
 
     const raw = await response.text();
     let data = {};
@@ -46,7 +52,7 @@ Regras obrigatórias:
     if (!response.ok) {
       const msg = String(data?.error?.message || "").replace(/[\r\n]+/g, " ").slice(0, 180);
       console.error("Gemini invoice extraction error", response.status, msg);
-      return res.status(502).json({ error: response.status === 429 ? "Limite temporário da Gemini atingido. Tente novamente mais tarde." : "A Gemini não conseguiu analisar esta fatura.", diagnostic: "HTTP " + response.status });
+      return res.status(502).json({ error: response.status === 503 ? "A Gemini está temporariamente sobrecarregada. Tentámos novamente automaticamente; aguarde um pouco e volte a tentar. A leitura local continua disponível." : response.status === 429 ? "O limite temporário da Gemini foi atingido. Tente novamente mais tarde." : "A Gemini não conseguiu analisar esta fatura.", diagnostic: "HTTP " + response.status });
     }
     const answer = data?.candidates?.[0]?.content?.parts?.map(p => p.text || "").join("").trim() || "";
     let extracted;
