@@ -195,6 +195,32 @@ function findKwhPeriod(text,label){
  }
  return "";
 }
+function parseHourlyConsumptionTable(text){
+ const lines=String(text||"").split(/\r?\n/).map(x=>x.replace(/\u00a0/g," ").trim()).filter(Boolean);
+ const norm=s=>normalizeOcrLine(s).replace(/[^a-z0-9 ]/g," ").replace(/\s+/g," ").trim();
+ const numberTokens=s=>(String(s||"").match(/\d{1,3}(?:[ .]\d{3})+(?:[,\.]\d+)?|\d+(?:[,\.]\d+)?/g)||[]).map(v=>v.replace(/[ .](?=\d{3}(?:[,\.]|$))/g,"").replace(",","."));
+ for(let i=0;i<lines.length;i++){
+  const h=norm(lines[i]);
+  const tri=h.includes("vazio")&&h.includes("cheias")&&h.includes("ponta");
+  const bi=h.includes("vazio")&&(h.includes("fora de vazio")||h.includes("fora vazio")||h.includes("fora-de-vazio"));
+  if(!tri&&!bi)continue;
+  const labels=tri?["vazio","ponta","cheias"]:(h.indexOf("vazio")<h.indexOf("fora")?["vazio","fora"]:["fora","vazio"]);
+  for(let j=i+1;j<Math.min(lines.length,i+5);j++){
+   const row=norm(lines[j]);
+   if(!/(total|consumo|energia)/.test(row)||!/(kwh|kw h)/.test(row))continue;
+   const tail=lines[j].slice(Math.max(0,lines[j].search(/k\s*w\s*h/i)+4));
+   let nums=numberTokens(tail);
+   if(nums.length<labels.length){
+    const all=numberTokens(lines[j]);
+    if(all.length>=labels.length)nums=all.slice(-labels.length);
+   }
+   if(nums.length<labels.length)continue;
+   const values={};labels.forEach((label,k)=>values[label==="fora"?"fora":label]=nums[k]);
+   return {values,tarifa:tri?"tri-horário":"bi-horário"};
+  }
+ }
+ return null;
+}
 function parseFaturaText(text){
  const clean=String(text||"").replace(/\u00a0/g," ");
  const normalized=normalizeOcrLine(clean);
@@ -211,7 +237,7 @@ function parseFaturaText(text){
  const gasMatch=clean.match(/(?:consumo\s+(?:total\s+)?de\s+)?g[aá]s[^\n]{0,100}?((?:\d{1,3}(?:[ .]\d{3})+|\d+)(?:[,\.]\d{1,3})?)\s*kwh/i);
  const cleanValue=v=>String(v||"").replace(/[ ]/g,"").replace(",",".");
  const nif=findNif(clean),cpe=findCode(clean,"CPE"),cui=findCode(clean,"CUI");
- return {fornecedor,titular:findTitular(clean),morada:findMorada(clean),nif,cpe,cui,potencia:findPower(clean),tarifa,simples:measuredSimpleRows.length?String(Number(measuredSimpleTotal.toFixed(3))):cleanValue(simpleMatch?.[1]),fora:findKwhPeriod(clean,"fora"),vazio:findKwhPeriod(clean,"vazio"),cheias:findKwhPeriod(clean,"cheias"),ponta:findKwhPeriod(clean,"ponta"),gas:cleanValue(gasMatch?.[1]),validacao:{nif:validateNif(nif),cpe:validateCpe(cpe),cui:validateCui(cui)}};
+ const hourly=parseHourlyConsumptionTable(clean);\n return {fornecedor,titular:findTitular(clean),morada:findMorada(clean),nif,cpe,cui,potencia:findPower(clean),tarifa:hourly?.tarifa||tarifa,simples:measuredSimpleRows.length?String(Number(measuredSimpleTotal.toFixed(3))):cleanValue(simpleMatch?.[1]),fora:hourly?.values.fora||findKwhPeriod(clean,"fora"),vazio:hourly?.values.vazio||findKwhPeriod(clean,"vazio"),cheias:hourly?.values.cheias||findKwhPeriod(clean,"cheias"),ponta:hourly?.values.ponta||findKwhPeriod(clean,"ponta"),gas:cleanValue(gasMatch?.[1]),validacao:{nif:validateNif(nif),cpe:validateCpe(cpe),cui:validateCui(cui)}};
 }
 function mostrarCampos(d,text){const keys={fornecedor:"ocr-fornecedor",titular:"ocr-titular",morada:"ocr-morada",nif:"ocr-nif",cpe:"ocr-cpe",cui:"ocr-cui",potencia:"ocr-potencia",tarifa:"ocr-tarifa",simples:"ocr-simples",fora:"ocr-fora",vazio:"ocr-vazio",cheias:"ocr-cheias",ponta:"ocr-ponta",gas:"ocr-gas"};for(const [k,id] of Object.entries(keys))$(id).value=d[k]||"";const status=[];if(d.nif)status.push("NIF/NIPC: "+(d.validacao.nif?"checksum OK":"checksum inválido"));if(d.cpe)status.push("CPE: "+(d.validacao.cpe?"estrutura OK":"estrutura inválida"));if(d.cui)status.push("CUI: "+(d.validacao.cui?"estrutura OK":"estrutura inválida"));$("ocr-validacao").textContent=status.length?status.join(" · ")+" (CPE/CUI sem validação de dígitos de controlo)":"Não foram detetados códigos para validar.";$("ocr-texto").value=text;$("ocr-resultados").classList.remove("hidden");}
 function extrairTextoPdf(page){
