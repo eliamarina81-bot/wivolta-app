@@ -39,9 +39,6 @@ export default async function handler(req, res) {
       if (!retryable || model === models[models.length - 1]) break;
       console.warn("Groq model rejected structured JSON; retrying with fallback model.");
     }
-    const raw = await response.text();
-    let data = {};
-    try { data = raw ? JSON.parse(raw) : {}; } catch { data = {}; }
     if (!response.ok) {
       const providerMessage = JSON.stringify({ message: data?.error?.message || "sem detalhe fornecido", failed_generation: data?.error?.failed_generation || "" }).slice(0, 1800);
       console.error("Groq invoice extraction error", response.status, providerMessage);
