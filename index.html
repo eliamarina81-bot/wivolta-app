@@ -338,22 +338,46 @@ async function processarFatura(event){
  const status=$("ocr-status");status.style.display="flex";status.textContent="A preparar leitura local…";
  let worker=null;
  try{
-  let text="";
+  let text="",pdf=null,pdfReadError="";
+  const consumoDetetado=value=>[value?.simples,value?.fora,value?.vazio,value?.cheias,value?.ponta,value?.gas].filter(v=>String(v||"").trim()!=="").length;
   if(isPdf){
    if(!window.pdfjsLib)throw new Error("PDF.js não carregou.");
-   pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js";
-   const pdf=await pdfjsLib.getDocument({data:await file.arrayBuffer()}).promise;
-   const pages=Math.min(pdf.numPages,5);
-   for(let p=1;p<=pages;p++){status.textContent="A extrair texto original do PDF: página "+p+" de "+pages+"…";const page=await pdf.getPage(p);text+="\n"+await extrairTextoPdf(page);}
-   const consumoDetetado=value=>[value?.simples,value?.fora,value?.vazio,value?.cheias,value?.ponta,value?.gas].filter(v=>String(v||"").trim()!=="").length;
-   const textoPdfTemConsumos=text.replace(/\s/g,"").length>80&&/k\s*w\s*h/i.test(text)&&consumoDetetado(parseFaturaText(text))>0;
+   try{
+    pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js";
+    pdf=await pdfjsLib.getDocument({data:new Uint8Array(await file.arrayBuffer()),isEvalSupported:false,useSystemFonts:true}).promise;
+    const pages=Math.min(pdf.numPages,5);
+    for(let p=1;p<=pages;p++){
+     status.textContent="A extrair texto original do PDF: página "+p+" de "+pages+"…";
+     const page=await pdf.getPage(p);
+     text+="\n"+await extrairTextoPdf(page);
+    }
+   }catch(error){
+    pdfReadError=error?.message||"Falha na extração de texto do PDF.";
+    text="";
+   }
+   const parsedText=consumoDetetado(parseFaturaText(text));
+   const textoPdfTemConsumos=text.replace(/\s/g,"").length>80&&/k\s*w\s*h/i.test(text)&&parsedText>0;
    if(!textoPdfTemConsumos){
-    if(!window.Tesseract)throw new Error("Este PDF não revelou texto de consumo suficiente e a biblioteca OCR visual não está disponível. Tente novamente quando houver ligação à internet.");
-    status.textContent="O PDF não revelou consumos estruturados. A ativar OCR visual nas páginas…";
-    worker=await Tesseract.createWorker("por",1,{logger:m=>{if(m.status==="recognizing text")status.textContent="OCR: "+Math.round((m.progress||0)*100)+"%";}});
+    if(!window.Tesseract)throw new Error("O PDF não revelou consumos estruturados e a biblioteca OCR visual não está disponível.");
+    if(!pdf){
+     pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js";
+     pdf=await pdfjsLib.getDocument({data:new Uint8Array(await file.arrayBuffer()),isEvalSupported:false,useSystemFonts:true}).promise;
+    }
+    status.textContent=pdfReadError?"A extração de texto falhou. A tentar leitura visual do PDF…":"O PDF não revelou consumos estruturados. A ativar OCR visual…";
+    worker=await Tesseract.createWorker("por",1,{logger:m=>{if(m.status==="recognizing text")status.textContent="OCR local: "+Math.round((m.progress||0)*100)+"%";}});
     let ocrText="";
-    for(let p=1;p<=pages;p++){status.textContent="OCR local: página "+p+" de "+pages+"…";const page=await pdf.getPage(p),viewport=page.getViewport({scale:2.8}),canvas=document.createElement("canvas");canvas.width=viewport.width;canvas.height=viewport.height;await page.render({canvasContext:canvas.getContext("2d"),viewport}).promise;const result=await worker.recognize(canvas);ocrText+="\n"+result.data.text;}
-    if(consumoDetetado(parseFaturaText(ocrText))>consumoDetetado(parseFaturaText(text)))text=ocrText;
+    const pages=Math.min(pdf.numPages,5);
+    for(let p=1;p<=pages;p++){
+     status.textContent="OCR visual: página "+p+" de "+pages+"…";
+     const page=await pdf.getPage(p),viewport=page.getViewport({scale:3}),canvas=document.createElement("canvas");
+     canvas.width=Math.ceil(viewport.width);canvas.height=Math.ceil(viewport.height);
+     const ctx=canvas.getContext("2d",{willReadFrequently:true});
+     await page.render({canvasContext:ctx,viewport}).promise;
+     const result=await worker.recognize(canvas);
+     ocrText+="\n"+result.data.text;
+     canvas.width=1;canvas.height=1;
+    }
+    if(consumoDetetado(parseFaturaText(ocrText))>=parsedText&&ocrText.trim())text=ocrText;
    }
    if(pdf.numPages>5)text+="\n[Nota: apenas as primeiras 5 páginas foram lidas.]";
   }else{
@@ -363,11 +387,18 @@ async function processarFatura(event){
    const result=await worker.recognize(file);text=result.data.text;
   }
   if(worker){await worker.terminate();worker=null;}
-  window.wivoltaOcrText=text;const parsed=parseFaturaText(text);mostrarCampos(parsed,text);$("ocr-groq-status").textContent="Leitura local concluída. A validação complementar por IA Groq está disponível mediante autorização.";
+  if(!text.trim())throw new Error("Não foi possível extrair texto desta fatura. Experimente uma imagem mais nítida ou confirme os campos manualmente.");
+  window.wivoltaOcrText=text;
+  const parsed=parseFaturaText(text);mostrarCampos(parsed,text);
+  $("ocr-groq-status").textContent="Leitura local concluída. A validação complementar por IA Groq está disponível mediante autorização.";
   const found=[parsed.simples,parsed.fora,parsed.vazio,parsed.cheias,parsed.ponta,parsed.gas].filter(Boolean).length;
-  status.textContent=found?"Leitura concluída: "+found+" campo(s) de consumo detetado(s). Confirme os valores antes de utilizar.":"Não foram detetados consumos com segurança. Consulte o texto reconhecido e confirme os campos manualmente.";
+  status.textContent=found?"Leitura concluída: "+found+" campo(s) de consumo detetado(s). Confirme os valores antes de utilizar.":"Texto extraído, mas não foram detetados consumos com segurança. Consulte o texto reconhecido e confirme os campos manualmente.";
   if($("ocr-groq-consent")?.checked){status.textContent+=" A iniciar validação complementar com IA autorizada…";await analisarComGroq();}
- }catch(e){if(worker)await worker.terminate();status.textContent="Falha de leitura: "+(e?.message||e);alert("Não foi possível ler esta fatura. Pode confirmar os campos manualmente.");}
+ }catch(e){
+  if(worker)await worker.terminate();
+  status.textContent="Falha de leitura: "+(e?.message||e);
+  alert("Não foi possível ler esta fatura. Pode confirmar os campos manualmente.");
+ }
 }
 function anonymizeInvoiceText(raw){
  const lines=String(raw||"").split(/\r?\n/);
