@@ -12,20 +12,33 @@ export default async function handler(req, res) {
     if (!text) return res.status(400).json({ error: "Não foi recebido texto da fatura." });
     if (text.length > 14000) return res.status(413).json({ error: "Texto demasiado extenso para análise." });
     const instructions = `Analisa texto extraído de uma fatura de eletricidade e/ou gás em Portugal. O texto pode conter erros de OCR e tabelas desformatadas.\nDevolve APENAS um objeto JSON válido com estas chaves:\n{\"fornecedor\":\"\",\"potencia\":\"\",\"tarifa\":\"simples|bi-horário|tri-horário|por confirmar\",\"simples\":\"\",\"fora\":\"\",\"vazio\":\"\",\"cheias\":\"\",\"ponta\":\"\",\"gas\":\"\",\"preco_energia\":\"\",\"termo_fixo_dia\":\"\",\"periodo_fatura\":\"\",\"confianca\":\"alta|media|baixa\",\"observacoes\":\"\"}\nRegras:\n- Extrai apenas valores efetivamente presentes. Na dúvida, deixa vazio.\n- Associa os kWh às colunas pelos cabeçalhos. Exemplo: \"Vazio Ponta Cheias\" e \"Total de consumos kWh 56 24 60\" significa vazio=56, ponta=24, cheias=60.\n- MUITO IMPORTANTE em faturas Galp: as mesmas quantidades de "Energia Simples (medida)" aparecem repetidas na secção "Comercialização" e na secção "Tarifas de Acesso". Conta o consumo apenas uma vez, usando a secção Comercialização; NUNCA somes as linhas repetidas da secção Tarifas de Acesso. A linha ISPE também repete o total e NÃO é consumo adicional. Exemplo: 200 kWh + 171 kWh na Comercialização = 371 kWh, mesmo que 200 e 171 voltem a aparecer em Tarifas de Acesso e ISPE indique 371 kWh.\n- Não confundas kWh com kVA, euros, dias ou leituras de contador.\n- Bi-horário: distingue fora de vazio e vazio. Não inventes valores nem calcules diferenças.\n- Gás: extrai kWh. Se só houver m3, deixa gas vazio e explica em observações.\n- Não calcules, arredondes, adivinhes nem convertas unidades.\n- Não devolvas nomes, moradas, NIF, CPE, CUI, telefone, email ou outros dados pessoais.\n- Se houver contradições, deixa vazio e explica em observações.`;
-    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-      method: "POST",
-      headers: { "Authorization": "Bearer " + apiKey, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "openai/gpt-oss-20b",
-        messages: [
-          { role: "system", content: instructions },
-          { role: "user", content: "Texto da fatura já filtrado automaticamente. A filtragem pode não remover todos os dados pessoais:\\n" + text }
-        ],
-        temperature: 0.1,
-        max_tokens: 1200,
-        response_format: { type: "json_object" }
-      })
-    });
+    const models = ["openai/gpt-oss-20b", "llama-3.3-70b-versatile"];
+    let response;
+    let raw = "";
+    let data = {};
+    for (const model of models) {
+      response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: { "Authorization": "Bearer " + apiKey, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model,
+          messages: [
+            { role: "system", content: instructions },
+            { role: "user", content: "Texto da fatura já filtrado automaticamente. A filtragem pode não remover todos os dados pessoais:\\n" + text }
+          ],
+          temperature: 0,
+          max_tokens: 1200,
+          response_format: { type: "json_object" }
+        })
+      });
+      raw = await response.text();
+      try { data = raw ? JSON.parse(raw) : {}; } catch { data = {}; }
+      if (response.ok) break;
+      const providerError = String(data?.error?.message || "");
+      const retryable = response.status === 400 && /validat.*json|string did not match|expected pattern/i.test(providerError);
+      if (!retryable || model === models[models.length - 1]) break;
+      console.warn("Groq model rejected structured JSON; retrying with fallback model.");
+    }
     const raw = await response.text();
     let data = {};
     try { data = raw ? JSON.parse(raw) : {}; } catch { data = {}; }
