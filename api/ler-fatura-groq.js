@@ -28,7 +28,7 @@ export default async function handler(req, res) {
           ],
           temperature: 0,
           max_tokens: 1200,
-          response_format: { type: "json_object" }
+          // Alguns modelos Groq rejeitam o modo JSON estrito com erro de validação; validamos o JSON na resposta abaixo.
         })
       });
       raw = await response.text();
