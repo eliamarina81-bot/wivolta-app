@@ -30,7 +30,7 @@ export default async function handler(req, res) {
     let data = {};
     try { data = raw ? JSON.parse(raw) : {}; } catch { data = {}; }
     if (!response.ok) {
-      const providerMessage = typeof data?.error?.message === "string" ? data.error.message.slice(0, 500) : "sem detalhe fornecido";
+      const providerMessage = JSON.stringify({ message: data?.error?.message || "sem detalhe fornecido", failed_generation: data?.error?.failed_generation || "" }).slice(0, 1800);
       console.error("Groq invoice extraction error", response.status, providerMessage);
       const status = response.status === 429 ? 429 : response.status === 401 || response.status === 403 ? 503 : 502;
       const message = response.status === 429
