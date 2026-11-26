@@ -30,7 +30,8 @@ export default async function handler(req, res) {
     let data = {};
     try { data = raw ? JSON.parse(raw) : {}; } catch { data = {}; }
     if (!response.ok) {
-      console.error("Groq invoice extraction error", response.status);
+      const providerMessage = typeof data?.error?.message === "string" ? data.error.message.slice(0, 500) : "sem detalhe fornecido";
+      console.error("Groq invoice extraction error", response.status, providerMessage);
       const status = response.status === 429 ? 429 : response.status === 401 || response.status === 403 ? 503 : 502;
       const message = response.status === 429
         ? "O limite de utilização da análise IA foi atingido. A leitura local continua disponível."
