@@ -27,6 +27,7 @@
 <div class="panel topline"><div><h1>Painel de gestão</h1><p id="who" class="muted"></p></div><div class="row"><button id="refresh" class="secondary" type="button">Atualizar</button><button id="logout" type="button">Terminar sessão</button></div></div>
 <div class="panel"><div class="stats"><div class="stat"><b id="count-total">0</b><span>Pedidos recebidos</span></div><div class="stat"><b id="count-new">0</b><span>Por acompanhar</span></div><div class="stat"><b id="count-reviews">0</b><span>Revisões registadas</span></div></div></div>
 <div class="panel"><div class="topline"><div><h2>Pedidos AutoSwitch</h2><p class="muted">Dados submetidos pelo cliente e respetivos consentimentos.</p></div><input id="filter" type="search" placeholder="Pesquisar nome, email ou telefone" style="max-width:300px"></div><div id="requests"><p>A carregar…</p></div></div>
+<div class="panel"><h2>Canal comercial e procedimentos</h2><p class="muted">Referência interna para encaminhar cada adesão pelo procedimento comercial aplicável. Esta informação não é apresentada aos clientes.</p><div id="commercial-channels"><p>A carregar procedimentos…</p></div></div>
 <div class="panel"><h2>Histórico de revisões</h2><div id="reviews"><p>A carregar…</p></div></div>
 </section>
 </main>
@@ -67,7 +68,7 @@
   ]);
   if(a.error){$("requests").textContent="Erro ao carregar pedidos: "+a.error.message;return;}
   if(b.error){$("reviews").textContent="Erro ao carregar revisões: "+b.error.message;}
-  requests=a.data||[];const reviews=b.data||[];
+  requests=a.data||[];const reviews=b.data||[];loadCommercialChannels();
   $("count-total").textContent=requests.length;
   $("count-new").textContent=requests.filter(x=>!["concluido","arquivado"].includes(String(x.status||"").toLowerCase())).length;
   $("count-reviews").textContent=reviews.length;
@@ -110,6 +111,12 @@
   if(error){alert(error.message);return;}window.open(data.signedUrl,"_blank","noopener");
 
  });
+ function loadCommercialChannels(){
+  const host=$("commercial-channels");if(!host)return;
+  fetch("/data/canais-comerciais-dw.json",{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error("Não foi possível carregar a referência comercial.");return r.json();}).then(registry=>{
+   host.innerHTML=(registry.comercializadores||[]).map(s=>'<article class="item"><div class="topline"><h3>'+esc(s.nome)+'</h3><span class="pill">Canal interno</span></div><p>'+esc(s.fluxo)+'</p><p class="muted"><b>Atenção:</b> '+esc(s.limites||"Confirmar procedimento em vigor.")+'</p><details><summary>Documentos de referência</summary><ul>'+((s.documentos||[]).map(d=>'<li>'+esc(d)+'</li>').join(""))+'</ul></details></article>').join("");
+  }).catch(error=>{host.textContent=error.message||"Erro ao carregar procedimentos.";});
+ }
  function renderReviews(rows){
   if(!rows.length){$("reviews").innerHTML="<p>Ainda não existem revisões registadas.</p>";return;}
   $("reviews").innerHTML=rows.map(x=>'<article class="item"><h3>'+esc(x.oferta_comercializador||"Oferta por definir")+' · '+esc(x.oferta_plano||"Sem plano")+'</h3><p><b>Pedido:</b> '+esc(x.pedido_id)+' · <b>Poupança anual estimada:</b> '+esc(x.poupanca_anual_estimada??"—")+' €</p><p><b>Estado:</b> '+esc(x.estado)+' · <b>Próxima revisão:</b> '+esc(x.proxima_revisao||"—")+'</p><p><b>Motivo:</b> '+esc(x.motivo||x.notas||"—")+'</p></article>').join("");
