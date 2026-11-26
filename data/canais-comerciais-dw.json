@@ -1,0 +1,79 @@
+{
+  "versao": "2026-11-26",
+  "uso": "Registo interno Wivolta dos documentos comerciais fornecidos no pacote Campanhas - Élia.zip. A operação comercial é encaminhada pelo canal DW; a Wivolta não apresenta a DW como marca pública.",
+  "canal_operacional": "DW",
+  "comercializadores": [
+    {
+      "id": "edp",
+      "nome": "EDP",
+      "documentos": [
+        "Energia/EDP/RESIDENCIAL/3 - Form autorização.pdf",
+        "Energia/EDP/RESIDENCIAL/5 - Contrato Energia residencial.pdf",
+        "Energia/EDP/RESIDENCIAL/4 - Formulario SEPA DD.pdf"
+      ],
+      "fluxo": "Recolher autorização de apresentação de oferta e, quando o cliente decidir aderir, formalizar o contrato de energia e os consentimentos aplicáveis.",
+      "limites": "O formulário de apresentação de oferta não substitui o contrato de energia nem o mandato para futuras mudanças."
+    },
+    {
+      "id": "endesa",
+      "nome": "Endesa",
+      "documentos": [
+        "Energia/Endesa/1 - DECLAÇÃO DE VENDA - SEM SMS.pdf",
+        "Energia/Endesa/1 - FICHA INSCRICAO ENDESA.pdf",
+        "Energia/Endesa/2 - AUTORIZAÇÃO CONTACTO.pdf",
+        "Energia/Endesa/4 - DECLARAÇÃO_Canal Unico_Standard - EMPRESA.pdf",
+        "Energia/Endesa/4 - DECLARAÇÃO_multiponto - EMPRESA (1).pdf"
+      ],
+      "fluxo": "Usar declaração de venda e autorização de contacto adequadas ao tipo de cliente/fornecimento; recolher ficha de inscrição e assinaturas necessárias.",
+      "limites": "A documentação inclui declarações específicas para empresas e canal único/multiponto; escolher a versão correspondente ao caso."
+    },
+    {
+      "id": "galp",
+      "nome": "Galp",
+      "documentos": [
+        "Energia/Galp/1 - FICHA INSCRICAO GALP.pdf",
+        "Energia/Galp/AutorizacaoDebitoDiretoSEPA_Novo_Preenchivel.pdf"
+      ],
+      "fluxo": "Preencher ficha de inscrição com dados do titular, CPE/CUI, potência/escalão, tarifa, campanha, vendedor e modalidade de pagamento; SEPA apenas se escolhido débito direto.",
+      "limites": "A autorização SEPA é autorização de débito bancário, não autorização de representação comercial."
+    },
+    {
+      "id": "iberdrola",
+      "nome": "Iberdrola",
+      "documentos": [
+        "Energia/Iberdrola/FICHA DE VENDA IBERDROLA.pdf",
+        "Energia/Iberdrola/AF_AUTOCOPIATIVO_SFIB_DUAL_2510.pdf",
+        "Energia/Iberdrola/AF_AUTOCOPIATIVO_SFIB_ELETRICIDADE_2510.pdf",
+        "Energia/Iberdrola/AF_AUTOCOPIATIVO_SFIB_GAS_2510.pdf"
+      ],
+      "fluxo": "Usar ficha de venda e formulário autocopiativo correspondente a eletricidade, gás ou dual. A ficha de venda identifica expressamente ORIGEM: DW.",
+      "limites": "Manter o código/origem comercial correto no processo de adesão."
+    },
+    {
+      "id": "meo",
+      "nome": "MEO Energia",
+      "documentos": [
+        "Energia/MEO/1 - FICHA INSCRICAO MEO.pdf",
+        "Energia/MEO/Simulador de MEO Energia 2026 01.xlsx"
+      ],
+      "fluxo": "Preencher ficha de inscrição e confirmar preço/campanha no simulador/tabela vigente antes da proposta.",
+      "limites": "A ficha inclui identificação do vendedor/código; validar sempre campanha e condições em vigor."
+    },
+    {
+      "id": "repsol",
+      "nome": "Repsol",
+      "documentos": [
+        "Energia/Repsol/Repsol Portugal Formulário Contratação Fornecimento Geral Domésticos_20261019.pdf"
+      ],
+      "fluxo": "Usar formulário de contratação doméstica; o documento identifica representante comercial D.B. e inclui dados do cliente, fornecimento, pagamento e consentimentos.",
+      "limites": "Confirmar que a versão e o representante/código continuam válidos para a operação submetida."
+    }
+  ],
+  "regras_wivolta": [
+    "A Wivolta apresenta a proposta e recolhe os dados e consentimentos do cliente.",
+    "A formalização da adesão segue o formulário, código e procedimento do canal DW aplicável ao comercializador.",
+    "Não reutilizar autorização de contacto, SEPA ou apresentação de oferta como procuração geral.",
+    "Para AutoSwitch, cada futura mudança deve respeitar o mandato do cliente e o procedimento de execução disponível no canal DW; registar comprovativo e resultado de cada pedido.",
+    "Não expor a marca DW na comunicação pública da Wivolta."
+  ]
+}
