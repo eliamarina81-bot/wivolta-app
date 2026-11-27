@@ -433,11 +433,21 @@ function parseFaturaText(text){
  const simpleRows=parseSimpleConsumptionRows(clean);
  const hourly=parseMeterReadingTable(clean)||parseHourlyConsumptionTable(clean);
  const hasHourlyLabels=hasPonta||hasCheias||hasVazio||hasFora;
- const safeSimple=structured.ciclo==="simples"&&structured.totalKwh!==null?String(structured.totalKwh):(simpleRows?.value||"");
+ // Nunca deixar o leitor antigo contornar uma ambiguidade detetada pelo motor genérico.
+ const hasAmbiguityOrWarning=Boolean(structured?.needsManualConfirmation)||(Array.isArray(structured?.warnings)&&structured.warnings.length>0);
+ const legacyRaw=simpleRows?.value;
+ const legacyNumber=typeof legacyRaw==="number"?legacyRaw:(typeof legacyRaw==="string"&&legacyRaw.trim()!==""?Number(legacyRaw.replace(",", ".")):NaN);
+ const legacySimpleValue=Number.isFinite(legacyNumber)&&legacyNumber>0?legacyNumber:null;
+ const consumoFinalKwh=hasAmbiguityOrWarning?null:(typeof structured?.totalKwh==="number"&&Number.isFinite(structured.totalKwh)?structured.totalKwh:legacySimpleValue);
+ const warnings=[
+  ...(Array.isArray(structured?.warnings)?structured.warnings:[]),
+  ...(hasAmbiguityOrWarning&&legacySimpleValue!==null?[\x60Leitura antiga (\x24{legacySimpleValue} kWh) ignorada por existir ambiguidade/aviso na estrutura; confirme o consumo manualmente.\x60]:[])
+ ];
+ const safeSimple=consumoFinalKwh===null?"":String(consumoFinalKwh);
  const gasMatch=clean.match(/(?:consumo\s+(?:total\s+)?de\s+)?g[aá]s[^\n]{0,100}?((?:\d{1,3}(?:[ .]\d{3})+|\d+)(?:[,\.]\d{1,3})?)\s*kwh/i);
  const cleanValue=v=>String(v||"").replace(/[ ]/g,"").replace(",",".");
  const nif=findNif(clean),cpe=findCode(clean,"CPE"),cui=findCode(clean,"CUI");
- return {fornecedor,titular:findTitular(clean),morada:findMorada(clean),nif,cpe,cui,potencia:findPower(clean),tarifa:hourly?.tarifa||structured.ciclo||tarifa,simples:(hourly||hasHourlyLabels)?"":safeSimple,fora:hourly?.values.fora||"",vazio:hourly?.values.vazio||"",cheias:hourly?.values.cheias||"",ponta:hourly?.values.ponta||"",gas:cleanValue(gasMatch?.[1]),validacao:{nif:validateNif(nif),cpe:validateCpe(cpe),cui:validateCui(cui)}};
+ return {fornecedor,titular:findTitular(clean),morada:findMorada(clean),nif,cpe,cui,potencia:findPower(clean),tarifa:hourly?.tarifa||structured.ciclo||tarifa,simples:(hourly||hasHourlyLabels)?"":safeSimple,fora:hourly?.values.fora||"",vazio:hourly?.values.vazio||"",cheias:hourly?.values.cheias||"",ponta:hourly?.values.ponta||"",gas:cleanValue(gasMatch?.[1]),warnings,validacao:{nif:validateNif(nif),cpe:validateCpe(cpe),cui:validateCui(cui)}};
 }
 function mostrarCampos(d,text){const keys={fornecedor:"ocr-fornecedor",titular:"ocr-titular",morada:"ocr-morada",nif:"ocr-nif",cpe:"ocr-cpe",cui:"ocr-cui",potencia:"ocr-potencia",tarifa:"ocr-tarifa",simples:"ocr-simples",fora:"ocr-fora",vazio:"ocr-vazio",cheias:"ocr-cheias",ponta:"ocr-ponta",gas:"ocr-gas"};for(const [k,id] of Object.entries(keys))$(id).value=d[k]||"";const status=[];if(d.nif)status.push("NIF/NIPC: "+(d.validacao.nif?"checksum OK":"checksum inválido"));if(d.cpe)status.push("CPE: "+(d.validacao.cpe?"estrutura OK":"estrutura inválida"));if(d.cui)status.push("CUI: "+(d.validacao.cui?"estrutura OK":"estrutura inválida"));$("ocr-validacao").textContent=status.length?status.join(" · ")+" (CPE/CUI sem validação de dígitos de controlo)":"Não foram detetados códigos para validar.";$("ocr-texto").value=text;$("ocr-resultados").classList.remove("hidden");}
 function extrairTextoPdf(page){
