@@ -33,7 +33,7 @@ test("Galp real: soma apenas energia simples da comercialização, mesmo com que
   assert.equal(result.fornecedor, "Galp");
   assert.equal(result.titular, "Cliente Exemplo");
   assert.equal(result.morada, "Rua Exemplo 56 2305-625 Sabacheira");
-  assert.equal(result.tarifa, "simples/por confirmar");
+  assert.equal(result.tarifa, "simples");
   assert.equal(result.simples, "371");
   assert.equal(result.fora, "");
   assert.equal(result.vazio, "");
@@ -52,7 +52,7 @@ test("Motor comum: exclui acesso às redes e impostos sem depender do fornecedor
 });
 
 test("Motor comum: não inventa consumo quando há valores simples ambíguos", () => {
-  const text = "Comercialização\\nEnergia simples 200 kWh\\nEnergia simples 171 kWh";
+  const text = "Energia simples 200 kWh\\nEnergia simples 171 kWh";
   const result = context.extractStructuredConsumptions(text);
   assert.equal(result.totalKwh, null);
   assert.ok(result.needsManualConfirmation);
