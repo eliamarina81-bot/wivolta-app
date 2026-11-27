@@ -441,7 +441,7 @@ function parseFaturaText(text){
  const consumoFinalKwh=hasAmbiguityOrWarning?null:(typeof structured?.totalKwh==="number"&&Number.isFinite(structured.totalKwh)?structured.totalKwh:legacySimpleValue);
  const warnings=[
   ...(Array.isArray(structured?.warnings)?structured.warnings:[]),
-  ...(hasAmbiguityOrWarning&&legacySimpleValue!==null?[\x60Leitura antiga (\x24{legacySimpleValue} kWh) ignorada por existir ambiguidade/aviso na estrutura; confirme o consumo manualmente.\x60]:[])
+  ...(hasAmbiguityOrWarning&&legacySimpleValue!==null?[`Leitura antiga (${legacySimpleValue} kWh) ignorada por existir ambiguidade/aviso na estrutura; confirme o consumo manualmente.`]:[])
  ];
  const safeSimple=consumoFinalKwh===null?"":String(consumoFinalKwh);
  const gasMatch=clean.match(/(?:consumo\s+(?:total\s+)?de\s+)?g[aá]s[^\n]{0,100}?((?:\d{1,3}(?:[ .]\d{3})+|\d+)(?:[,\.]\d{1,3})?)\s*kwh/i);
