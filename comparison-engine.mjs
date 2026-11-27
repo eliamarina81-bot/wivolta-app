@@ -58,3 +58,42 @@ export function validateProfile(profile) {
   }
   return "";
 }
+
+
+export function annualizeInvoiceConsumption(input) {
+  const parse = value => {
+    if (value === null || value === undefined || String(value).trim() === "") return null;
+    const normalized = String(value).trim().replace(/\s/g, "").replace(/\.(?=\d{3}(?:[,\.]|$))/g, "").replace(",", ".");
+    const number = Number(normalized);
+    return Number.isFinite(number) && number >= 0 ? number : null;
+  };
+  const months = Number(input.periodMonths);
+  if (![1,2,3,6,12].includes(months)) return null;
+  const rawCycle = String(input.cycle || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  const cycle = rawCycle.includes("tri") ? "tri-horario" : rawCycle.includes("bi") ? "bi-horario" : "simples";
+  let total = 0;
+  const result = { cycle, offPeakPercent: null, peakPercent: null, shoulderPercent: null };
+  if (cycle === "simples") {
+    const simple = parse(input.simple);
+    if (simple === null) return null;
+    total = simple;
+  } else if (cycle === "bi-horario") {
+    const outside = parse(input.outside), offPeak = parse(input.offPeak);
+    if (outside === null || offPeak === null) return null;
+    total = outside + offPeak;
+    if (total <= 0) return null;
+    result.offPeakPercent = offPeak / total * 100;
+  } else {
+    const peak = parse(input.peak), shoulder = parse(input.shoulder), offPeak = parse(input.offPeak);
+    if ([peak, shoulder, offPeak].some(value => value === null)) return null;
+    total = peak + shoulder + offPeak;
+    if (total <= 0) return null;
+    result.peakPercent = peak / total * 100;
+    result.shoulderPercent = shoulder / total * 100;
+    result.offPeakPercent = offPeak / total * 100;
+  }
+  if (total <= 0) return null;
+  result.periodKwh = total;
+  result.annualKwh = total * 12 / months;
+  return result;
+}
