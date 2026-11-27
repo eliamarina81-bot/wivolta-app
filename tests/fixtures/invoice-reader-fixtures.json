@@ -61,7 +61,7 @@
       "supplier": "Endesa",
       "cycle": "tri-horário",
       "source": "https://04c3c6d090.cbaul-cdnwnd.com/42fc8f1c44e137e970f0abf66ebf840d/200000020-b55feb65a1/ENDESA%20BTE.pdf",
-      "text": "Ponta\\nCheia\\nVazio\\nCons. Fora Vazio 122.461\\nTR1. 30%<= exc< jok",
+      "text": "Ponta\nCheia\nVazio\nCons. Fora Vazio 122.461\nTR1. 30%<= exc< jok",
       "expected": {
         "ponta": "",
         "cheias": "",
@@ -75,7 +75,7 @@
       "supplier": "Goldenergy",
       "cycle": "tri-horário",
       "source": "https://pt.scribd.com/document/874779982/Documento-596500407",
-      "text": "000001650124185 Vazio 05/04/2025 15151 Real 05/05/2025 15253 Real 102\\n000001650124185 Ponta 05/04/2025 5345 Real 05/05/2025 5354 Real 9\\n000001650124185 Cheia 05/04/2025 18098 Real 05/05/2025 18188 Real 90",
+      "text": "000001650124185 Vazio 05/04/2025 15151 Real 05/05/2025 15253 Real 102\n000001650124185 Ponta 05/04/2025 5345 Real 05/05/2025 5354 Real 9\n000001650124185 Cheia 05/04/2025 18098 Real 05/05/2025 18188 Real 90",
       "expected": {
         "vazio": "102",
         "ponta": "9",
@@ -90,7 +90,7 @@
       "supplier": "Iberdrola",
       "cycle": "simples",
       "source": "https://pt.scribd.com/document/981274486/953270130-2025-09-22-16-54-37-004997",
-      "text": "Energia Real: Simples (16/08/2025-27/08/2025) 102 kWh 0,1595 €/kWh\\nEnergia Real: Simples (27/08/2025-16/09/2025) 188 kWh 0,1595 €/kWh",
+      "text": "Energia Real: Simples (16/08/2025-27/08/2025) 102 kWh 0,1595 €/kWh\nEnergia Real: Simples (27/08/2025-16/09/2025) 188 kWh 0,1595 €/kWh",
       "expected": {
         "simples": "290",
         "fora": "",
