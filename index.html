@@ -384,14 +384,15 @@ function extractStructuredConsumptions(input){
   else if(unique.length>1)warnings.push("Valores diferentes encontrados para o período "+key+"; confirmação manual necessária.");
  }
  const simple=primary.filter(e=>!e.period&&e.kind==="parcela");
- const uniqueSimple=[...new Set(simple.map(e=>e.value))];
+ const dedupedSimple=[...new Map(simple.map(e=>[e.line.replace(/\s+/g," ").trim(),e])).values()];
+ const uniqueSimple=[...new Set(dedupedSimple.map(e=>e.value))];
  let nonPeriodSum=null;
  if(uniqueSimple.length===1)nonPeriodSum=uniqueSimple[0];
  else if(uniqueSimple.length>1){
-  // Só somar subperíodos quando cada linha tiver uma referência temporal distinta.
-  const dated=simple.every(e=>/\d{1,2}[\/.-]\d{1,2}[\/.-]\d{2,4}/.test(e.line));
-  const distinctDates=new Set(simple.map(e=>(e.line.match(/\d{1,2}[\/.-]\d{1,2}[\/.-]\d{2,4}/g)||[]).join("|")));
-  if(dated&&distinctDates.size===simple.length)nonPeriodSum=Number(simple.reduce((a,e)=>a+e.value,0).toFixed(3));
+  const dated=dedupedSimple.every(e=>/\d{1,2}[\/.-]\d{1,2}[\/.-]\d{2,4}/.test(e.line));
+  const distinctDates=new Set(dedupedSimple.map(e=>(e.line.match(/\d{1,2}[\/.-]\d{1,2}[\/.-]\d{2,4}/g)||[]).join("|")));
+  const explicitCommercialRows=dedupedSimple.every(e=>e.section==="comercializacao"&&/energia|consumo/.test(normalizeOcrLine(e.line)));
+  if((dated&&distinctDates.size===dedupedSimple.length)||explicitCommercialRows)nonPeriodSum=Number(dedupedSimple.reduce((a,e)=>a+e.value,0).toFixed(3));
   else warnings.push("Foram encontrados vários valores simples sem períodos identificáveis; não foram somados.");
  }
  const totals=primary.filter(e=>e.kind==="total").map(e=>e.value);
