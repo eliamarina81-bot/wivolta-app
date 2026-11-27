@@ -334,7 +334,7 @@ function extrairTextoPdf(page){
 async function processarFatura(event){
  const file=event.target.files?.[0];if(!file)return;
  const isPdf=file.type==="application/pdf"||file.name.toLowerCase().endsWith(".pdf");
- if(!window.Tesseract&&!isPdf){alert("A biblioteca OCR não carregou. Verifique a ligação à internet e tente novamente.");return;}
+ if(!window.Tesseract&&!isPdf&&!$("ocr-groq-consent")?.checked){alert("A biblioteca OCR não carregou. Autorize a análise visual Groq ou tente mais tarde.");return;}
  const status=$("ocr-status");status.style.display="flex";status.textContent="A preparar leitura local…";
  let worker=null;
  try{
@@ -387,7 +387,7 @@ async function processarFatura(event){
    const result=await worker.recognize(file);text=result.data.text;
   }
   if(worker){await worker.terminate();worker=null;}
-  if(!text.trim())throw new Error("Não foi possível extrair texto desta fatura. Experimente uma imagem mais nítida ou confirme os campos manualmente.");
+  if(!text.trim()&&!$("ocr-groq-consent")?.checked)throw new Error("Não foi possível extrair texto desta fatura. Autorize a análise visual Groq ou confirme os campos manualmente.");
   window.wivoltaOcrText=text;
   const parsed=parseFaturaText(text);mostrarCampos(parsed,text);
   $("ocr-groq-status").textContent="Leitura local concluída. A validação complementar por IA Groq está disponível mediante autorização.";
@@ -460,7 +460,7 @@ const GROQ_CONSENT_VERSION="2026-11-25-v1";
 async function analisarComGroq(){
  const consent=$("ocr-groq-consent"),status=$("ocr-groq-status"),button=$("ocr-groq-button");
  const raw=window.wivoltaOcrText||$("ocr-texto").value||"";
- if(!raw.trim()){status.textContent="Primeiro selecione e leia uma fatura.";return;}
+ if(!raw.trim()&&!Array.isArray(window.wivoltaOcrImages)){status.textContent="Primeiro selecione uma fatura.";return;}
  if(!consent.checked){status.textContent="Para usar a Groq, marque primeiro a autorização específica para este prestador.";return;}
  const safeText=anonymizeInvoiceText(raw);
  const images=Array.isArray(window.wivoltaOcrImages)?window.wivoltaOcrImages:[];
