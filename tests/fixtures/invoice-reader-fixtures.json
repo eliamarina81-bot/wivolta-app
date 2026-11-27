@@ -68,6 +68,21 @@
         "vazio": ""
       },
       "notes": "Excerto de fatura BTE pública com estrutura antiga e valores de leitura/consumo próximos. O leitor deve reconhecer a existência de períodos, mas não adivinhar os kWh de cada período."
+    },
+    {
+      "id": "goldenergy-tri-publico-2025",
+      "kind": "public-transcription",
+      "supplier": "Goldenergy",
+      "cycle": "tri-horário",
+      "source": "https://pt.scribd.com/document/874779982/Documento-596500407",
+      "text": "000001650124185 Vazio 05/04/2025 15151 Real 05/05/2025 15253 Real 102\\n000001650124185 Ponta 05/04/2025 5345 Real 05/05/2025 5354 Real 9\\n000001650124185 Cheia 05/04/2025 18098 Real 05/05/2025 18188 Real 90",
+      "expected": {
+        "vazio": "102",
+        "ponta": "9",
+        "cheias": "90",
+        "simples": ""
+      },
+      "notes": "Transcrição de linhas da tabela de leituras. O detalhe de faturação contém parcelas adicionais, por isso o teste usa a diferença de leituras e não soma linhas de preço/IVA."
     }
   ]
 }
