@@ -393,12 +393,38 @@ async function processarFatura(event){
   $("ocr-groq-status").textContent="Leitura local concluída. A validação complementar por IA Groq está disponível mediante autorização.";
   const found=[parsed.simples,parsed.fora,parsed.vazio,parsed.cheias,parsed.ponta,parsed.gas].filter(Boolean).length;
   status.textContent=found?"Leitura concluída: "+found+" campo(s) de consumo detetado(s). Confirme os valores antes de utilizar.":"Texto extraído, mas não foram detetados consumos com segurança. Consulte o texto reconhecido e confirme os campos manualmente.";
-  if($("ocr-groq-consent")?.checked){status.textContent+=" A iniciar validação complementar com IA autorizada…";await analisarComGroq();}
+  if($("ocr-groq-consent")?.checked){
+   status.textContent+=" A preparar páginas para análise visual Groq…";
+   window.wivoltaOcrImages=await prepararImagensParaGroq(file,isPdf,pdf);
+   status.textContent+=" A enviar páginas para análise IA…";
+   await analisarComGroq();
+  }
  }catch(e){
   if(worker)await worker.terminate();
   status.textContent="Falha de leitura: "+(e?.message||e);
   alert("Não foi possível ler esta fatura. Pode confirmar os campos manualmente.");
  }
+}
+async function prepararImagensParaGroq(file,isPdf,pdf){
+ const images=[],maxWidth=1400;
+ const encode=canvas=>canvas.toDataURL("image/jpeg",0.68);
+ if(isPdf&&pdf){
+  for(let p=1;p<=Math.min(pdf.numPages,5);p++){
+   const page=await pdf.getPage(p),base=page.getViewport({scale:1});
+   const viewport=page.getViewport({scale:Math.min(1.6,maxWidth/base.width)});
+   const canvas=document.createElement("canvas");
+   canvas.width=Math.ceil(viewport.width);canvas.height=Math.ceil(viewport.height);
+   await page.render({canvasContext:canvas.getContext("2d"),viewport}).promise;
+   images.push(encode(canvas));canvas.width=1;canvas.height=1;
+  }
+ }else{
+  const bitmap=await createImageBitmap(file),scale=Math.min(1,maxWidth/bitmap.width);
+  const canvas=document.createElement("canvas");
+  canvas.width=Math.round(bitmap.width*scale);canvas.height=Math.round(bitmap.height*scale);
+  canvas.getContext("2d").drawImage(bitmap,0,0,canvas.width,canvas.height);
+  images.push(encode(canvas));bitmap.close?.();
+ }
+ return images;
 }
 function anonymizeInvoiceText(raw){
  const lines=String(raw||"").split(/\r?\n/);
@@ -437,10 +463,11 @@ async function analisarComGroq(){
  if(!raw.trim()){status.textContent="Primeiro selecione e leia uma fatura.";return;}
  if(!consent.checked){status.textContent="Para usar a Groq, marque primeiro a autorização específica para este prestador.";return;}
  const safeText=anonymizeInvoiceText(raw);
- if(safeText.length<20){status.textContent="Não há texto suficiente para análise. Confirme os campos manualmente.";return;}
- button.disabled=true;button.textContent="A Groq está a analisar…";status.textContent="A enviar apenas texto filtrado à Groq; a fatura original não é enviada…";
+ const images=Array.isArray(window.wivoltaOcrImages)?window.wivoltaOcrImages:[];
+ if(safeText.length<20&&!images.length){status.textContent="Não há texto nem imagem suficiente para análise. Confirme os campos manualmente.";return;}
+ button.disabled=true;button.textContent="A Groq está a analisar…";status.textContent=images.length?"A enviar imagens da fatura e texto filtrado para Groq Vision…":"A enviar apenas texto filtrado à Groq…";
  try{
-  const response=await fetch("/api/ler-fatura-groq",{method:"POST",cache:"no-store",headers:{"Content-Type":"application/json"},body:JSON.stringify({text:safeText})});
+  const response=await fetch("/api/ler-fatura-groq",{method:"POST",cache:"no-store",headers:{"Content-Type":"application/json"},body:JSON.stringify({text:safeText,images})});
   const data=await response.json();
   if(!response.ok)throw new Error(data.error||"Falha na análise Groq.");
   const d=data.extracted||{};
@@ -454,7 +481,7 @@ async function analisarComGroq(){
    else if(["simples","fora","vazio","cheias","ponta","gas"].includes(key)&&Number(local.replace(",","."))!==Number(ai.replace(",","."))){conflicts.push(key);}
   }
   const notes=d.observacoes?(" "+d.observacoes):"";
-  status.textContent="Análise Groq concluída: "+count+" campo(s) em falta preenchido(s)."+(conflicts.length?" ATENÇÃO: a IA divergiu da leitura local em "+conflicts.join(", ")+". Nenhum valor divergente foi substituído; confirme na fatura.":"") +" Confiança indicada: "+(d.confianca||"não indicada")+". Confirme os valores com a fatura."+notes;
+  status.textContent="Análise Groq "+(data.mode==="vision"?"visual":"de texto")+" concluída: "+count+" campo(s) em falta preenchido(s)."+(conflicts.length?" ATENÇÃO: a IA divergiu da leitura local em "+conflicts.join(", ")+". Nenhum valor divergente foi substituído; confirme na fatura.":"") +" Confiança indicada: "+(d.confianca||"não indicada")+". Confirme os valores com a fatura."+notes;
   const validation=$("ocr-validacao");if(validation)validation.textContent+=" · Leitura assistida por Groq; confirmar todos os valores.";
  }catch(error){status.textContent="Não foi possível analisar com Groq: "+(error.message||"erro").toString()+" A leitura local mantém-se disponível.";}
  finally{button.disabled=false;button.textContent="✨ Analisar consumos com Groq";}
