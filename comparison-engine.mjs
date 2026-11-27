@@ -1,5 +1,5 @@
 export function classifyDiscountScope(conditions = "") {
-  const text = String(conditions).toLocaleLowerCase("pt-PT").normalize("NFD").replace(/[\\u0300-\\u036f]/g, "");
+  const text = String(conditions).toLocaleLowerCase("pt-PT").normalize("NFD").replace(/[\u0300-\u036f]/g, "");
   if (/total da fatura|total da factura|total da conta/.test(text)) return "subtotal";
   if (/preco (?:de )?energia|termo de energia|preco endesa|preco unitario de energia/.test(text)) return "energia";
   return null;
