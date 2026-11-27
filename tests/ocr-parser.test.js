@@ -12,7 +12,7 @@ const elements = new Map();
 const context = {
   document: {
     getElementById: id => {
-      if (!elements.has(id)) elements.set(id, { value: "", textContent: "", innerHTML: "", classList: { remove() {} } });
+      if (!elements.has(id)) elements.set(id, { value: "", textContent: "", innerHTML: "", classList: { remove() {} }, addEventListener() {} });
       return elements.get(id);
     }
   },
