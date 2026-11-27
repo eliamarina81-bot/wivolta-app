@@ -34,16 +34,19 @@ import { calculateAnnualOfferCost, validateProfile } from "/comparison-engine.mj
   cycle.addEventListener("change", updateCycleFields);
   updateCycleFields();
 
-  const readProfile = () => ({
-    segment: $("of-segmento").value,
-    annualKwh: Number($("of-consumo").value),
-    powerKva: Number($("of-potencia").value),
-    cycle: cycle.value,
-    offPeakPercent: Number($("of-vazio").value),
-    peakPercent: Number($("of-ponta").value),
-    shoulderPercent: Number($("of-cheias").value),
-    modality: mode.value
-  });
+  const readProfile = () => {
+    const numberOrNaN = id => $(""+id).value.trim() === "" ? NaN : Number($(""+id).value);
+    return {
+      segment: $("of-segmento").value,
+      annualKwh: numberOrNaN("of-consumo"),
+      powerKva: Number($("of-potencia").value),
+      cycle: cycle.value,
+      offPeakPercent: numberOrNaN("of-vazio"),
+      peakPercent: numberOrNaN("of-ponta"),
+      shoulderPercent: numberOrNaN("of-cheias"),
+      modality: mode.value
+    };
+  };
 
   function renderOffers() {
     if (!currentOffers.length) return;
