@@ -22,7 +22,8 @@ const context = vm.createContext({
   console
 });
 
-const parserStart = html.indexOf("function parseHourlyConsumptionTable(text){");
+const meterParserStart = html.indexOf("function parseMeterReadingTable(text){");
+const parserStart = meterParserStart >= 0 ? meterParserStart : html.indexOf("function parseHourlyConsumptionTable(text){");
 const parserEnd = html.indexOf("function mostrarCampos", parserStart);
 assert.ok(parserStart >= 0 && parserEnd > parserStart, "Parser de faturas encontrado no index.html");
 vm.runInContext(html.slice(parserStart, parserEnd), context);
