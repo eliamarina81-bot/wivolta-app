@@ -33,6 +33,8 @@ test("Galp real: soma apenas energia simples da comercialização, mesmo com que
   const f = fixtures["galp-simple-commercial-public-structure"];
   const result = context.parseFaturaText(f.text);
   assert.equal(result.fornecedor, "Galp");
+  assert.equal(result.titular, "Cliente Exemplo");
+  assert.equal(result.morada, "Rua Exemplo 56 2305-625 Sabacheira");
   assert.equal(result.tarifa, "simples/por confirmar");
   assert.equal(result.simples, "371");
   assert.equal(result.fora, "");
