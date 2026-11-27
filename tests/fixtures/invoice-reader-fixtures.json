@@ -106,7 +106,7 @@
       "supplier": "Galp",
       "cycle": "simples",
       "source": "Fatura real Galp fornecida para teste; dados pessoais removidos",
-      "text": "Galp\nEletricidade CPE PT0002000030214913NT Tarifa 6.9 kVA Social Simples Sem Ciclo\nComercialização\nEnergia Simples (medida)\n200 kWh 0,10330000 €/kWh\nEnergia Simples (medida) 171 kWh 0,10330000 €/kWh\nTarifas de Acesso\nEnergia Simples (medida) 200 kWh 0,01390000 €/kWh\nEnergia Simples (medida) 171 kWh 0,01390000 €/kWh\nTaxas e Impostos\nISPE 371 kWh 0,00000000 €/kWh",
+      "text": "Galp\nNome do Titular\nCliente Exemplo\nLocal de Fornecimento Mensagens Úteis\nRua Exemplo 56 2305-625 Sabacheira\nEletricidade CPE PT0002000030214913NT Tarifa 6.9 kVA Social Simples Sem Ciclo\nComercialização\nEnergia Simples (medida)\n200 kWh 0,10330000 €/kWh\nEnergia Simples (medida) 171 kWh 0,10330000 €/kWh\nTarifas de Acesso\nEnergia Simples (medida) 200 kWh 0,01390000 €/kWh\nEnergia Simples (medida) 171 kWh 0,01390000 €/kWh\nTaxas e Impostos\nISPE 371 kWh 0,00000000 €/kWh",
       "expected": {
         "simples": "371",
         "fora": "",
