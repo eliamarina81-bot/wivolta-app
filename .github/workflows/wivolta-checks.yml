@@ -1,0 +1,27 @@
+name: Wivolta checks
+on:
+  push:
+    branches:
+      - main
+      - feature/manie-comparator-v1
+  pull_request:
+    branches:
+      - main
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Validate JavaScript syntax
+        run: |
+          node --check comparador.js
+          node --check comparison-engine.mjs
+      - name: Run existing calculator tests
+        run: node tests/calculadora.test.js
+      - name: Run existing invoice parser tests
+        run: node tests/ocr-parser.test.js
+      - name: Run comparison engine tests
+        run: node --test tests/comparison-engine.test.mjs
