@@ -37,14 +37,25 @@ test("Galp real: soma apenas energia simples da comercialização, mesmo com que
   assert.equal(result.simples, "371");
   assert.equal(result.fora, "");
   assert.equal(result.vazio, "");
-  const sectionResult = context.extractGalpCommercializationKwh(f.text);
-  assert.deepEqual(Array.from(sectionResult.rows), [200, 171]);
-  assert.equal(sectionResult.totalKwh, 371);
+  const structured = context.extractStructuredConsumptions(f.text);
+  assert.equal(structured.totalKwh, 371);
+  assert.equal(structured.ciclo, "simples");
+  assert.equal(structured.canCompare, false);
+  assert.equal(structured.needsManualConfirmation, false);
 });
 
-test("Galp: não extrai consumos se faltar o limite da secção de comercialização", () => {
-  const ambiguous = "Galp\\nEnergia Simples (medida) 200 kWh\\nISPE 200 kWh";
-  assert.equal(context.extractGalpCommercializationKwh(ambiguous), null);
+test("Motor comum: exclui acesso às redes e impostos sem depender do fornecedor", () => {
+  const text = "Comercialização\\nEnergia Simples (medida) 200 kWh\\nEnergia Simples (medida) 171 kWh\\nAcesso às Redes\\nEnergia Simples (medida) 200 kWh\\nEnergia Simples (medida) 171 kWh\\nImpostos e Taxas\\nISPE 371 kWh";
+  const result = context.extractStructuredConsumptions(text);
+  assert.equal(result.totalKwh, 371);
+  assert.equal(result.ciclo, "simples");
+});
+
+test("Motor comum: não inventa consumo quando há valores simples ambíguos", () => {
+  const text = "Comercialização\\nEnergia simples 200 kWh\\nEnergia simples 171 kWh";
+  const result = context.extractStructuredConsumptions(text);
+  assert.equal(result.totalKwh, null);
+  assert.ok(result.needsManualConfirmation);
 });
 
 test("EDP público: separa os três períodos sem criar consumo simples", () => {
