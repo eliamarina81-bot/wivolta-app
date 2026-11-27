@@ -458,45 +458,47 @@ function parseFaturaText(text){
  const nif=findNif(clean),cpe=findCode(clean,"CPE"),cui=findCode(clean,"CUI");
  return {fornecedor,titular:findTitular(clean),morada:findMorada(clean),nif,cpe,cui,potencia:findPower(clean),tarifa:hourly?.tarifa||structured.ciclo||tarifa,simples:(hourly||hasHourlyLabels)?"":safeSimple,fora:hourly?.values.fora||"",vazio:hourly?.values.vazio||"",cheias:hourly?.values.cheias||"",ponta:hourly?.values.ponta||"",gas:cleanValue(gasMatch?.[1]),warnings,validacao:{nif:validateNif(nif),cpe:validateCpe(cpe),cui:validateCui(cui)}};
 }
-function mostrarCampos(d,text){window.wivoltaLocalInvoiceSummary=getWivoltaLocalSummary(d);const geminiPanel=$("wivolta-gemini-opt-panel");if(geminiPanel)geminiPanel.style.display=shouldOfferSecondaryGeminiReading(window.wivoltaLocalInvoiceSummary)?"block":"none";const geminiConsent=$("wivolta-gemini-consent-checkbox");if(geminiConsent){geminiConsent.checked=false;$("wivolta-btn-pedir-gemini").disabled=true;$("wivolta-gemini-status").textContent="";$("wivolta-gemini-results").style.display="none";}const keys={fornecedor:"ocr-fornecedor",titular:"ocr-titular",morada:"ocr-morada",nif:"ocr-nif",cpe:"ocr-cpe",cui:"ocr-cui",potencia:"ocr-potencia",tarifa:"ocr-tarifa",simples:"ocr-simples",fora:"ocr-fora",vazio:"ocr-vazio",cheias:"ocr-cheias",ponta:"ocr-ponta",gas:"ocr-gas"};for(const [k,id] of Object.entries(keys))$(id).value=d[k]||"";const status=[];if(d.nif)status.push("NIF/NIPC: "+(d.validacao.nif?"checksum OK":"checksum inválido"));if(d.cpe)status.push("CPE: "+(d.validacao.cpe?"estrutura OK":"estrutura inválida"));if(d.cui)status.push("CUI: "+(d.validacao.cui?"estrutura OK":"estrutura inválida"));const warningText=Array.isArray(d.warnings)&&d.warnings.length?" Avisos de leitura: "+d.warnings.join(" "):"";$("ocr-validacao").textContent=(status.length?status.join(" · ")+" (CPE/CUI sem validação de dígitos de controlo)":"Não foram detetados códigos para validar.")+warningText;$("ocr-texto").value=text;$("ocr-resultados").classList.remove("hidden");}
+function mostrarCampos(d,text){window.wivoltaLocalInvoiceSummary=getWivoltaLocalSummary(d);initOptionalGeminiUi({localSummary:window.wivoltaLocalInvoiceSummary,extractedText:text});const keys={fornecedor:"ocr-fornecedor",titular:"ocr-titular",morada:"ocr-morada",nif:"ocr-nif",cpe:"ocr-cpe",cui:"ocr-cui",potencia:"ocr-potencia",tarifa:"ocr-tarifa",simples:"ocr-simples",fora:"ocr-fora",vazio:"ocr-vazio",cheias:"ocr-cheias",ponta:"ocr-ponta",gas:"ocr-gas"};for(const [k,id] of Object.entries(keys))$(id).value=d[k]||"";const status=[];if(d.nif)status.push("NIF/NIPC: "+(d.validacao.nif?"checksum OK":"checksum inválido"));if(d.cpe)status.push("CPE: "+(d.validacao.cpe?"estrutura OK":"estrutura inválida"));if(d.cui)status.push("CUI: "+(d.validacao.cui?"estrutura OK":"estrutura inválida"));const warningText=Array.isArray(d.warnings)&&d.warnings.length?" Avisos de leitura: "+d.warnings.join(" "):"";$("ocr-validacao").textContent=(status.length?status.join(" · ")+" (CPE/CUI sem validação de dígitos de controlo)":"Não foram detetados códigos para validar.")+warningText;$("ocr-texto").value=text;$("ocr-resultados").classList.remove("hidden");}
 document.addEventListener("DOMContentLoaded",setupWivoltaGeminiPanel);
 function shouldOfferSecondaryGeminiReading(localSummary={}){
  const hasWarnings=Array.isArray(localSummary.warnings)&&localSummary.warnings.length>0;
- const missingCoreFields=localSummary.consumoKwh===null||localSummary.consumoKwh===undefined||!localSummary.ciclo||!localSummary.fornecedor;
- return Boolean(hasWarnings||missingCoreFields);
+ const missingCore=localSummary.consumoKwh===null||localSummary.consumoKwh===undefined||!localSummary.ciclo||!localSummary.fornecedor;
+ return Boolean(hasWarnings||missingCore);
 }
 function getWivoltaLocalSummary(d){
- const nums=["simples","fora","vazio","cheias","ponta"].map(k=>Number(String(d[k]||"").replace(",","."))).filter(n=>Number.isFinite(n)&&n>0);
- const total=nums.length?nums.reduce((a,b)=>a+b,0):null;
- const tariff=String(d.tarifa||"").toLowerCase();const ciclo=/tri/.test(tariff)?"tri-horário":/bi/.test(tariff)?"bi-horário":/simples/.test(tariff)&&!/por confirmar/.test(tariff)?"simples":null;\n return {fornecedor:d.fornecedor||"",ciclo,consumoKwh:total,warnings:Array.isArray(d.warnings)?d.warnings:[]};
+ const keys=["simples","fora","vazio","cheias","ponta"];
+ const values=keys.map(k=>{const n=Number(String(d[k]||"").replace(",", "."));return Number.isFinite(n)&&n>0?n:null;}).filter(n=>n!==null);
+ const consumoKwh=values.length?values.reduce((sum,n)=>sum+n,0):null;
+ const tariff=String(d.tarifa||"").toLowerCase();
+ const ciclo=/tri/.test(tariff)?"tri-horário":/bi/.test(tariff)?"bi-horário":/simples/.test(tariff)&&!/por confirmar/.test(tariff)?"simples":null;
+ return {fornecedor:d.fornecedor||"",ciclo,consumoKwh,warnings:Array.isArray(d.warnings)?d.warnings:[]};
 }
-async function runOptionalGeminiSecondaryCheck(){
- const panel=$("wivolta-gemini-opt-panel"),consent=$("wivolta-gemini-consent-checkbox"),button=$("wivolta-btn-pedir-gemini"),status=$("wivolta-gemini-status"),results=$("wivolta-gemini-results");
- const local=window.wivoltaLocalInvoiceSummary||{};
- if(!shouldOfferSecondaryGeminiReading(local)){status.textContent="A segunda leitura não é necessária: a leitura local não apresenta avisos nem campos essenciais em falta.";return;}
- if(!consent.checked){status.textContent="Marca a autorização específica para pedir a segunda leitura.";return;}
- const raw=window.wivoltaOcrText||$("ocr-texto").value||"";
- if(!raw.trim()){status.textContent="Não existe texto extraído para enviar. A leitura local mantém-se disponível.";return;}
- button.disabled=true;status.textContent="A enviar apenas texto filtrado para a segunda leitura…";results.style.display="none";results.textContent="";
- try{
-  const filtered=typeof anonymizeInvoiceText==="function"?anonymizeInvoiceText(raw):raw;
-  const response=await fetch("/api/ler-fatura-gemini",{method:"POST",cache:"no-store",headers:{"Content-Type":"application/json","Cache-Control":"no-cache"},body:JSON.stringify({consent:true,text:filtered,localWarnings:local.warnings||[]})});
-  const payload=await response.json().catch(()=>({}));
-  if(!response.ok)throw new Error(payload.error||"Falha na segunda leitura opcional.");
-  const extracted=payload.extracted||null;
-  results.style.display="block";
-  results.textContent=extracted?JSON.stringify(extracted,null,2):"O Gemini não devolveu campos estruturados. Mantém-se a confirmação manual.";
-  status.textContent="Segunda leitura recebida. Os dados locais não foram alterados. Confirma manualmente todos os valores; a comparação continua bloqueada.";
-  window.wivoltaGeminiSecondaryResult={local,secondaryGemini:extracted,requiresManualConfirmation:true,canCompare:false};
- }catch(error){status.textContent=error?.message||"Não foi possível concluir a segunda leitura.";}
- finally{button.disabled=!consent.checked;}
-}
-function setupWivoltaGeminiPanel(){
- const consent=$("wivolta-gemini-consent-checkbox"),button=$("wivolta-btn-pedir-gemini");
- if(!consent||!button)return;
- consent.checked=false;button.disabled=true;
- consent.addEventListener("change",()=>{button.disabled=!consent.checked;if(!consent.checked)$("wivolta-gemini-status").textContent="Autorização não ativa. A leitura local continua disponível.";});
- button.addEventListener("click",runOptionalGeminiSecondaryCheck);
+function initOptionalGeminiUi({localSummary,extractedText}){
+ const panel=$("wivolta-gemini-opt-panel"),checkbox=$("wivolta-gemini-consent-checkbox"),button=$("wivolta-btn-pedir-gemini"),statusEl=$("wivolta-gemini-status"),results=$("wivolta-gemini-results");
+ if(!panel||!checkbox||!button||!statusEl)return;
+ window.wivoltaComparisonAllowed=false;
+ const shouldShow=shouldOfferSecondaryGeminiReading(localSummary);
+ panel.style.display=shouldShow?"block":"none";
+ checkbox.checked=false;button.disabled=true;statusEl.textContent="";
+ if(results){results.style.display="none";results.textContent="";}
+ checkbox.onchange=()=>{button.disabled=!checkbox.checked;if(!checkbox.checked)statusEl.textContent="Autorização Gemini retirada. A leitura local continua disponível.";else statusEl.textContent="";}
+ button.onclick=async()=>{
+  if(!checkbox.checked){button.disabled=true;statusEl.textContent="É necessária autorização explícita para enviar o texto ao Gemini.";return;}
+  if(!shouldShow){statusEl.textContent="A segunda leitura não é necessária.";return;}
+  if(!String(extractedText||"").trim()){statusEl.textContent="Não existe texto extraído para enviar. Confirma os campos manualmente.";return;}
+  button.disabled=true;statusEl.textContent="A consultar a segunda leitura opcional em texto…";
+  try{
+   const filtered=typeof anonymizeInvoiceText==="function"?anonymizeInvoiceText(extractedText):String(extractedText);
+   const response=await fetch("/api/ler-fatura-gemini",{method:"POST",cache:"no-store",headers:{"Content-Type":"application/json","Cache-Control":"no-cache"},body:JSON.stringify({consent:true,geminiConsent:true,text:filtered,localWarnings:Array.isArray(localSummary.warnings)?localSummary.warnings:[]})});
+   const payload=await response.json().catch(()=>({}));
+   if(!response.ok)throw new Error(payload.error||"Falha na segunda leitura opcional.");
+   const extracted=payload.extracted||null;
+   if(results){results.style.display="block";results.textContent=extracted?JSON.stringify(extracted,null,2):"O Gemini não devolveu campos estruturados. Mantém-se a confirmação manual.";}
+   window.wivoltaGeminiSecondaryResult={localPreserved:localSummary,geminiExtracted:extracted,requiresManualConfirmation:true,canCompare:false};
+   window.wivoltaComparisonAllowed=false;
+   statusEl.textContent="Segunda leitura concluída. Reveja e confirme manualmente os campos. A comparação continua bloqueada.";
+  }catch(err){statusEl.textContent=err?.message||"Não foi possível obter a segunda leitura.";button.disabled=!checkbox.checked;}
+ };
 }
 function extrairTextoPdf(page){
  return page.getTextContent().then(content=>{
