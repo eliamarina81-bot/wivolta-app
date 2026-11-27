@@ -8,7 +8,12 @@
       "cycle": "tri-horário",
       "source": "https://pt.scribd.com/document/874254518/Fatura-Edp-Maio-234",
       "text": "Data vazio ponta cheias\n2025/06/09 (R) 2585 564 2503\n2025/10/20 (E) 2641 588 2563\nTotal de consumos kWh 56 24 60",
-      "expected": { "vazio": "56", "ponta": "24", "cheias": "60", "simples": "" },
+      "expected": {
+        "vazio": "56",
+        "ponta": "24",
+        "cheias": "60",
+        "simples": ""
+      },
       "notes": "Transcrição do excerto indexado publicamente. Não é o PDF original anexado ao repositório."
     },
     {
@@ -18,7 +23,10 @@
       "cycle": "bi-horário",
       "source": null,
       "text": "Período de consumo\nData Fora de vazio Vazio\n2026/10/01 1200 800\nTotal de consumos kWh 125 75",
-      "expected": { "fora": "125", "vazio": "75" },
+      "expected": {
+        "fora": "125",
+        "vazio": "75"
+      },
       "notes": "Caso sintético para testar a estrutura bi-horária; não representa uma fatura real."
     },
     {
@@ -28,7 +36,13 @@
       "cycle": "simples",
       "source": null,
       "text": "Consumo normal estimado 01 Out 26 a 31 Out 26 140 kWh",
-      "expected": { "simples": "140", "fora": "", "vazio": "", "cheias": "", "ponta": "" },
+      "expected": {
+        "simples": "140",
+        "fora": "",
+        "vazio": "",
+        "cheias": "",
+        "ponta": ""
+      },
       "notes": "Caso sintético para testar a extração de consumo simples."
     },
     {
@@ -40,6 +54,20 @@
       "text": "Data vazio ponta cheias\nTotal de consumos kWh 56 24 60 140",
       "expected": null,
       "notes": "Deve ser rejeitado porque existem quatro valores para três períodos."
+    },
+    {
+      "id": "endesa-bte-public-ambiguous",
+      "kind": "public-pdf-transcription",
+      "supplier": "Endesa",
+      "cycle": "tri-horário",
+      "source": "https://04c3c6d090.cbaul-cdnwnd.com/42fc8f1c44e137e970f0abf66ebf840d/200000020-b55feb65a1/ENDESA%20BTE.pdf",
+      "text": "Ponta\\nCheia\\nVazio\\nCons. Fora Vazio 122.461\\nTR1. 30%<= exc< jok",
+      "expected": {
+        "ponta": "",
+        "cheias": "",
+        "vazio": ""
+      },
+      "notes": "Excerto de fatura BTE pública com estrutura antiga e valores de leitura/consumo próximos. O leitor deve reconhecer a existência de períodos, mas não adivinhar os kWh de cada período."
     }
   ]
 }
