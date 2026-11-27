@@ -83,6 +83,22 @@
         "simples": ""
       },
       "notes": "Transcrição de linhas da tabela de leituras. O detalhe de faturação contém parcelas adicionais, por isso o teste usa a diferença de leituras e não soma linhas de preço/IVA."
+    },
+    {
+      "id": "iberdrola-simple-public-2025",
+      "kind": "public-transcription",
+      "supplier": "Iberdrola",
+      "cycle": "simples",
+      "source": "https://pt.scribd.com/document/981274486/953270130-2025-09-22-16-54-37-004997",
+      "text": "Energia Real: Simples (16/08/2025-27/08/2025) 102 kWh 0,1595 €/kWh\\nEnergia Real: Simples (27/08/2025-16/09/2025) 188 kWh 0,1595 €/kWh",
+      "expected": {
+        "simples": "290",
+        "fora": "",
+        "vazio": "",
+        "cheias": "",
+        "ponta": ""
+      },
+      "notes": "Transcrição de duas linhas explícitas de consumo simples. A soma de subperíodos é 290 kWh."
     }
   ]
 }
