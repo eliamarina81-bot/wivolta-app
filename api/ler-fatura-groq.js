@@ -43,8 +43,16 @@ Regras:
       return res.status(status).json({ error: response.status === 429 ? "O limite de utilização da análise IA foi atingido." : "A análise visual Groq está temporariamente indisponível. Confirme os campos manualmente." });
     }
     const answer = data?.choices?.[0]?.message?.content || "";
-    let extracted;
-    try { extracted = JSON.parse(answer.replace(/^\`\`\`(?:json)?\s*/i, "").replace(/\s*\`\`\`$/, "").trim()); } catch { extracted = null; }
+    let extracted = null;
+    // Alguns modelos acrescentam Markdown ou texto introdutório apesar da instrução JSON.
+    const cleaned = String(answer).trim().replace(/^\x60\x60\x60(?:json)?\s*/i, "").replace(/\s*\x60\x60\x60$/, "").trim();
+    try { extracted = JSON.parse(cleaned); } catch {
+      const start = cleaned.indexOf("{");
+      const end = cleaned.lastIndexOf("}");
+      if (start >= 0 && end > start) {
+        try { extracted = JSON.parse(cleaned.slice(start, end + 1)); } catch { extracted = null; }
+      }
+    }
     if (!extracted || typeof extracted !== "object" || Array.isArray(extracted)) return res.status(502).json({ error: "A análise IA devolveu um formato inválido. Confirme os campos manualmente." });
     const allowed = ["fornecedor","potencia","tarifa","simples","fora","vazio","cheias","ponta","gas","preco_energia","termo_fixo_dia","periodo_fatura","confianca","observacoes"];
     const result = {}; for (const key of allowed) result[key] = typeof extracted[key] === "string" ? extracted[key].slice(0, 300) : "";
