@@ -178,7 +178,16 @@ footer a{color:#678c20!important}
 <p id="ocr-groq-consent-record" style="font-size:11px;color:#64748b;margin-top:7px" aria-live="polite">Não existe autorização ativa para a Groq. O registo fica apenas neste dispositivo/navegador.</p>
 <button id="ocr-groq-button" type="button" onclick="analisarComGroq()" style="margin-top:10px;padding:11px 14px;border:0;border-radius:8px;background:#20231f;color:white;font-weight:700;width:100%">✨ Analisar consumos com Groq</button>
 <p id="ocr-groq-status" style="font-size:12px;color:#475569;margin-top:8px" aria-live="polite">A leitura local continua disponível sem autorizar o envio à Groq.</p>
-</div></div><details style="margin-top:12px"><summary>Texto reconhecido (para conferência)</summary><textarea id="ocr-texto" rows="8" style="width:100%;margin-top:8px"></textarea></details><p style="font-size:12px;color:#64748b;margin-top:10px">O OCR é experimental. Valores, códigos e períodos devem ser confirmados manualmente. No gás, esta versão só identifica consumos expressos em kWh; não converte m³ automaticamente. Esta versão não envia a fatura nem calcula uma mudança de contrato.</p><button type="button" onclick="limparLeitura()" style="margin-top:10px;padding:10px;border-radius:8px;border:1px solid #cbd5e1;background:#fff">Limpar leitura</button></div></section>
+</div></div><details style="margin-top:12px"><summary>Texto reconhecido (para conferência)</summary><textarea id="ocr-texto" rows="8" style="width:100%;margin-top:8px"></textarea><div id="wivolta-gemini-opt-panel" style="display:none;margin-top:12px;padding:12px;border:1px solid #d1d5db;border-radius:8px">
+<p style="margin:0 0 8px">A leitura local encontrou avisos ou campos por confirmar. Podes pedir uma segunda leitura em texto com o Gemini. Não são enviadas imagens nem CPE/CUI; os dados pessoais identificáveis são filtrados antes do envio.</p>
+<label style="display:flex;align-items:flex-start;gap:8px;margin-bottom:10px;cursor:pointer">
+<input type="checkbox" id="wivolta-gemini-consent-checkbox">
+<span>Autorizo explicitamente o envio do texto filtrado da fatura para a segunda leitura opcional no Gemini. Esta autorização é independente de qualquer outra ferramenta. Posso continuar sem esta análise.</span>
+</label>
+<button type="button" id="wivolta-btn-pedir-gemini" disabled style="padding:11px 14px;border:0;border-radius:8px;background:#0f766e;color:#fff;font-weight:700">Pedir segunda leitura ao Gemini</button>
+<div id="wivolta-gemini-status" role="status" aria-live="polite" style="margin-top:8px;font-size:.92em"></div>
+<div id="wivolta-gemini-results" style="display:none;margin-top:10px"></div>
+</div></details><p style="font-size:12px;color:#64748b;margin-top:10px">O OCR é experimental. Valores, códigos e períodos devem ser confirmados manualmente. No gás, esta versão só identifica consumos expressos em kWh; não converte m³ automaticamente. Esta versão não envia a fatura nem calcula uma mudança de contrato.</p><button type="button" onclick="limparLeitura()" style="margin-top:10px;padding:10px;border-radius:8px;border:1px solid #cbd5e1;background:#fff">Limpar leitura</button></div></section>
 
         <!-- 2. Análise de ofertas -->
         <section id="simulador" class="card"><h2>Vamos encontrar uma opção adequada ao teu consumo</h2><p class="subtitle">Consulta ofertas de eletricidade disponíveis para particulares e empresas. Usamos os dados de consumo e potência para comparar condições; depois explicamos-te os resultados e ajudamos-te a decidir. Não é uma adesão automática.</p><div class="ocr-grid"><div class="ocr-field"><label for="of-segmento">Tipo de cliente</label><select id="of-segmento"><option value="residencial">Particular</option><option value="empresarial">Empresa</option></select></div><div class="ocr-field"><label for="of-consumo">Consumo anual (kWh)</label><input id="of-consumo" type="number" min="0" value="3500"></div><div class="ocr-field"><label for="of-potencia">Potência contratada (kVA)</label><select id="of-potencia"><option value="1.15">1,15</option><option value="2.3">2,30</option><option value="3.45">3,45</option><option value="4.6">4,60</option><option value="5.75">5,75</option><option value="6.9" selected>6,90</option><option value="10.35">10,35</option><option value="13.8">13,80</option><option value="17.25">17,25</option><option value="20.7">20,70</option></select></div><div class="ocr-field"><label for="of-ciclo">Ciclo horário</label><select id="of-ciclo"><option value="simples">Simples</option><option value="bi-horario">Bi-horário</option></select></div><div class="ocr-field" id="of-vazio-wrap" style="display:none"><label for="of-vazio">Consumo em vazio (%)</label><input id="of-vazio" type="number" min="0" max="100" step="1" placeholder="Indique a percentagem real (0–100)"></div></div><button id="of-comparar" type="button" class="btn-primary" style="margin-top:12px;background:#0d9488">Ver ofertas para o meu consumo</button><div id="of-resultados" style="margin-top:16px" aria-live="polite"></div><p style="font-size:12px;color:#64748b;margin-top:12px">Valores sem IVA. Os descontos dependem das condições indicadas em cada campanha. O custo de serviços opcionais não está incluído. Estimativa de energia + termo fixo; não inclui impostos, taxas ou outros encargos. Confirme sempre a proposta contratual.</p></section>
@@ -449,7 +458,46 @@ function parseFaturaText(text){
  const nif=findNif(clean),cpe=findCode(clean,"CPE"),cui=findCode(clean,"CUI");
  return {fornecedor,titular:findTitular(clean),morada:findMorada(clean),nif,cpe,cui,potencia:findPower(clean),tarifa:hourly?.tarifa||structured.ciclo||tarifa,simples:(hourly||hasHourlyLabels)?"":safeSimple,fora:hourly?.values.fora||"",vazio:hourly?.values.vazio||"",cheias:hourly?.values.cheias||"",ponta:hourly?.values.ponta||"",gas:cleanValue(gasMatch?.[1]),warnings,validacao:{nif:validateNif(nif),cpe:validateCpe(cpe),cui:validateCui(cui)}};
 }
-function mostrarCampos(d,text){const keys={fornecedor:"ocr-fornecedor",titular:"ocr-titular",morada:"ocr-morada",nif:"ocr-nif",cpe:"ocr-cpe",cui:"ocr-cui",potencia:"ocr-potencia",tarifa:"ocr-tarifa",simples:"ocr-simples",fora:"ocr-fora",vazio:"ocr-vazio",cheias:"ocr-cheias",ponta:"ocr-ponta",gas:"ocr-gas"};for(const [k,id] of Object.entries(keys))$(id).value=d[k]||"";const status=[];if(d.nif)status.push("NIF/NIPC: "+(d.validacao.nif?"checksum OK":"checksum inválido"));if(d.cpe)status.push("CPE: "+(d.validacao.cpe?"estrutura OK":"estrutura inválida"));if(d.cui)status.push("CUI: "+(d.validacao.cui?"estrutura OK":"estrutura inválida"));const warningText=Array.isArray(d.warnings)&&d.warnings.length?" Avisos de leitura: "+d.warnings.join(" "):"";$("ocr-validacao").textContent=(status.length?status.join(" · ")+" (CPE/CUI sem validação de dígitos de controlo)":"Não foram detetados códigos para validar.")+warningText;$("ocr-texto").value=text;$("ocr-resultados").classList.remove("hidden");}
+function mostrarCampos(d,text){window.wivoltaLocalInvoiceSummary=getWivoltaLocalSummary(d);const geminiPanel=$("wivolta-gemini-opt-panel");if(geminiPanel)geminiPanel.style.display=shouldOfferSecondaryGeminiReading(window.wivoltaLocalInvoiceSummary)?"block":"none";const geminiConsent=$("wivolta-gemini-consent-checkbox");if(geminiConsent){geminiConsent.checked=false;$("wivolta-btn-pedir-gemini").disabled=true;$("wivolta-gemini-status").textContent="";$("wivolta-gemini-results").style.display="none";}const keys={fornecedor:"ocr-fornecedor",titular:"ocr-titular",morada:"ocr-morada",nif:"ocr-nif",cpe:"ocr-cpe",cui:"ocr-cui",potencia:"ocr-potencia",tarifa:"ocr-tarifa",simples:"ocr-simples",fora:"ocr-fora",vazio:"ocr-vazio",cheias:"ocr-cheias",ponta:"ocr-ponta",gas:"ocr-gas"};for(const [k,id] of Object.entries(keys))$(id).value=d[k]||"";const status=[];if(d.nif)status.push("NIF/NIPC: "+(d.validacao.nif?"checksum OK":"checksum inválido"));if(d.cpe)status.push("CPE: "+(d.validacao.cpe?"estrutura OK":"estrutura inválida"));if(d.cui)status.push("CUI: "+(d.validacao.cui?"estrutura OK":"estrutura inválida"));const warningText=Array.isArray(d.warnings)&&d.warnings.length?" Avisos de leitura: "+d.warnings.join(" "):"";$("ocr-validacao").textContent=(status.length?status.join(" · ")+" (CPE/CUI sem validação de dígitos de controlo)":"Não foram detetados códigos para validar.")+warningText;$("ocr-texto").value=text;$("ocr-resultados").classList.remove("hidden");}
+document.addEventListener("DOMContentLoaded",setupWivoltaGeminiPanel);
+function shouldOfferSecondaryGeminiReading(localSummary={}){
+ const hasWarnings=Array.isArray(localSummary.warnings)&&localSummary.warnings.length>0;
+ const missingCoreFields=localSummary.consumoKwh===null||localSummary.consumoKwh===undefined||!localSummary.ciclo||!localSummary.fornecedor;
+ return Boolean(hasWarnings||missingCoreFields);
+}
+function getWivoltaLocalSummary(d){
+ const nums=["simples","fora","vazio","cheias","ponta"].map(k=>Number(String(d[k]||"").replace(",","."))).filter(n=>Number.isFinite(n)&&n>0);
+ const total=nums.length?nums.reduce((a,b)=>a+b,0):null;
+ return {fornecedor:d.fornecedor||"",ciclo:d.tarifa||"",consumoKwh:total,warnings:Array.isArray(d.warnings)?d.warnings:[]};
+}
+async function runOptionalGeminiSecondaryCheck(){
+ const panel=$("wivolta-gemini-opt-panel"),consent=$("wivolta-gemini-consent-checkbox"),button=$("wivolta-btn-pedir-gemini"),status=$("wivolta-gemini-status"),results=$("wivolta-gemini-results");
+ const local=window.wivoltaLocalInvoiceSummary||{};
+ if(!shouldOfferSecondaryGeminiReading(local)){status.textContent="A segunda leitura não é necessária: a leitura local não apresenta avisos nem campos essenciais em falta.";return;}
+ if(!consent.checked){status.textContent="Marca a autorização específica para pedir a segunda leitura.";return;}
+ const raw=window.wivoltaOcrText||$("ocr-texto").value||"";
+ if(!raw.trim()){status.textContent="Não existe texto extraído para enviar. A leitura local mantém-se disponível.";return;}
+ button.disabled=true;status.textContent="A enviar apenas texto filtrado para a segunda leitura…";results.style.display="none";results.textContent="";
+ try{
+  const filtered=typeof anonymizeInvoiceText==="function"?anonymizeInvoiceText(raw):raw;
+  const response=await fetch("/api/ler-fatura-gemini",{method:"POST",cache:"no-store",headers:{"Content-Type":"application/json","Cache-Control":"no-cache"},body:JSON.stringify({consent:true,text:filtered,localWarnings:local.warnings||[]})});
+  const payload=await response.json().catch(()=>({}));
+  if(!response.ok)throw new Error(payload.error||"Falha na segunda leitura opcional.");
+  const extracted=payload.extracted||null;
+  results.style.display="block";
+  results.textContent=extracted?JSON.stringify(extracted,null,2):"O Gemini não devolveu campos estruturados. Mantém-se a confirmação manual.";
+  status.textContent="Segunda leitura recebida. Os dados locais não foram alterados. Confirma manualmente todos os valores; a comparação continua bloqueada.";
+  window.wivoltaGeminiSecondaryResult={local,secondaryGemini:extracted,requiresManualConfirmation:true,canCompare:false};
+ }catch(error){status.textContent=error?.message||"Não foi possível concluir a segunda leitura.";}
+ finally{button.disabled=!consent.checked;}
+}
+function setupWivoltaGeminiPanel(){
+ const consent=$("wivolta-gemini-consent-checkbox"),button=$("wivolta-btn-pedir-gemini");
+ if(!consent||!button)return;
+ consent.checked=false;button.disabled=true;
+ consent.addEventListener("change",()=>{button.disabled=!consent.checked;if(!consent.checked)$("wivolta-gemini-status").textContent="Autorização não ativa. A leitura local continua disponível.";});
+ button.addEventListener("click",runOptionalGeminiSecondaryCheck);
+}
 function extrairTextoPdf(page){
  return page.getTextContent().then(content=>{
   const items=(content.items||[]).map(item=>{
