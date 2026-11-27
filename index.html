@@ -380,8 +380,7 @@ async function processarFatura(event){
     if(consumoDetetado(parseFaturaText(ocrText))>=parsedText&&ocrText.trim())text=ocrText;
    }
    if(pdf.numPages>5)text+="\n[Nota: apenas as primeiras 5 páginas foram lidas.]";
-  }else{
-   if(!window.Tesseract)throw new Error("A biblioteca OCR não carregou. Verifique a ligação à internet e tente novamente.");
+  }else if(window.Tesseract){
    status.textContent="OCR local a processar imagem…";
    worker=await Tesseract.createWorker("por",1,{logger:m=>{if(m.status==="recognizing text")status.textContent="A ler fatura… "+Math.round((m.progress||0)*100)+"%";}});
    const result=await worker.recognize(file);text=result.data.text;
