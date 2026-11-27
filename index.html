@@ -474,7 +474,7 @@ const GROQ_CONSENT_VERSION="2026-11-25-v1";
 async function analisarComGroq(){
  const consent=$("ocr-groq-consent"),status=$("ocr-groq-status"),button=$("ocr-groq-button");
  const raw=window.wivoltaOcrText||$("ocr-texto").value||"";
- if(!raw.trim()&&!Array.isArray(window.wivoltaOcrImages)){status.textContent="Primeiro selecione uma fatura.";return;}
+ if(!raw.trim()&&!(Array.isArray(window.wivoltaOcrImages)&&window.wivoltaOcrImages.length)){status.textContent="Primeiro selecione uma fatura.";return;}
  if(!consent.checked){status.textContent="Para usar a Groq, marque primeiro a autorização específica para este prestador.";return;}
  const safeText=anonymizeInvoiceText(raw);
  const images=Array.isArray(window.wivoltaOcrImages)?window.wivoltaOcrImages:[];
