@@ -29,6 +29,16 @@ const parserEnd = html.indexOf("function mostrarCampos", parserStart);
 assert.ok(parserStart >= 0 && parserEnd > parserStart, "Parser de faturas encontrado no index.html");
 vm.runInContext(html.slice(parserStart, parserEnd), context);
 
+test("Galp real: soma apenas energia simples da comercialização, mesmo com quebras de linha", () => {
+  const f = fixtures["galp-simple-commercial-public-structure"];
+  const result = context.parseFaturaText(f.text);
+  assert.equal(result.fornecedor, "Galp");
+  assert.equal(result.tarifa, "simples/por confirmar");
+  assert.equal(result.simples, "371");
+  assert.equal(result.fora, "");
+  assert.equal(result.vazio, "");
+});
+
 test("EDP público: separa os três períodos sem criar consumo simples", () => {
   const f = fixtures["edp-tri-publico-2025"];
   const result = context.parseFaturaText(f.text);
