@@ -6,7 +6,7 @@ export default async function handler(req, res) {
     let body = req.body;
     if (typeof body === "string") { try { body = JSON.parse(body); } catch { body = {}; } }
     const text = typeof body?.text === "string" ? body.text.trim() : "";
-    const images = Array.isArray(body?.images) ? body.images.slice(0, 5) : [];
+    const images = Array.isArray(body?.images) ? body.images.slice(0, 3) : [];
     if (!text && !images.length) return res.status(400).json({ error: "Não foi recebido texto nem imagem da fatura." });
     if (text.length > 14000) return res.status(413).json({ error: "Texto demasiado extenso para análise." });
     const safeImages = [];
