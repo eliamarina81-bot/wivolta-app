@@ -17,8 +17,8 @@ test("calcula bi-horário com percentagem real em vazio", () => {
 
 test("calcula tri-horário com três períodos", () => {
   const result = calculateAnnualOfferCost({preco_ponta:0.4,preco_cheias:0.2,preco_vazio:0.1,termo_fixo_dia:0.2},{annualKwh:3000,cycle:"tri-horario",peakPercent:20,shoulderPercent:45,offPeakPercent:35});
-  assert.equal(result.energy,615);
-  assert.equal(result.total,688);
+  assert.ok(Math.abs(result.energy - 615) < 1e-9);
+  assert.ok(Math.abs(result.total - 688) < 1e-9);
 });
 
 test("aplica desconto ao termo de energia apenas quando o âmbito é explícito", () => {
