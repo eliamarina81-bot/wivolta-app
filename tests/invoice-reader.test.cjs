@@ -37,6 +37,14 @@ test("Galp real: soma apenas energia simples da comercialização, mesmo com que
   assert.equal(result.simples, "371");
   assert.equal(result.fora, "");
   assert.equal(result.vazio, "");
+  const sectionResult = context.extractGalpCommercializationKwh(f.text);
+  assert.deepEqual(Array.from(sectionResult.rows), [200, 171]);
+  assert.equal(sectionResult.totalKwh, 371);
+});
+
+test("Galp: não extrai consumos se faltar o limite da secção de comercialização", () => {
+  const ambiguous = "Galp\\nEnergia Simples (medida) 200 kWh\\nISPE 200 kWh";
+  assert.equal(context.extractGalpCommercializationKwh(ambiguous), null);
 });
 
 test("EDP público: separa os três períodos sem criar consumo simples", () => {
