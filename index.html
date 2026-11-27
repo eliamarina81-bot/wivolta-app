@@ -312,7 +312,7 @@ function parseHourlyConsumptionTable(text){
   const headerClean=header.replace(/fora de vazio|fora vazio/g,"fora");
   const words=headerClean.split(" ");
   const has=(w)=>words.includes(w);
-  const tri=has("vazio")&&has("cheias")&&has("ponta");
+  const tri=has("vazio")&&(has("cheia")||has("cheias"))&&has("ponta");
   const bi=!tri&&has("fora")&&has("vazio");
   if(!tri&&!bi)continue;
   const labels=tri?["vazio","ponta","cheias"]:["fora","vazio"];
@@ -336,7 +336,7 @@ function parseHourlyConsumptionTable(text){
 function parseFaturaText(text){
  const clean=String(text||"").replace(/\u00a0/g," ");
  const normalized=normalizeOcrLine(clean);
- const hasPonta=/\bponta\b/.test(normalized),hasCheias=/\bcheias\b/.test(normalized),hasVazio=/\bvazio\b/.test(normalized),hasFora=/fora[ -]de[ -]vazio/.test(normalized);
+ const hasPonta=/\bponta\b/.test(normalized),hasCheias=/\bcheias?\b/.test(normalized),hasVazio=/\bvazio\b/.test(normalized),hasFora=/fora[ -]de[ -]vazio/.test(normalized);
  const tarifa=(hasPonta&&hasCheias&&hasVazio)?"tri-horário":((hasFora||hasVazio)&&!hasPonta)?"bi-horário":"simples/por confirmar";
  let fornecedor="";for(const n of ["EDP","Endesa","Galp","Iberdrola","Repsol","MEO","Goldenergy","G9","Ibelectra","Luzboa","Plenitude","Eni"])if(new RegExp("\\b"+n+"\\b","i").test(clean)){fornecedor=n;break;}
  // Nas faturas Galp, "Energia Simples (medida)" pode surgir em duas linhas,
