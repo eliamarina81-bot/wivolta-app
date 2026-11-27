@@ -22,8 +22,9 @@ const context = vm.createContext({
   console
 });
 
+const simpleParserStart = html.indexOf("function parseSimpleConsumptionRows(text){");
 const meterParserStart = html.indexOf("function parseMeterReadingTable(text){");
-const parserStart = meterParserStart >= 0 ? meterParserStart : html.indexOf("function parseHourlyConsumptionTable(text){");
+const parserStart = simpleParserStart >= 0 ? simpleParserStart : (meterParserStart >= 0 ? meterParserStart : html.indexOf("function parseHourlyConsumptionTable(text){"));
 const parserEnd = html.indexOf("function mostrarCampos", parserStart);
 assert.ok(parserStart >= 0 && parserEnd > parserStart, "Parser de faturas encontrado no index.html");
 vm.runInContext(html.slice(parserStart, parserEnd), context);
@@ -36,6 +37,15 @@ test("EDP público: separa os três períodos sem criar consumo simples", () => 
   assert.equal(result.ponta, f.expected.ponta);
   assert.equal(result.cheias, f.expected.cheias);
   assert.equal(result.simples, "");
+});
+
+test("Iberdrola público: soma subperíodos explicitamente simples", () => {
+  const f = fixtures["iberdrola-simple-public-2025"];
+  const result = context.parseFaturaText(f.text);
+  assert.equal(result.tarifa, "simples/por confirmar");
+  assert.equal(result.simples, f.expected.simples);
+  assert.equal(result.fora, "");
+  assert.equal(result.vazio, "");
 });
 
 test("Goldenergy público: extrai leituras tri-horárias e ignora parcelas faturadas", () => {
