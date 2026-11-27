@@ -47,3 +47,23 @@ test("valida percentagens de ciclos bi e tri-horários", () => {
   assert.equal(validateProfile({annualKwh:3000,powerKva:6.9,cycle:"bi-horario",offPeakPercent:40}),"");
   assert.match(validateProfile({annualKwh:3000,powerKva:6.9,cycle:"tri-horario",peakPercent:20,shoulderPercent:40,offPeakPercent:30}),/somar 100/);
 });
+
+import { annualizeInvoiceConsumption } from "../comparison-engine.mjs";
+
+test("annualizes bi-hourly invoice consumption and preserves real period shares", () => {
+  const result = annualizeInvoiceConsumption({cycle:"bi-horário",outside:"180",offPeak:"120",periodMonths:2});
+  assert.equal(result.annualKwh,1800);
+  assert.equal(result.offPeakPercent,40);
+});
+
+test("annualizes tri-hourly invoice consumption using three actual readings", () => {
+  const result = annualizeInvoiceConsumption({cycle:"tri-horário",peak:"20",shoulder:"45",offPeak:"35",periodMonths:1});
+  assert.equal(result.annualKwh,1200);
+  assert.ok(Math.abs(result.peakPercent-20)<1e-9);
+  assert.ok(Math.abs(result.shoulderPercent-45)<1e-9);
+  assert.ok(Math.abs(result.offPeakPercent-35)<1e-9);
+});
+
+test("refuses to annualize an invoice when a required hourly period is missing", () => {
+  assert.equal(annualizeInvoiceConsumption({cycle:"bi-horário",outside:"100",offPeak:"",periodMonths:1}),null);
+});
