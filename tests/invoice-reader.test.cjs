@@ -37,6 +37,15 @@ test("EDP público: separa os três períodos sem criar consumo simples", () => 
   assert.equal(result.simples, "");
 });
 
+test("Endesa BTE público: reconhece períodos mas não adivinha consumos", () => {
+  const f = fixtures["endesa-bte-public-ambiguous"];
+  const result = context.parseFaturaText(f.text);
+  assert.equal(result.tarifa, "tri-horário");
+  assert.equal(result.ponta, "");
+  assert.equal(result.cheias, "");
+  assert.equal(result.vazio, "");
+});
+
 test("Bi-horário: identifica fora de vazio e vazio", () => {
   const f = fixtures["synthetic-bi-hourly"];
   const result = context.parseFaturaText(f.text);
