@@ -1,0 +1,77 @@
+const test = require("node:test");
+const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const vm = require("node:vm");
+
+const html = fs.readFileSync(require("node:path").join(__dirname, "..", "index.html"), "utf8");
+const fixtureFile = JSON.parse(fs.readFileSync(require("node:path").join(__dirname, "fixtures", "invoice-reader-fixtures.json"), "utf8"));
+const fixtures = Object.fromEntries(fixtureFile.fixtures.map(item => [item.id, item]));
+
+const context = vm.createContext({
+  normalizeOcrLine(value) {
+    return String(value || "").normalize("NFD").replace(/[\\u0300-\\u036f]/g, "").toLowerCase();
+  },
+  findNif: () => "",
+  findCode: () => "",
+  findPower: () => "",
+  findTitular: () => "",
+  findMorada: () => "",
+  validateNif: () => false,
+  validateCpe: () => false,
+  validateCui: () => false,
+  console
+});
+
+const parserStart = html.indexOf("function parseHourlyConsumptionTable(text){");
+const parserEnd = html.indexOf("function mostrarCampos", parserStart);
+assert.ok(parserStart >= 0 && parserEnd > parserStart, "Parser de faturas encontrado no index.html");
+vm.runInContext(html.slice(parserStart, parserEnd), context);
+
+test("EDP público: separa os três períodos sem criar consumo simples", () => {
+  const f = fixtures["edp-tri-publico-2025"];
+  const result = context.parseFaturaText(f.text);
+  assert.equal(result.tarifa, "tri-horário");
+  assert.equal(result.vazio, f.expected.vazio);
+  assert.equal(result.ponta, f.expected.ponta);
+  assert.equal(result.cheias, f.expected.cheias);
+  assert.equal(result.simples, "");
+});
+
+test("Bi-horário: identifica fora de vazio e vazio", () => {
+  const f = fixtures["synthetic-bi-hourly"];
+  const result = context.parseFaturaText(f.text);
+  assert.equal(result.tarifa, "bi-horário");
+  assert.equal(result.fora, f.expected.fora);
+  assert.equal(result.vazio, f.expected.vazio);
+});
+
+test("Simples: lê consumo normal estimado quando não há tabela horária", () => {
+  const f = fixtures["synthetic-simple"];
+  const result = context.parseFaturaText(f.text);
+  assert.equal(result.simples, f.expected.simples);
+  assert.equal(result.tarifa, "simples/por confirmar");
+});
+
+test("Tabela tri-horária ambígua: não escolhe números à sorte", () => {
+  const f = fixtures["synthetic-tri-ambiguous"];
+  assert.equal(context.parseHourlyConsumptionTable(f.text), null);
+});
+
+test("PDF.js: recompõe texto pela posição x/y e mantém a ordem das colunas", async () => {
+  const start = html.indexOf("function extrairTextoPdf(page){");
+  const end = html.indexOf("async function processarFatura", start);
+  assert.ok(start >= 0 && end > start, "Função extrairTextoPdf encontrada");
+  vm.runInContext(html.slice(start, end), context);
+  const items = [
+    { str: "Total de consumos", width: 80, height: 10, transform: [1,0,0,10,10,100] },
+    { str: "kWh", width: 18, height: 10, transform: [1,0,0,10,95,100] },
+    { str: "56", width: 12, height: 10, transform: [1,0,0,10,120,100] },
+    { str: "24", width: 12, height: 10, transform: [1,0,0,10,145,100] },
+    { str: "60", width: 12, height: 10, transform: [1,0,0,10,170,100] },
+    { str: "Data", width: 20, height: 10, transform: [1,0,0,10,10,80] }
+  ];
+  const output = await context.extrairTextoPdf({ getTextContent: async () => ({ items }) });
+  assert.match(output, /Total de consumos kWh 56 24 60/);
+  assert.match(output, /Data/);
+  assert.ok(output.indexOf("Total de consumos") < output.indexOf("Data"));
+});
