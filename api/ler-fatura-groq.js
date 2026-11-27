@@ -30,7 +30,7 @@ Regras:
 - Se houver contradições, deixa vazio e explica em observações.`;
     const userContent = [{ type: "text", text: "Analisa esta fatura. O texto seguinte foi filtrado automaticamente e pode estar incompleto:\n" + text }];
     for (const image of safeImages) userContent.push({ type: "image_url", image_url: { url: image } });
-    const model = safeImages.length ? "meta-llama/llama-4-scout-17b-16e-instruct" : "openai/gpt-oss-20b";
+    const model = safeImages.length ? "qwen/qwen3.8-27b" : "openai/gpt-oss-20b";
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST", headers: { "Authorization": "Bearer " + apiKey, "Content-Type": "application/json" },
       body: JSON.stringify({ model, messages: [{ role: "system", content: instructions }, { role: "user", content: safeImages.length ? userContent : userContent[0].text }], temperature: 0.1, max_tokens: 1400 })
