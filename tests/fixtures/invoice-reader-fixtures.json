@@ -1,0 +1,45 @@
+{
+  "description": "Fixtures de regressão para o leitor local Wivolta. Valores do exemplo público são usados apenas para testar a extração, não como tarifários.",
+  "fixtures": [
+    {
+      "id": "edp-tri-publico-2025",
+      "kind": "public-transcription",
+      "supplier": "EDP",
+      "cycle": "tri-horário",
+      "source": "https://pt.scribd.com/document/874254518/Fatura-Edp-Maio-234",
+      "text": "Data vazio ponta cheias\n2025/06/09 (R) 2585 564 2503\n2025/10/20 (E) 2641 588 2563\nTotal de consumos kWh 56 24 60",
+      "expected": { "vazio": "56", "ponta": "24", "cheias": "60", "simples": "" },
+      "notes": "Transcrição do excerto indexado publicamente. Não é o PDF original anexado ao repositório."
+    },
+    {
+      "id": "synthetic-bi-hourly",
+      "kind": "synthetic-regression",
+      "supplier": "Exemplo fictício",
+      "cycle": "bi-horário",
+      "source": null,
+      "text": "Período de consumo\nData Fora de vazio Vazio\n2026/10/01 1200 800\nTotal de consumos kWh 125 75",
+      "expected": { "fora": "125", "vazio": "75" },
+      "notes": "Caso sintético para testar a estrutura bi-horária; não representa uma fatura real."
+    },
+    {
+      "id": "synthetic-simple",
+      "kind": "synthetic-regression",
+      "supplier": "Exemplo fictício",
+      "cycle": "simples",
+      "source": null,
+      "text": "Consumo normal estimado 01 Out 26 a 31 Out 26 140 kWh",
+      "expected": { "simples": "140", "fora": "", "vazio": "", "cheias": "", "ponta": "" },
+      "notes": "Caso sintético para testar a extração de consumo simples."
+    },
+    {
+      "id": "synthetic-tri-ambiguous",
+      "kind": "synthetic-regression",
+      "supplier": "Exemplo fictício",
+      "cycle": "tri-horário",
+      "source": null,
+      "text": "Data vazio ponta cheias\nTotal de consumos kWh 56 24 60 140",
+      "expected": null,
+      "notes": "Deve ser rejeitado porque existem quatro valores para três períodos."
+    }
+  ]
+}
