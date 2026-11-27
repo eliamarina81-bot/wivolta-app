@@ -468,7 +468,7 @@ function shouldOfferSecondaryGeminiReading(localSummary={}){
 function getWivoltaLocalSummary(d){
  const nums=["simples","fora","vazio","cheias","ponta"].map(k=>Number(String(d[k]||"").replace(",","."))).filter(n=>Number.isFinite(n)&&n>0);
  const total=nums.length?nums.reduce((a,b)=>a+b,0):null;
- return {fornecedor:d.fornecedor||"",ciclo:d.tarifa||"",consumoKwh:total,warnings:Array.isArray(d.warnings)?d.warnings:[]};
+ const tariff=String(d.tarifa||"").toLowerCase();const ciclo=/tri/.test(tariff)?"tri-horário":/bi/.test(tariff)?"bi-horário":/simples/.test(tariff)&&!/por confirmar/.test(tariff)?"simples":null;\n return {fornecedor:d.fornecedor||"",ciclo,consumoKwh:total,warnings:Array.isArray(d.warnings)?d.warnings:[]};
 }
 async function runOptionalGeminiSecondaryCheck(){
  const panel=$("wivolta-gemini-opt-panel"),consent=$("wivolta-gemini-consent-checkbox"),button=$("wivolta-btn-pedir-gemini"),status=$("wivolta-gemini-status"),results=$("wivolta-gemini-results");
