@@ -37,6 +37,16 @@ test("EDP público: separa os três períodos sem criar consumo simples", () => 
   assert.equal(result.simples, "");
 });
 
+test("Goldenergy público: extrai leituras tri-horárias e ignora parcelas faturadas", () => {
+  const f = fixtures["goldenergy-tri-publico-2025"];
+  const result = context.parseFaturaText(f.text);
+  assert.equal(result.tarifa, "tri-horário");
+  assert.equal(result.vazio, f.expected.vazio);
+  assert.equal(result.ponta, f.expected.ponta);
+  assert.equal(result.cheias, f.expected.cheias);
+  assert.equal(result.simples, "");
+});
+
 test("Endesa BTE público: reconhece períodos mas não adivinha consumos", () => {
   const f = fixtures["endesa-bte-public-ambiguous"];
   const result = context.parseFaturaText(f.text);
