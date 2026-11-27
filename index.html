@@ -345,7 +345,7 @@ function parseFaturaText(text){
  const galpCommercialSection=/\bgalp\b/i.test(clean)&&/comercializa[cç][aã]o/i.test(clean)&&/tarifas? de acesso/i.test(clean)
   ? clean.split(/tarifas? de acesso/i)[0]
   : clean;
- const measuredSimpleRows=[...galpCommercialSection.matchAll(/energia\s+simples\s*\(\s*medida\s*\)[^\n]{0,180}?((?:\d{1,3}(?:[ .]\d{3})+|\d+)(?:[,\.]\d{1,3})?)\s*k\s*w\s*h/gi)];
+ const measuredSimpleRows=[...galpCommercialSection.matchAll(/energia\s+simples\s*\(\s*medida\s*\)[\s\S]{0,180}?((?:\d{1,3}(?:[ .]\d{3})+|\d+)(?:[,\.]\d{1,3})?)\s*k\s*w\s*h/gi)];
  const parseKwhNumber=value=>Number(String(value||"").replace(/[ .](?=\d{3}(?:[,\.]|$))/g,"").replace(",","."));
  const measuredSimpleTotal=measuredSimpleRows.reduce((sum,row)=>sum+parseKwhNumber(row[1]),0);
  const simpleRows=parseSimpleConsumptionRows(clean);
