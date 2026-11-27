@@ -267,30 +267,28 @@ function parseHourlyConsumptionTable(text){
  const lines=String(text||"").split(/\r?\n/).map(x=>x.replace(/\u00a0/g," ").trim()).filter(Boolean);
  const norm=s=>normalizeOcrLine(s).replace(/[^a-z0-9 ]/g," ").replace(/\s+/g," ").trim();
  const numberTokens=s=>(String(s||"").match(/\d{1,3}(?:[ .]\d{3})+(?:[,\.]\d+)?|\d+(?:[,\.]\d+)?/g)||[]).map(v=>v.replace(/[ .](?=\d{3}(?:[,\.]|$))/g,"").replace(",","."));
- const hasLabel=(s,label)=>new RegExp("(^| )"+label+"( |$)").test(s);
  for(let i=0;i<lines.length;i++){
-  // PDF.js e OCR podem separar os cabeçalhos das colunas por várias linhas.
-  const headerParts=lines.slice(i,Math.min(lines.length,i+3));
-  const header=norm(headerParts.join(" "));
-  const tri=hasLabel(header,"vazio")&&hasLabel(header,"cheias")&&hasLabel(header,"ponta");
-  const bi=hasLabel(header,"vazio")&&(header.includes("fora de vazio")||header.includes("fora vazio"));
+  const header=norm(lines.slice(i,Math.min(lines.length,i+3)).join(" "));
+  const headerClean=header.replace(/fora de vazio|fora vazio/g,"fora");
+  const words=headerClean.split(" ");
+  const has=(w)=>words.includes(w);
+  const tri=has("vazio")&&has("cheias")&&has("ponta");
+  const bi=!tri&&has("fora")&&has("vazio");
   if(!tri&&!bi)continue;
-  const labels=(tri?["vazio","ponta","cheias"]:["vazio","fora"]).sort((a,b)=>header.indexOf(a)-header.indexOf(b));
-  // Localiza a linha total de consumos, admitindo cabeçalho e unidade em linhas separadas.
-  for(let j=i+1;j<Math.min(lines.length,i+10);j++){
+  const labels=tri?["vazio","ponta","cheias"]:["fora","vazio"];
+  // Só aceita uma linha explicitamente identificada como total de consumo e com
+  // exatamente um valor por período. Valores extra tornam a leitura ambígua.
+  for(let j=i+1;j<Math.min(lines.length,i+9);j++){
    const row=norm(lines[j]);
-   if(!/(total|consumo|energia)/.test(row))continue;
-   const combined=lines.slice(j,Math.min(lines.length,j+2)).join(" ");
-   if(!/k\s*w\s*h/i.test(combined))continue;
-   const all=numberTokens(lines[j]);
-   let nums=all;
-   // Se a unidade e os números estiverem em linhas distintas, recolhe os números da linha seguinte.
-   if(nums.length<labels.length&&j+1<lines.length)nums=numberTokens(lines[j+1]);
-   if(nums.length<labels.length)continue;
-   // Em linhas de total, os últimos N valores correspondem às colunas horárias; evita datas/IDs anteriores.
-   nums=nums.slice(-labels.length);
-   const values={};labels.forEach((label,k)=>values[label]=nums[k]);
-   return {values,tarifa:tri?"tri-horário":"bi-horário"};
+   if(!/(total de consumos|total consumos|consumo total)/.test(row))continue;
+   const candidateLines=[lines[j],lines[j+1]||""];
+   for(const candidate of candidateLines){
+    if(!/k\s*w\s*h/i.test(candidate)&&candidate===lines[j])continue;
+    const nums=numberTokens(candidate);
+    if(nums.length!==labels.length)continue;
+    const values={};labels.forEach((label,k)=>values[label]=nums[k]);
+    return {values,tarifa:tri?"tri-horário":"bi-horário",confidence:"medium"};
+   }
   }
  }
  return null;
@@ -320,15 +318,36 @@ function parseFaturaText(text){
 function mostrarCampos(d,text){const keys={fornecedor:"ocr-fornecedor",titular:"ocr-titular",morada:"ocr-morada",nif:"ocr-nif",cpe:"ocr-cpe",cui:"ocr-cui",potencia:"ocr-potencia",tarifa:"ocr-tarifa",simples:"ocr-simples",fora:"ocr-fora",vazio:"ocr-vazio",cheias:"ocr-cheias",ponta:"ocr-ponta",gas:"ocr-gas"};for(const [k,id] of Object.entries(keys))$(id).value=d[k]||"";const status=[];if(d.nif)status.push("NIF/NIPC: "+(d.validacao.nif?"checksum OK":"checksum inválido"));if(d.cpe)status.push("CPE: "+(d.validacao.cpe?"estrutura OK":"estrutura inválida"));if(d.cui)status.push("CUI: "+(d.validacao.cui?"estrutura OK":"estrutura inválida"));$("ocr-validacao").textContent=status.length?status.join(" · ")+" (CPE/CUI sem validação de dígitos de controlo)":"Não foram detetados códigos para validar.";$("ocr-texto").value=text;$("ocr-resultados").classList.remove("hidden");}
 function extrairTextoPdf(page){
  return page.getTextContent().then(content=>{
+  const items=(content.items||[]).map(item=>{
+   const value=String(item.str||"").replace(/\s+/g," ").trim();
+   const transform=item.transform||[];
+   return {value,x:Number(transform[4]||0),y:Number(transform[5]||0),width:Number(item.width||0),fontSize:Math.abs(Number(transform[3]||item.height||10))};
+  }).filter(item=>item.value&&Number.isFinite(item.x)&&Number.isFinite(item.y));
+  // Ordenar numericamente primeiro evita o comparador não transitivo que
+  // juntava linhas diferentes quando os elementos chegavam fora de ordem.
+  items.sort((a,b)=>b.y-a.y||a.x-b.x);
   const rows=[];
-  for(const item of (content.items||[])){
-   const value=String(item.str||"").trim();if(!value)continue;
-   const y=Number(item.transform?.[5]||0),x=Number(item.transform?.[4]||0);
-   let row=rows.find(r=>Math.abs(r.y-y)<2.5);
-   if(!row){row={y,items:[]};rows.push(row);}
-   row.items.push({x,value});
+  for(const item of items){
+   const tolerance=Math.max(1.1,Math.min(3.2,item.fontSize*0.22));
+   let row=null,best=Infinity;
+   for(const candidate of rows){
+    const distance=Math.abs(candidate.y-item.y);
+    if(distance<=tolerance&&distance<best){row=candidate;best=distance;}
+   }
+   if(!row){row={y:item.y,items:[]};rows.push(row);}
+   row.items.push(item);
   }
-  return rows.sort((a,b)=>b.y-a.y).map(r=>r.items.sort((a,b)=>a.x-b.x).map(i=>i.value).join(" ")).join("\n");
+  return rows.sort((a,b)=>b.y-a.y).map(row=>{
+   row.items.sort((a,b)=>a.x-b.x);
+   let out="",right=-Infinity;
+   for(const item of row.items){
+    const gap=item.x-right;
+    if(out&&gap>Math.max(2,item.fontSize*0.2))out+=" ";
+    out+=item.value;
+    right=Math.max(right,item.x+item.width);
+   }
+   return out;
+  }).join("\n");
  });
 }
 async function processarFatura(event){
