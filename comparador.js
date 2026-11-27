@@ -1,4 +1,4 @@
-import { calculateAnnualOfferCost, validateProfile } from "/comparison-engine.mjs";
+import { calculateAnnualOfferCost, validateProfile, annualizeInvoiceConsumption } from "/comparison-engine.mjs";
 
 (() => {
   const $ = id => document.getElementById(id);
@@ -33,6 +33,35 @@ import { calculateAnnualOfferCost, validateProfile } from "/comparison-engine.mj
   };
   cycle.addEventListener("change", updateCycleFields);
   updateCycleFields();
+
+  const importButton = $("ocr-import-button");
+  if (importButton) importButton.addEventListener("click", () => {
+    const imported = annualizeInvoiceConsumption({
+      cycle: $("ocr-tarifa").value,
+      simple: $("ocr-simples").value,
+      outside: $("ocr-fora").value,
+      offPeak: $("ocr-vazio").value,
+      shoulder: $("ocr-cheias").value,
+      peak: $("ocr-ponta").value,
+      periodMonths: $("of-periodo-meses").value
+    });
+    if (!imported) {
+      status.textContent = "Não foi possível importar: confirma os consumos por período e a duração da fatura. Não vamos preencher valores em falta.";
+      return;
+    }
+    cycle.value = imported.cycle;
+    updateCycleFields();
+    $("of-consumo").value = String(Math.round(imported.annualKwh));
+    if (imported.offPeakPercent !== null) $("of-vazio").value = imported.offPeakPercent.toFixed(1);
+    if (imported.peakPercent !== null) $("of-ponta").value = imported.peakPercent.toFixed(1);
+    if (imported.shoulderPercent !== null) $("of-cheias").value = imported.shoulderPercent.toFixed(1);
+    const power = Number(String($("ocr-potencia").value).replace(",", "."));
+    const powerOption = [...$("of-potencia").options].find(option => Math.abs(Number(option.value)-power)<0.001);
+    if (powerOption) $("of-potencia").value = powerOption.value;
+    status.textContent = "Consumos importados: " + imported.periodKwh.toLocaleString("pt-PT") + " kWh em " + $("of-periodo-meses").value + " mês(es), anualizados para " + Math.round(imported.annualKwh).toLocaleString("pt-PT") + " kWh. Confirma o perfil e carrega em Comparar ofertas.";
+    $("simulador").scrollIntoView({behavior:"smooth",block:"start"});
+  });
+
 
   const readProfile = () => {
     const numberOrNaN = id => $(""+id).value.trim() === "" ? NaN : Number($(""+id).value);
