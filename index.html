@@ -405,24 +405,39 @@ async function processarFatura(event){
  }
 }
 async function prepararImagensParaGroq(file,isPdf,pdf){
- const images=[],maxWidth=1400;
- const encode=canvas=>canvas.toDataURL("image/jpeg",0.68);
+ const images=[],maxWidth=1200,maxPages=3,maxTotal=3600000;
+ const encode=canvas=>canvas.toDataURL("image/jpeg",0.52);
  if(isPdf&&pdf){
-  for(let p=1;p<=Math.min(pdf.numPages,5);p++){
+  for(let p=1;p<=Math.min(pdf.numPages,maxPages);p++){
    const page=await pdf.getPage(p),base=page.getViewport({scale:1});
-   const viewport=page.getViewport({scale:Math.min(1.6,maxWidth/base.width)});
+   const viewport=page.getViewport({scale:Math.min(1.35,maxWidth/base.width)});
    const canvas=document.createElement("canvas");
    canvas.width=Math.ceil(viewport.width);canvas.height=Math.ceil(viewport.height);
    await page.render({canvasContext:canvas.getContext("2d"),viewport}).promise;
-   images.push(encode(canvas));canvas.width=1;canvas.height=1;
+   const data=encode(canvas);canvas.width=1;canvas.height=1;
+   if(images.reduce((n,x)=>n+x.length,0)+data.length>maxTotal)break;
+   images.push(data);
   }
  }else{
-  const bitmap=await createImageBitmap(file),scale=Math.min(1,maxWidth/bitmap.width);
-  const canvas=document.createElement("canvas");
-  canvas.width=Math.round(bitmap.width*scale);canvas.height=Math.round(bitmap.height*scale);
-  canvas.getContext("2d").drawImage(bitmap,0,0,canvas.width,canvas.height);
-  images.push(encode(canvas));bitmap.close?.();
+  const dataUrl=await new Promise((resolve,reject)=>{
+   const reader=new FileReader();
+   reader.onerror=()=>reject(new Error("Não foi possível ler a imagem selecionada."));
+   reader.onload=()=>{
+    const img=new Image();
+    img.onerror=()=>reject(new Error("Formato de imagem não reconhecido pelo navegador."));
+    img.onload=()=>{
+     const scale=Math.min(1,maxWidth/img.naturalWidth),canvas=document.createElement("canvas");
+     canvas.width=Math.max(1,Math.round(img.naturalWidth*scale));canvas.height=Math.max(1,Math.round(img.naturalHeight*scale));
+     canvas.getContext("2d").drawImage(img,0,0,canvas.width,canvas.height);
+     resolve(encode(canvas));canvas.width=1;canvas.height=1;
+    };
+    img.src=String(reader.result);
+   };
+   reader.readAsDataURL(file);
+  });
+  images.push(dataUrl);
  }
+ if(!images.length)throw new Error("Não foi possível preparar páginas da fatura para análise visual.");
  return images;
 }
 function anonymizeInvoiceText(raw){
