@@ -11,16 +11,14 @@ const context = vm.createContext({
   normalizeOcrLine(value) {
     return String(value || "").normalize("NFD").replace(/[\\u0300-\\u036f]/g, "").toLowerCase();
   },
-  findNif: () => "",
-  findCode: () => "",
-  findPower: () => "",
-  findTitular: () => "",
-  findMorada: () => "",
-  validateNif: () => false,
-  validateCpe: () => false,
-  validateCui: () => false,
   console
 });
+
+// Carrega os extratores reais de identificação, titular e morada do próprio index.html.
+const helperStart = html.indexOf("function normCode(s){");
+const helperEnd = html.indexOf("function validateNif(value){", helperStart);
+assert.ok(helperStart >= 0 && helperEnd > helperStart, "Helpers de fatura encontrados");
+vm.runInContext(html.slice(helperStart, helperEnd), context);
 
 const simpleParserStart = html.indexOf("function parseSimpleConsumptionRows(text){");
 const meterParserStart = html.indexOf("function parseMeterReadingTable(text){");
