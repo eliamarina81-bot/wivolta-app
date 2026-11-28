@@ -27,4 +27,4 @@ jobs:
         with:
           node-version: 20
       - name: Run invoice reader tests
-        run: node --test tests/invoice-reader.test.cjs
+        run: node --test tests/ocr-parser.test.js tests/invoice-reader.test.cjs
