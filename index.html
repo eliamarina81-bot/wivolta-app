@@ -717,6 +717,9 @@ function extrairTextoPdf(page){
 }
 async function processarFatura(event){
  const file=event.target.files?.[0];if(!file)return;
+ // Cada novo documento invalida imediatamente imagens e texto da fatura anterior.
+ window.wivoltaOcrImages=[];
+ window.wivoltaOcrText="";
  window.wivoltaInvoiceNeedsConfirmation=true;
  if($("ocr-confirmar"))$("ocr-confirmar").checked=false;
  const isPdf=file.type==="application/pdf"||file.name.toLowerCase().endsWith(".pdf");
@@ -775,11 +778,20 @@ async function processarFatura(event){
   if(!text.trim()&&!$("ocr-groq-consent")?.checked)throw new Error("Não foi possível extrair texto desta fatura. Autorize a análise visual Groq ou confirme os campos manualmente.");
   window.wivoltaOcrText=text;
   const parsed=parseFaturaText(text);mostrarCampos(parsed,text);
-  $("ocr-groq-status").textContent="Leitura local concluída. A validação complementar por IA Groq está disponível mediante autorização.";
+  let imagePreparationWarning="";
+  try{
+   // Preparação local apenas: não envia nada à Groq nem altera o consentimento.
+   if(isPdf&&!pdf)throw new Error("O PDF não ficou disponível para preparar as páginas visuais.");
+   window.wivoltaOcrImages=await prepararImagensParaGroq(file,isPdf,pdf);
+  }catch(imageError){
+   window.wivoltaOcrImages=[];
+   imagePreparationWarning=imageError?.message||"Não foi possível preparar imagens para análise visual.";
+  }
+  $("ocr-groq-status").textContent=window.wivoltaOcrImages.length
+   ?"Imagens preparadas neste dispositivo ("+window.wivoltaOcrImages.length+" página(s)). Nada foi enviado. Para enviar à Groq, autorize e carregue no botão de análise."
+   :"Leitura local concluída. A análise visual não está disponível para este ficheiro; pode continuar a confirmar os campos manualmente.";
   const found=[parsed.simples,parsed.fora,parsed.vazio,parsed.cheias,parsed.ponta,parsed.gas].filter(Boolean).length;
-  status.textContent=found?"Leitura concluída: "+found+" campo(s) de consumo detetado(s). Confirme os valores antes de utilizar.":"Texto extraído, mas não foram detetados consumos com segurança. Consulte o texto reconhecido e confirme os campos manualmente.";
-  // Groq fica fora do fluxo automático durante a validação do leitor local v4.
-  $("ocr-groq-status").textContent="Groq temporariamente fora do fluxo automático. A leitura local está a ser validada.";
+  status.textContent=(found?"Leitura concluída: "+found+" campo(s) de consumo detetado(s). Confirme os valores antes de utilizar.":"Texto extraído, mas não foram detetados consumos com segurança. Consulte o texto reconhecido e confirme os campos manualmente.")+(imagePreparationWarning?" Aviso da preparação visual: "+imagePreparationWarning:"");
  }catch(e){
   if(worker)await worker.terminate();
   status.textContent="Falha de leitura: "+(e?.message||e);
