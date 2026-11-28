@@ -14,6 +14,7 @@ const context = {
   document: {
     addEventListener() {},
     getElementById: id => {
+      if (id.startsWith("wivolta-gemini")) return null;
       if (!elements.has(id)) elements.set(id, { value: "", textContent: "", innerHTML: "", checked: false, addEventListener() {}, classList: { remove() {} } });
       return elements.get(id);
     }
