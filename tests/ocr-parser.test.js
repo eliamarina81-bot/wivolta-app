@@ -75,7 +75,7 @@ const galp = parse([
 ].join("\n"));
 assert.equal(galp.fornecedor, "Galp");
 assert.equal(galp.potencia, "6.9");
-assert.equal(galp.tarifa, "simples/por confirmar");
+assert.equal(galp.tarifa, "simples");
 assert.equal(galp.simples, "371", "adds the two Galp simple-energy lines and ignores the duplicate ISPE total");
 
 const wrongCpe = parse("CPE PT1002123456789123AB");
