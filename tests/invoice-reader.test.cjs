@@ -67,7 +67,7 @@ test("EDP público: separa os três períodos sem criar consumo simples", () => 
 test("Iberdrola público: soma subperíodos explicitamente simples", () => {
   const f = fixtures["iberdrola-simple-public-2025"];
   const result = context.parseFaturaText(f.text);
-  assert.equal(result.tarifa, "simples/por confirmar");
+  assert.equal(result.tarifa, "simples");
   assert.equal(result.simples, f.expected.simples);
   assert.equal(result.fora, "");
   assert.equal(result.vazio, "");
