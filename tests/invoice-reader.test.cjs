@@ -7,23 +7,14 @@ const html = fs.readFileSync(require("node:path").join(__dirname, "..", "index.h
 const fixtureFile = JSON.parse(fs.readFileSync(require("node:path").join(__dirname, "fixtures", "invoice-reader-fixtures.json"), "utf8"));
 const fixtures = Object.fromEntries(fixtureFile.fixtures.map(item => [item.id, item]));
 
-const context = vm.createContext({
-  normalizeOcrLine(value) {
-    return String(value || "").normalize("NFD").replace(/[\\u0300-\\u036f]/g, "").toLowerCase();
-  },
-  console
-});
+const context = vm.createContext({ console });
 
 // Carrega os extratores reais de identificação, titular e morada do próprio index.html.
 const helperStart = html.indexOf("function normCode(s){");
-const helperEnd = html.indexOf("function validateNif(value){", helperStart);
+const helperEnd = html.indexOf("function parseSimpleConsumptionRows(text){", helperStart);
 assert.ok(helperStart >= 0 && helperEnd > helperStart, "Helpers de fatura encontrados");
 vm.runInContext(html.slice(helperStart, helperEnd), context);
 
-const powerHelperStart = html.indexOf("function findPower(text){");
-const powerHelperEnd = html.indexOf("function cleanNum(v){", powerHelperStart);
-assert.ok(powerHelperStart >= 0 && powerHelperEnd > powerHelperStart, "Helper potência encontrado");
-vm.runInContext(html.slice(powerHelperStart, powerHelperEnd), context);
 
 const simpleParserStart = html.indexOf("function parseSimpleConsumptionRows(text){");
 const meterParserStart = html.indexOf("function parseMeterReadingTable(text){");
