@@ -104,7 +104,7 @@ test("Simples: lê consumo normal estimado quando não há tabela horária", () 
   const f = fixtures["synthetic-simple"];
   const result = context.parseFaturaText(f.text);
   assert.equal(result.simples, f.expected.simples);
-  assert.equal(result.tarifa, "simples/por confirmar");
+  assert.equal(result.tarifa, "simples");
 });
 
 test("Tabela tri-horária ambígua: não escolhe números à sorte", () => {
