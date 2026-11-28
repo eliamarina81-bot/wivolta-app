@@ -1,0 +1,120 @@
+{
+  "description": "Fixtures de regressão para o leitor local Wivolta. Valores do exemplo público são usados apenas para testar a extração, não como tarifários.",
+  "fixtures": [
+    {
+      "id": "edp-tri-publico-2025",
+      "kind": "public-transcription",
+      "supplier": "EDP",
+      "cycle": "tri-horário",
+      "source": "https://pt.scribd.com/document/874254518/Fatura-Edp-Maio-234",
+      "text": "Data vazio ponta cheias\n2025/06/09 (R) 2585 564 2503\n2025/10/20 (E) 2641 588 2563\nTotal de consumos kWh 56 24 60",
+      "expected": {
+        "vazio": "56",
+        "ponta": "24",
+        "cheias": "60",
+        "simples": ""
+      },
+      "notes": "Transcrição do excerto indexado publicamente. Não é o PDF original anexado ao repositório."
+    },
+    {
+      "id": "synthetic-bi-hourly",
+      "kind": "synthetic-regression",
+      "supplier": "Exemplo fictício",
+      "cycle": "bi-horário",
+      "source": null,
+      "text": "Período de consumo\nData Fora de vazio Vazio\n2026/10/01 1200 800\nTotal de consumos kWh 125 75",
+      "expected": {
+        "fora": "125",
+        "vazio": "75"
+      },
+      "notes": "Caso sintético para testar a estrutura bi-horária; não representa uma fatura real."
+    },
+    {
+      "id": "synthetic-simple",
+      "kind": "synthetic-regression",
+      "supplier": "Exemplo fictício",
+      "cycle": "simples",
+      "source": null,
+      "text": "Consumo normal estimado 01 Out 26 a 31 Out 26 140 kWh",
+      "expected": {
+        "simples": "140",
+        "fora": "",
+        "vazio": "",
+        "cheias": "",
+        "ponta": ""
+      },
+      "notes": "Caso sintético para testar a extração de consumo simples."
+    },
+    {
+      "id": "synthetic-tri-ambiguous",
+      "kind": "synthetic-regression",
+      "supplier": "Exemplo fictício",
+      "cycle": "tri-horário",
+      "source": null,
+      "text": "Data vazio ponta cheias\nTotal de consumos kWh 56 24 60 140",
+      "expected": null,
+      "notes": "Deve ser rejeitado porque existem quatro valores para três períodos."
+    },
+    {
+      "id": "endesa-bte-public-ambiguous",
+      "kind": "public-pdf-transcription",
+      "supplier": "Endesa",
+      "cycle": "tri-horário",
+      "source": "https://04c3c6d090.cbaul-cdnwnd.com/42fc8f1c44e137e970f0abf66ebf840d/200000020-b55feb65a1/ENDESA%20BTE.pdf",
+      "text": "Ponta\nCheia\nVazio\nCons. Fora Vazio 122.461\nTR1. 30%<= exc< jok",
+      "expected": {
+        "ponta": "",
+        "cheias": "",
+        "vazio": ""
+      },
+      "notes": "Excerto de fatura BTE pública com estrutura antiga e valores de leitura/consumo próximos. O leitor deve reconhecer a existência de períodos, mas não adivinhar os kWh de cada período."
+    },
+    {
+      "id": "goldenergy-tri-publico-2025",
+      "kind": "public-transcription",
+      "supplier": "Goldenergy",
+      "cycle": "tri-horário",
+      "source": "https://pt.scribd.com/document/874779982/Documento-596500407",
+      "text": "000001650124185 Vazio 05/04/2025 15151 Real 05/05/2025 15253 Real 102\n000001650124185 Ponta 05/04/2025 5345 Real 05/05/2025 5354 Real 9\n000001650124185 Cheia 05/04/2025 18098 Real 05/05/2025 18188 Real 90",
+      "expected": {
+        "vazio": "102",
+        "ponta": "9",
+        "cheias": "90",
+        "simples": ""
+      },
+      "notes": "Transcrição de linhas da tabela de leituras. O detalhe de faturação contém parcelas adicionais, por isso o teste usa a diferença de leituras e não soma linhas de preço/IVA."
+    },
+    {
+      "id": "iberdrola-simple-public-2025",
+      "kind": "public-transcription",
+      "supplier": "Iberdrola",
+      "cycle": "simples",
+      "source": "https://pt.scribd.com/document/981274486/953270130-2025-09-22-16-54-37-004997",
+      "text": "Energia Real: Simples (16/08/2025-27/08/2025) 102 kWh 0,1595 €/kWh\nEnergia Real: Simples (27/08/2025-16/09/2025) 188 kWh 0,1595 €/kWh",
+      "expected": {
+        "simples": "290",
+        "fora": "",
+        "vazio": "",
+        "cheias": "",
+        "ponta": ""
+      },
+      "notes": "Transcrição de duas linhas explícitas de consumo simples. A soma de subperíodos é 290 kWh."
+    },
+    {
+      "id": "galp-simple-commercial-public-structure",
+      "kind": "redacted-real-invoice-structure",
+      "supplier": "Galp",
+      "cycle": "simples",
+      "source": "Fatura real Galp fornecida para teste; dados pessoais removidos",
+      "text": "Galp\nNome do Titular\nCliente Exemplo\nLocal de Fornecimento Mensagens Úteis\nRua Exemplo 56 2305-625 Sabacheira\nEletricidade CPE PT0002000030214913NT Tarifa 6.9 kVA Social Simples Sem Ciclo\nComercialização\nEnergia Simples (medida)\n200 kWh 0,10330000 €/kWh\nEnergia Simples (medida) 171 kWh 0,10330000 €/kWh\nTarifas de Acesso\nEnergia Simples (medida) 200 kWh 0,01390000 €/kWh\nEnergia Simples (medida) 171 kWh 0,01390000 €/kWh\nTaxas e Impostos\nISPE 371 kWh 0,00000000 €/kWh",
+      "expected": {
+        "simples": "371",
+        "fora": "",
+        "vazio": "",
+        "cheias": "",
+        "ponta": ""
+      },
+      "notes": "Estrutura redigida da fatura Galp original. O parser deve somar apenas a secção Comercialização; não deve duplicar as parcelas de acesso às redes nem a linha ISPE."
+    }
+  ]
+}

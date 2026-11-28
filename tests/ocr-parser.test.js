@@ -10,9 +10,12 @@ assert.ok(inline, "OCR parser must exist in index.html");
 
 const elements = new Map();
 const context = {
+  window: {},
   document: {
+    addEventListener() {},
     getElementById: id => {
-      if (!elements.has(id)) elements.set(id, { value: "", textContent: "", innerHTML: "", classList: { remove() {} } });
+      if (id.startsWith("wivolta-gemini")) return null;
+      if (!elements.has(id)) elements.set(id, { value: "", textContent: "", innerHTML: "", checked: false, style: {}, replaceChildren() {}, addEventListener() {}, classList: { remove() {} } });
       return elements.get(id);
     }
   },
@@ -64,13 +67,15 @@ assert.equal(simple.simples, "1200");
 const galp = parse([
   "Galp",
   "Tarifa 6.9 kVA Social Simples Sem Ciclo",
+  "Comercialização",
   "Energia Simples (medida) 200 kWh 0,10330000 €/kWh",
   "Energia Simples (medida) 171 kWh 0,10330000 €/kWh",
+  "Impostos e Taxas",
   "ISPE 371 kWh 0,00000000 €/kWh"
 ].join("\n"));
 assert.equal(galp.fornecedor, "Galp");
 assert.equal(galp.potencia, "6.9");
-assert.equal(galp.tarifa, "simples/por confirmar");
+assert.equal(galp.tarifa, "simples");
 assert.equal(galp.simples, "371", "adds the two Galp simple-energy lines and ignores the duplicate ISPE total");
 
 const wrongCpe = parse("CPE PT1002123456789123AB");

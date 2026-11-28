@@ -1,0 +1,30 @@
+name: Invoice reader regression tests
+
+on:
+  push:
+    branches:
+      - test/groq-invoice-reader
+    paths:
+      - "index.html"
+      - "tests/**"
+      - ".github/workflows/invoice-reader-tests.yml"
+  pull_request:
+    branches:
+      - test/groq-invoice-reader
+    paths:
+      - "index.html"
+      - "tests/**"
+      - ".github/workflows/invoice-reader-tests.yml"
+
+jobs:
+  invoice-reader:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Run invoice reader tests
+        run: node --test tests/ocr-parser.test.js tests/invoice-reader.test.cjs

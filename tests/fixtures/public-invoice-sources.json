@@ -1,0 +1,97 @@
+{
+  "purpose": "Catálogo de exemplos públicos para orientar a matriz de testes. Não guardar PDFs com dados pessoais no repositório; usar apenas transcrições mínimas e anonimizadas.",
+  "sources": [
+    {
+      "supplier": "EDP",
+      "document": "EDP SU BTN Simples",
+      "cycle": "simples",
+      "format": "PDF",
+      "url": "https://04c3c6d090.cbaul-cdnwnd.com/42fc8f1c44e137e970f0abf66ebf840d/200000018-7aa477c982/EDP%20SU%20BTN%20Simples.pdf",
+      "source_index": "https://liberalenergia.webnode.pt/parceiros/pme/exemplo-faturas-ee/",
+      "status": "link público; conteúdo PDF ainda não transcrito"
+    },
+    {
+      "supplier": "EDP",
+      "document": "EDP Comercial Simples",
+      "cycle": "simples",
+      "format": "PDF",
+      "url": "https://04c3c6d090.cbaul-cdnwnd.com/42fc8f1c44e137e970f0abf66ebf840d/200000015-30a46319da/EDP%20C%20Simples.pdf",
+      "source_index": "https://liberalenergia.webnode.pt/parceiros/pme/exemplo-faturas-ee/",
+      "status": "link público; conteúdo PDF ainda não transcrito"
+    },
+    {
+      "supplier": "EDP",
+      "document": "EDP SU BTN Médias",
+      "cycle": "por confirmar",
+      "format": "PDF",
+      "url": "https://04c3c6d090.cbaul-cdnwnd.com/42fc8f1c44e137e970f0abf66ebf840d/200000022-f3762004b2/Factura%20EDP%20SU%20BTN%20M%C3%A9dias%20Bonificado.pdf",
+      "source_index": "https://liberalenergia.webnode.pt/parceiros/pme/exemplo-faturas-ee/",
+      "status": "link público; conteúdo PDF ainda não transcrito"
+    },
+    {
+      "supplier": "Endesa",
+      "document": "Endesa BTE",
+      "cycle": "tri-horário / diário a confirmar no documento",
+      "format": "PDF",
+      "url": "https://04c3c6d090.cbaul-cdnwnd.com/42fc8f1c44e137e970f0abf66ebf840d/200000020-b55feb65a1/ENDESA%20BTE.pdf",
+      "source_index": "https://liberalenergia.webnode.pt/parceiros/pme/exemplo-faturas-ee/",
+      "status": "texto público consultável; incluído como caso ambíguo"
+    },
+    {
+      "supplier": "Iberdrola",
+      "document": "Iberdrola — exemplo de fatura",
+      "cycle": "por confirmar",
+      "format": "PDF",
+      "url": "https://www.fatura-amiga.pt/wp-content/uploads/2018/07/fatura_iberdrola_dow.pdf",
+      "status": "exemplo público antigo; útil para variação de layout"
+    },
+    {
+      "supplier": "Iberdrola",
+      "document": "Iberdrola Simples 2025",
+      "cycle": "simples",
+      "format": "transcrição pública indexada",
+      "url": "https://www.scribd.com/document/981274486/953270130-2025-09-22-16-54-37-004997",
+      "status": "incluído como fixture de regressão"
+    },
+    {
+      "supplier": "Goldenergy",
+      "document": "Goldenergy tri-horário 2025",
+      "cycle": "tri-horário",
+      "format": "transcrição pública indexada",
+      "url": "https://pt.scribd.com/document/874779982/Documento-596500407",
+      "status": "incluído como fixture de regressão"
+    },
+    {
+      "supplier": "Galp",
+      "document": "Galp — exemplo de fatura",
+      "cycle": "simples / por confirmar",
+      "format": "PDF",
+      "url": "https://www.fatura-amiga.pt/wp-content/uploads/2018/06/faturas_galp_download.pdf",
+      "status": "exemplo público antigo; útil para variação de layout"
+    },
+    {
+      "supplier": "Galp",
+      "document": "Galp — fatura 2025",
+      "cycle": "por confirmar",
+      "format": "transcrição pública indexada",
+      "url": "https://pt.scribd.com/document/889392178/Conta-de-Luz-Junho",
+      "status": "texto indexado com linhas de consumo e detalhe fiscal; ciclo não presumido"
+    },
+    {
+      "supplier": "Repsol",
+      "document": "Repsol eletricidade e gás 2025",
+      "cycle": "bi-horário / por confirmar",
+      "format": "transcrição pública indexada",
+      "url": "https://pt.scribd.com/document/868386375/fatura-2025-04-05-25050760103213499",
+      "status": "exemplo público indexado; ciclo precisa de confirmação no documento completo"
+    },
+    {
+      "supplier": "EDP",
+      "document": "EDP tri-horário 2025",
+      "cycle": "tri-horário",
+      "format": "transcrição pública indexada",
+      "url": "https://pt.scribd.com/document/874254518/Fatura-Edp-Maio-234",
+      "status": "incluído como fixture de regressão"
+    }
+  ]
+}

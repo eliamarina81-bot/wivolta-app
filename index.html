@@ -139,12 +139,43 @@ footer{background:#fff!important;border-color:var(--line)!important}
 footer a{color:#678c20!important}
 @media(max-width:640px){.header-inner{padding:12px 14px!important}main{padding:18px 12px!important;gap:14px!important}.wivolta-steps{grid-template-columns:1fr}.wivolta-steps>div{padding:15px}.hero-trust{gap:10px 16px}.hero-cta{width:100%;justify-content:space-between}.wivolta-hero{border-radius:20px!important}}
 </style>
+
+<style id="wivolta-identidade-final">
+:root{--ink:#40364a;--muted:#766e78;--paper:#f5eee4;--white:#fffdf9;--lilac:#eee3f4;--lilac-strong:#d9c2e8;--purple:#76518d;--purple-deep:#56386d;--line:#e7dccc}
+body{background:var(--paper)!important;color:var(--ink)!important}
+header{background:rgba(255,253,249,.96)!important;border-color:var(--line)!important}
+.brand-logo{background:var(--lilac)!important;color:var(--purple-deep)!important;width:38px;height:38px;padding:5px!important;display:grid;place-items:center}
+.brand-logo svg{width:100%;height:100%}
+.brand-title,h2{color:var(--ink)!important}
+nav a:hover,nav a.highlight,footer a{color:var(--purple)!important}
+.card,.wivolta-steps>div{background:var(--white)!important;border-color:var(--line)!important}
+.card-highlight{background:var(--lilac)!important}
+.wivolta-hero{background:#e8d9eb!important;color:var(--ink)!important}
+.wivolta-hero:after{content:"";display:none}
+.wivolta-hero h2{color:var(--ink)!important}
+.wivolta-hero .hero-eyebrow{color:var(--purple-deep)!important}
+.wivolta-hero .subtitle{color:#5d5361!important}
+.hero-cta,.btn-primary,.seg-btn.active{background:var(--purple)!important;color:white!important;border-color:var(--purple)!important;box-shadow:none!important}
+.hero-cta:hover,.btn-primary:hover{background:var(--purple-deep)!important}
+.upload-box{border-color:var(--lilac-strong)!important;background:#fbf7fc!important}
+input:focus,select:focus,textarea:focus{border-color:var(--purple)!important;box-shadow:0 0 0 3px rgba(118,81,141,.15)!important}
+.tarifa-card{border-left-color:var(--lilac-strong)!important}
+.badge{background:var(--lilac)!important;color:var(--purple-deep)!important}
+.autoswitch-card{background:#e8d9eb!important;color:var(--ink)!important}
+.as-step{background:#f8f2fa!important;border-color:var(--lilac-strong)!important}
+#wivolta-chat-launch,#wivolta-chat-send{background:var(--purple)!important;color:#fff!important}
+#wivolta-chat-head{background:var(--purple-deep)!important}
+#wivolta-chat-messages .bot{background:#f1e9f4!important}
+#wivolta-chat-messages .user{background:#eadcf0!important}
+footer{background:var(--white)!important;border-color:var(--line)!important}
+@media(max-width:640px){.brand-logo{width:34px;height:34px}}
+</style>
 </head>
 <body>
     <header>
         <div class="header-inner">
             <div class="brand">
-                <span class="brand-logo">W</span>
+                <span class="brand-logo" aria-label="Raio Wivolta"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M37 3 12 35h17l-3 26 26-36H35z" fill="currentColor"/></svg></span>
                 <h1 class="brand-title">Wivolta</h1>
             </div>
             <nav>
@@ -171,10 +202,26 @@ footer a{color:#678c20!important}
 
 
         <!-- 1. Leitor Inteligente de Fatura -->
-        <section id="fatura-card" class="card card-highlight"><div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><span style="font-size:24px">⚡</span><div><h2 style="margin:0">Leitor de Faturas — Eletricidade e Gás</h2><p class="subtitle" style="margin:0">Leitura inicial no próprio dispositivo. Identifica campos de eletricidade e gás; confirme sempre os valores detetados.</p></div></div><div class="upload-box" style="position:relative;overflow:hidden"><input type="file" id="fatura-input" accept=".pdf,application/pdf,image/png,image/jpeg,image/webp" aria-label="Selecionar fatura PDF ou imagem" onchange="processarFatura(event)" style="position:absolute;inset:0;width:100%;height:100%;opacity:0.01;cursor:pointer;z-index:2"><div style="pointer-events:none"><div style="font-size:28px;margin-bottom:6px">📄</div><p style="font-size:14px;font-weight:600;color:#1e293b">Selecionar fatura PDF ou imagem</p><p style="font-size:12px;color:#64748b;margin-top:4px">Toque nesta área para escolher a fatura PDF ou imagem · até 5 páginas de PDF</p></div></div><p id="ocr-status" class="status-banner" style="display:none"></p><div id="ocr-resultados" class="hidden" style="margin-top:16px"><h3 style="margin-bottom:10px">Dados detetados — confirme antes de usar</h3><div class="ocr-grid"><div class="ocr-field"><label for="ocr-fornecedor">Comercializador</label><input id="ocr-fornecedor" type="text"></div><div class="ocr-field"><label for="ocr-titular">Titular do contrato</label><input id="ocr-titular" type="text"></div><div class="ocr-field"><label for="ocr-morada">Morada de fornecimento</label><input id="ocr-morada" type="text"></div><div class="ocr-field"><label for="ocr-nif">NIF/NIPC</label><input id="ocr-nif" type="text"></div><div class="ocr-field"><label for="ocr-cpe">CPE (eletricidade)</label><input id="ocr-cpe" type="text"></div><div class="ocr-field"><label for="ocr-cui">CUI (gás)</label><input id="ocr-cui" type="text"></div><div class="ocr-field"><label for="ocr-potencia">Potência contratada (kVA)</label><input id="ocr-potencia" type="text"></div><div class="ocr-field"><label for="ocr-tarifa">Tarifário</label><input id="ocr-tarifa" type="text"></div><div class="ocr-field"><label for="ocr-simples">Consumo simples (kWh)</label><input id="ocr-simples" type="text"></div><div class="ocr-field"><label for="ocr-fora">Fora de vazio (kWh)</label><input id="ocr-fora" type="text"></div><div class="ocr-field"><label for="ocr-vazio">Vazio (kWh)</label><input id="ocr-vazio" type="text"></div><div class="ocr-field"><label for="ocr-cheias">Cheias (kWh)</label><input id="ocr-cheias" type="text"></div><div class="ocr-field"><label for="ocr-ponta">Ponta (kWh)</label><input id="ocr-ponta" type="text"></div><div class="ocr-field"><label for="ocr-gas">Consumo de gás (kWh, se indicado)</label><input id="ocr-gas" type="text"></div></div><p id="ocr-validacao" style="font-size:12px;color:#64748b;margin-top:10px" aria-live="polite"></p><div style="margin-top:14px;padding:12px;border:1px solid #cbd5e1;border-radius:10px;background:#f8fafc"><p style="font-size:13px;color:#334155;margin-bottom:10px"><strong>Análise assistida por inteligência artificial</strong><br>A leitura inicial é feita neste dispositivo. Se escolher a análise com IA, é enviado para processamento externo apenas o texto extraído da fatura depois de uma filtragem automática. Esse texto pode incluir comercializador, tarifas, períodos, consumos, preços e outros elementos que não sejam detetados pelo filtro. A fatura original e a imagem/PDF não são enviados por esta função. A filtragem pode falhar e não garante a remoção de todos os dados pessoais.</p><p style="font-size:12px;color:#475569;margin-bottom:10px">Prestador tecnológico: Google LLC, através do serviço Gemini API. A finalidade é identificar e estruturar dados de consumo e tarifas. A utilização é opcional; pode continuar com a leitura local sem aceitar. Consulte a <a href="https://ai.google.dev/gemini-api/terms" target="_blank" rel="noopener">informação de termos da Gemini API</a> e a <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">política de privacidade da Google</a>.</p><label style="display:flex;gap:8px;align-items:flex-start;font-size:13px;font-weight:500"><input id="ocr-gemini-consent" type="checkbox" style="margin-top:3px"> Autorizo, de forma opcional e específica, o envio do texto extraído e filtrado da minha fatura à Google LLC, através da Gemini API, para análise de consumos e tarifas. Sei que a filtragem pode não remover todos os dados pessoais e que posso retirar esta autorização desmarcando esta opção; a retirada não afeta o tratamento já realizado.</label><p id="ocr-consent-record" style="font-size:11px;color:#64748b;margin-top:7px" aria-live="polite">Não existe autorização ativa. A escolha não é guardada num servidor; o registo fica apenas neste dispositivo/navegador.</p><button id="ocr-gemini-button" type="button" onclick="analisarComGemini()" style="margin-top:10px;padding:11px 14px;border:0;border-radius:8px;background:#0d9488;color:white;font-weight:700;width:100%">✨ Analisar consumos com Gemini</button><p id="ocr-gemini-status" style="font-size:12px;color:#475569;margin-top:8px" aria-live="polite">A leitura local continua disponível sem autorizar o envio.</p></div><details style="margin-top:12px"><summary>Texto reconhecido (para conferência)</summary><textarea id="ocr-texto" rows="8" style="width:100%;margin-top:8px"></textarea></details><p style="font-size:12px;color:#64748b;margin-top:10px">O OCR é experimental. Valores, códigos e períodos devem ser confirmados manualmente. No gás, esta versão só identifica consumos expressos em kWh; não converte m³ automaticamente. Esta versão não envia a fatura nem calcula uma mudança de contrato.</p><button type="button" onclick="limparLeitura()" style="margin-top:10px;padding:10px;border-radius:8px;border:1px solid #cbd5e1;background:#fff">Limpar leitura</button></div></section>
+        <section id="fatura-card" class="card card-highlight"><div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><span style="font-size:24px">⚡</span><div><h2 style="margin:0">Leitor de Faturas — Eletricidade e Gás</h2><p class="subtitle" style="margin:0">Leitura inicial no próprio dispositivo. Identifica campos de eletricidade e gás; confirme sempre os valores detetados.</p></div></div><div class="upload-box" style="position:relative;overflow:hidden"><input type="file" id="fatura-input" accept=".pdf,application/pdf,image/png,image/jpeg,image/webp" aria-label="Selecionar fatura PDF ou imagem" onchange="processarFatura(event)" style="position:absolute;inset:0;width:100%;height:100%;opacity:0.01;cursor:pointer;z-index:2"><div style="pointer-events:none"><div style="font-size:28px;margin-bottom:6px">📄</div><p style="font-size:14px;font-weight:600;color:#1e293b">Selecionar fatura PDF ou imagem</p><p style="font-size:12px;color:#64748b;margin-top:4px">Toque nesta área para escolher a fatura PDF ou imagem · até 5 páginas de PDF</p></div></div><p id="ocr-status" class="status-banner" style="display:none"></p><div id="ocr-resultados" class="hidden" style="margin-top:16px"><h3 style="margin-bottom:10px">Dados detetados — confirme antes de usar</h3><div class="ocr-grid"><div class="ocr-field"><label for="ocr-fornecedor">Comercializador</label><input id="ocr-fornecedor" type="text"></div><div class="ocr-field"><label for="ocr-titular">Titular do contrato</label><input id="ocr-titular" type="text"></div><div class="ocr-field"><label for="ocr-morada">Morada de fornecimento</label><input id="ocr-morada" type="text"></div><div class="ocr-field"><label for="ocr-nif">NIF/NIPC</label><input id="ocr-nif" type="text"></div><div class="ocr-field"><label for="ocr-cpe">CPE (eletricidade)</label><input id="ocr-cpe" type="text"></div><div class="ocr-field"><label for="ocr-cui">CUI (gás)</label><input id="ocr-cui" type="text"></div><div class="ocr-field"><label for="ocr-potencia">Potência contratada (kVA)</label><input id="ocr-potencia" type="text"></div><div class="ocr-field"><label for="ocr-tarifa">Tarifário</label><input id="ocr-tarifa" type="text"></div><div class="ocr-field"><label for="ocr-simples">Consumo simples (kWh)</label><input id="ocr-simples" type="text"></div><div class="ocr-field"><label for="ocr-fora">Fora de vazio (kWh)</label><input id="ocr-fora" type="text"></div><div class="ocr-field"><label for="ocr-vazio">Vazio (kWh)</label><input id="ocr-vazio" type="text"></div><div class="ocr-field"><label for="ocr-cheias">Cheias (kWh)</label><input id="ocr-cheias" type="text"></div><div class="ocr-field"><label for="ocr-ponta">Ponta (kWh)</label><input id="ocr-ponta" type="text"></div><div class="ocr-field"><label for="ocr-gas">Consumo de gás (kWh, se indicado)</label><input id="ocr-gas" type="text"></div></div><p id="ocr-validacao" style="font-size:12px;color:#64748b;margin-top:10px" aria-live="polite"></p><label style="display:flex;gap:8px;align-items:flex-start;font-size:13px;font-weight:600;margin-top:12px"><input id="ocr-confirmar" type="checkbox" style="margin-top:3px"> Confirmei e corrigi, se necessário, os dados extraídos desta fatura. Só depois desta confirmação posso avançar para a comparação.</label><div style="margin-top:14px;padding:12px;border:1px solid #d1d5db;border-radius:10px;background:#fff">
+<p style="font-size:13px;color:#334155;margin-bottom:8px"><strong>Alternativa de análise IA — Groq</strong><br>A análise é feita pela Groq e exige uma autorização própria. O texto filtrado e imagens das páginas da fatura podem ser enviados à Groq, Inc. para interpretação visual. As imagens podem mostrar dados pessoais (por exemplo, nome, morada, NIF ou códigos de instalação); não são totalmente anonimizadas. A utilização é opcional e pode continuar apenas com a leitura local. A utilização é opcional e pode continuar apenas com a leitura local.</p>
+<p style="font-size:12px;color:#475569;margin-bottom:8px">Prestador: Groq, Inc. Consulte os <a href="https://groq.com/privacy-policy/" target="_blank" rel="noopener">termos de privacidade da Groq</a> e a <a href="https://console.groq.com/docs/rate-limits" target="_blank" rel="noopener">informação sobre limites de utilização</a>.</p>
+<label style="display:flex;gap:8px;align-items:flex-start;font-size:13px;font-weight:500"><input id="ocr-groq-consent" type="checkbox" style="margin-top:3px"> Autorizo especificamente o envio do texto filtrado e de imagens das páginas da minha fatura à Groq, Inc., para análise de consumos e tarifas. Compreendo que as imagens podem conter dados pessoais e posso continuar sem esta análise ou retirar a autorização desmarcando esta opção.</label>
+<p id="ocr-groq-consent-record" style="font-size:11px;color:#64748b;margin-top:7px" aria-live="polite">Não existe autorização ativa para a Groq. O registo fica apenas neste dispositivo/navegador.</p>
+<button id="ocr-groq-button" type="button" onclick="analisarComGroq()" style="margin-top:10px;padding:11px 14px;border:0;border-radius:8px;background:#20231f;color:white;font-weight:700;width:100%">✨ Analisar consumos com Groq</button>
+<p id="ocr-groq-status" style="font-size:12px;color:#475569;margin-top:8px" aria-live="polite">A leitura local continua disponível sem autorizar o envio à Groq.</p>
+</div></div><details style="margin-top:12px"><summary>Texto reconhecido (para conferência)</summary><textarea id="ocr-texto" rows="8" style="width:100%;margin-top:8px"></textarea><div id="wivolta-gemini-opt-panel" style="display:none;margin-top:12px;padding:12px;border:1px solid #d1d5db;border-radius:8px">
+<p style="margin:0 0 8px">A leitura local encontrou avisos ou campos por confirmar. Podes pedir uma segunda leitura em texto com o Gemini. Não são enviadas imagens nem CPE/CUI; os dados pessoais identificáveis são filtrados antes do envio.</p>
+<label style="display:flex;align-items:flex-start;gap:8px;margin-bottom:10px;cursor:pointer">
+<input type="checkbox" id="wivolta-gemini-consent-checkbox">
+<span>Autorizo explicitamente o envio do texto filtrado da fatura para a segunda leitura opcional no Gemini. Esta autorização é independente de qualquer outra ferramenta. Posso continuar sem esta análise.</span>
+</label>
+<button type="button" id="wivolta-btn-pedir-gemini" disabled style="padding:11px 14px;border:0;border-radius:8px;background:#0f766e;color:#fff;font-weight:700">Pedir segunda leitura ao Gemini</button>
+<div id="wivolta-gemini-status" role="status" aria-live="polite" style="margin-top:8px;font-size:.92em"></div>
+<div id="wivolta-gemini-results" style="display:none;margin-top:10px"></div>
+</div></details><p style="font-size:12px;color:#64748b;margin-top:10px">O OCR é experimental. Valores, códigos e períodos devem ser confirmados manualmente. No gás, esta versão só identifica consumos expressos em kWh; não converte m³ automaticamente. Esta versão não envia a fatura nem calcula uma mudança de contrato.</p><button type="button" onclick="limparLeitura()" style="margin-top:10px;padding:10px;border-radius:8px;border:1px solid #cbd5e1;background:#fff">Limpar leitura</button></div></section>
 
         <!-- 2. Análise de ofertas -->
-        <section id="simulador" class="card"><h2>Vamos encontrar uma opção adequada ao teu consumo</h2><p class="subtitle">Consulta ofertas de eletricidade disponíveis para particulares e empresas. Usamos os dados de consumo e potência para comparar condições; depois explicamos-te os resultados e ajudamos-te a decidir. Não é uma adesão automática.</p><div class="ocr-grid"><div class="ocr-field"><label for="of-segmento">Tipo de cliente</label><select id="of-segmento"><option value="residencial">Particular</option><option value="empresarial">Empresa</option></select></div><div class="ocr-field"><label for="of-consumo">Consumo anual (kWh)</label><input id="of-consumo" type="number" min="0" value="3500"></div><div class="ocr-field"><label for="of-potencia">Potência contratada (kVA)</label><select id="of-potencia"><option value="1.15">1,15</option><option value="2.3">2,30</option><option value="3.45">3,45</option><option value="4.6">4,60</option><option value="5.75">5,75</option><option value="6.9" selected>6,90</option><option value="10.35">10,35</option><option value="13.8">13,80</option><option value="17.25">17,25</option><option value="20.7">20,70</option></select></div><div class="ocr-field"><label for="of-ciclo">Ciclo horário</label><select id="of-ciclo"><option value="simples">Simples</option><option value="bi-horario">Bi-horário</option></select></div><div class="ocr-field" id="of-vazio-wrap" style="display:none"><label for="of-vazio">Consumo em vazio (%)</label><input id="of-vazio" type="number" min="0" max="100" step="1" placeholder="Indique a percentagem real (0–100)"></div></div><button id="of-comparar" type="button" class="btn-primary" style="margin-top:12px;background:#0d9488">Ver ofertas para o meu consumo</button><div id="of-resultados" style="margin-top:16px" aria-live="polite"></div><p style="font-size:12px;color:#64748b;margin-top:12px">Valores sem IVA. Os descontos dependem das condições indicadas em cada campanha. O custo de serviços opcionais não está incluído. Estimativa de energia + termo fixo; não inclui impostos, taxas ou outros encargos. Confirme sempre a proposta contratual.</p><p><a href="https://simuladorprecos.erse.pt/" target="_blank" rel="noopener">Consultar também o simulador oficial da ERSE</a>.</p></section>
+        <section id="simulador" class="card"><h2>Vamos encontrar uma opção adequada ao teu consumo</h2><p class="subtitle">Consulta ofertas de eletricidade disponíveis para particulares e empresas. Usamos os dados de consumo e potência para comparar condições; depois explicamos-te os resultados e ajudamos-te a decidir. Não é uma adesão automática.</p><div class="ocr-grid"><div class="ocr-field"><label for="of-segmento">Tipo de cliente</label><select id="of-segmento"><option value="residencial">Particular</option><option value="empresarial">Empresa</option></select></div><div class="ocr-field"><label for="of-consumo">Consumo anual (kWh)</label><input id="of-consumo" type="number" min="0" value="3500"></div><div class="ocr-field"><label for="of-potencia">Potência contratada (kVA)</label><select id="of-potencia"><option value="1.15">1,15</option><option value="2.3">2,30</option><option value="3.45">3,45</option><option value="4.6">4,60</option><option value="5.75">5,75</option><option value="6.9" selected>6,90</option><option value="10.35">10,35</option><option value="13.8">13,80</option><option value="17.25">17,25</option><option value="20.7">20,70</option></select></div><div class="ocr-field"><label for="of-ciclo">Ciclo horário</label><select id="of-ciclo"><option value="simples">Simples</option><option value="bi-horario">Bi-horário</option></select></div><div class="ocr-field" id="of-vazio-wrap" style="display:none"><label for="of-vazio">Consumo em vazio (%)</label><input id="of-vazio" type="number" min="0" max="100" step="1" placeholder="Indique a percentagem real (0–100)"></div></div><button id="of-comparar" type="button" class="btn-primary" style="margin-top:12px;background:#0d9488">Ver ofertas para o meu consumo</button><div id="of-resultados" style="margin-top:16px" aria-live="polite"></div><p style="font-size:12px;color:#64748b;margin-top:12px">Valores sem IVA. Os descontos dependem das condições indicadas em cada campanha. O custo de serviços opcionais não está incluído. Estimativa de energia + termo fixo; não inclui impostos, taxas ou outros encargos. Confirme sempre a proposta contratual.</p></section>
 <section class="card" id="analise-gas">
 <h2>🔥 Também analisamos o teu contrato de gás natural</h2>
 <p class="subtitle">A Wivolta acompanha eletricidade e gás. Neste momento, a comparação automática de ofertas está disponível apenas para eletricidade; para o gás fazemos uma análise pessoal da tua fatura e das condições do contrato, sem inventar preços nem poupanças.</p>
@@ -182,7 +229,7 @@ footer a{color:#678c20!important}
 </section>
 
 <script>
-(()=>{const $=id=>document.getElementById(id);const cycle=$("of-ciclo"),wrap=$("of-vazio-wrap"),out=$("of-resultados");cycle.addEventListener("change",()=>wrap.style.display=cycle.value==="bi-horario"?"block":"none");$("of-comparar").addEventListener("click",async()=>{const kwh=Number($("of-consumo").value),power=Number($("of-potencia").value),vazio=Number($("of-vazio").value);if(!Number.isFinite(kwh)||kwh<=0||!Number.isFinite(power)||power<=0||(cycle.value==="bi-horario"&&($("of-vazio").value.trim()===""||!Number.isFinite(vazio)||vazio<0||vazio>100))){out.textContent="Confirme consumo, potência e percentagem de vazio.";return;}out.textContent="A consultar tarifários validados…";try{const S=window.supabase.createClient("https://awhfvgzajfkxwtridqft.supabase.co","sb_publishable_lgP_OLkaHrXtc1NKJmMUww_KMH0UETf");const {data,error}=await S.from("ofertas_energia").select("comercializador,plano,ciclo,potencia_min_kva,potencia_max_kva,preco_simples,preco_fora_vazio,preco_vazio,termo_fixo_dia,desconto_percentagem,desconto_condicoes,validade_fim").eq("estado","ativo").eq("energia","eletricidade").eq("segmento",$("of-segmento").value).eq("ciclo",cycle.value).or("potencia_min_kva.is.null,potencia_min_kva.lte."+power).or("potencia_max_kva.is.null,potencia_max_kva.gte."+power).or("validade_fim.is.null,validade_fim.gte."+new Date().toISOString().slice(0,10)).order("desconto_percentagem",{ascending:false});if(error)throw error;if(!data?.length){out.textContent="Não existem ofertas validadas para estes critérios.";return;}const money=n=>new Intl.NumberFormat("pt-PT",{style:"currency",currency:"EUR"}).format(n);const rows=data.map(o=>{const energy=cycle.value==="simples"?kwh*Number(o.preco_simples):(kwh*(1-vazio/100)*Number(o.preco_fora_vazio)+kwh*vazio/100*Number(o.preco_vazio));const powerCost=Number(o.termo_fixo_dia)*365;return {...o,total:energy+powerCost,energy,powerCost};}).sort((a,b)=>a.total-b.total);const best=rows[0];const whatsappText="Olá, Wivolta! Fiz uma simulação no vosso site.\\nTipo de cliente: "+$("of-segmento").selectedOptions[0].text+"\\nConsumo anual: "+kwh+" kWh\\nPotência: "+power+" kVA\\nCiclo: "+cycle.value+"\\nMelhor oferta apresentada: "+best.comercializador+" — "+best.plano+"\\nCusto estimado: "+money(best.total)+"/ano, sem IVA.\\nQuero confirmar as condições e comparar com a minha fatura atual.";out.innerHTML=rows.map(o=>'<article class="tarifa-card"><div><strong>'+String(o.comercializador)+' — '+String(o.plano)+'</strong><br><span class="badge">'+Number(o.desconto_percentagem)+'% desconto anunciado (não aplicado ao cálculo)'+(o.validade_fim?' · até '+new Date(o.validade_fim+"T12:00:00").toLocaleDateString("pt-PT"):' · validade a confirmar')+'</span><p style="font-size:12px;color:#64748b;margin-top:6px">'+String(o.desconto_condicoes||'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]))+'</p><p style="font-size:12px;color:#64748b">Energia: '+money(o.energy)+' · Potência: '+money(o.powerCost)+'/ano</p></div><div><strong style="font-size:20px">'+money(o.total)+'/ano</strong><p style="font-size:12px;color:#64748b">Sem IVA</p></div></article>').join("")+'<a class="btn-primary" style="display:flex;text-decoration:none;background:#0d9488;margin-top:12px" href="https://wa.me/351913629339?text='+encodeURIComponent(whatsappText)+'" target="_blank" rel="noopener">Enviar esta simulação à Wivolta pelo WhatsApp</a><p style="font-size:12px;color:#64748b;margin-top:8px">Abre o WhatsApp com a mensagem preparada. O cliente confirma e carrega em Enviar. Este valor é uma estimativa sem IVA, não representa poupança face à fatura atual.</p>';}catch(e){out.textContent="Não foi possível consultar as ofertas: "+(e.message||"erro desconhecido");}});})();
+(()=>{const $=id=>document.getElementById(id);const cycle=$("of-ciclo"),wrap=$("of-vazio-wrap"),out=$("of-resultados");cycle.addEventListener("change",()=>wrap.style.display=cycle.value==="bi-horario"?"block":"none");$("of-comparar").addEventListener("click",async()=>{if(wivoltaConfirmationGate&&!wivoltaConfirmationGate.canProceedToCompare()){out.textContent="Antes de comparar, confirme manualmente os dados atuais da fatura. Qualquer alteração exige nova confirmação.";document.getElementById("ocr-confirmar")?.focus();return;}if(window.wivoltaInvoiceNeedsConfirmation||window.wivoltaComparisonAllowed===false){out.textContent="Antes de comparar, confirme manualmente os dados atuais da fatura.";document.getElementById("ocr-confirmar")?.focus();return;}const kwh=Number($("of-consumo").value),power=Number($("of-potencia").value),vazio=Number($("of-vazio").value);if(!Number.isFinite(kwh)||kwh<=0||!Number.isFinite(power)||power<=0||(cycle.value==="bi-horario"&&($("of-vazio").value.trim()===""||!Number.isFinite(vazio)||vazio<0||vazio>100))){out.textContent="Confirme consumo, potência e percentagem de vazio.";return;}out.textContent="A consultar tarifários validados…";try{const S=window.supabase.createClient("https://awhfvgzajfkxwtridqft.supabase.co","sb_publishable_lgP_OLkaHrXtc1NKJmMUww_KMH0UETf");const hoje=new Date().toISOString().slice(0,10);const {data:rawData,error}=await S.from("ofertas_energia").select("comercializador,plano,ciclo,potencia_min_kva,potencia_max_kva,preco_simples,preco_fora_vazio,preco_vazio,termo_fixo_dia,desconto_percentagem,desconto_condicoes,validade_inicio,validade_fim").eq("estado","ativo").eq("energia","eletricidade").eq("segmento",$("of-segmento").value).eq("ciclo",cycle.value).order("desconto_percentagem",{ascending:false});if(error)throw error;const validRows=(rawData||[]).filter(o=>(o.potencia_min_kva==null||power>=Number(o.potencia_min_kva))&&(o.potencia_max_kva==null||power<=Number(o.potencia_max_kva))&&(!o.validade_inicio||o.validade_inicio<=hoje)&&(!o.validade_fim||o.validade_fim>=hoje)&&Number.isFinite(Number(o.termo_fixo_dia))&&Number(o.termo_fixo_dia)>=0&&(cycle.value==="simples"?Number.isFinite(Number(o.preco_simples))&&Number(o.preco_simples)>=0:Number.isFinite(Number(o.preco_fora_vazio))&&Number(o.preco_fora_vazio)>=0&&Number.isFinite(Number(o.preco_vazio))&&Number(o.preco_vazio)>=0));const offerGroups=new Map();for(const o of validRows){const key=[o.comercializador,o.plano,o.ciclo,o.potencia_min_kva,o.potencia_max_kva].join("|");const current=offerGroups.get(key);if(!current){offerGroups.set(key,{...o,maxDiscount:Number(o.desconto_percentagem)||0});}else{current.maxDiscount=Math.max(current.maxDiscount,Number(o.desconto_percentagem)||0);if((Number(o.desconto_percentagem)||0)<(Number(current.desconto_percentagem)||0)){const maxDiscount=current.maxDiscount;offerGroups.set(key,{...o,maxDiscount});}}}const data=[...offerGroups.values()];if(!data.length){out.textContent="Não existem ofertas ativas e válidas para estes critérios de consumo, potência e data.";return;}const money=n=>new Intl.NumberFormat("pt-PT",{style:"currency",currency:"EUR"}).format(n);const rows=data.map(o=>{const energy=cycle.value==="simples"?kwh*Number(o.preco_simples):(kwh*(1-vazio/100)*Number(o.preco_fora_vazio)+kwh*vazio/100*Number(o.preco_vazio));const powerCost=Number(o.termo_fixo_dia)*365;return {...o,total:energy+powerCost,energy,powerCost};}).sort((a,b)=>a.total-b.total);const best=rows[0];const whatsappText="Olá, Wivolta! Fiz uma simulação no vosso site.\\nTipo de cliente: "+$("of-segmento").selectedOptions[0].text+"\\nConsumo anual: "+kwh+" kWh\\nPotência: "+power+" kVA\\nCiclo: "+cycle.value+"\\nMelhor oferta apresentada: "+best.comercializador+" — "+best.plano+"\\nCusto estimado: "+money(best.total)+"/ano, sem IVA.\\nQuero confirmar as condições e comparar com a minha fatura atual.";out.innerHTML=rows.map(o=>'<article class="tarifa-card"><div><strong>'+String(o.comercializador)+' — '+String(o.plano)+'</strong><br><span class="badge">'+(Number(o.desconto_percentagem)>0?Number(o.desconto_percentagem)+'% condicionado':'Preço base no cálculo')+' · até '+Number(o.maxDiscount)+'% sujeito a condições'+(o.validade_fim?' · até '+new Date(o.validade_fim+"T12:00:00").toLocaleDateString("pt-PT"):' · validade a confirmar')+'</span><p style="font-size:12px;color:#64748b;margin-top:6px">'+String(o.desconto_condicoes||'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]))+'</p><p style="font-size:12px;color:#64748b">Energia: '+money(o.energy)+' · Potência: '+money(o.powerCost)+'/ano</p></div><div><strong style="font-size:20px">'+money(o.total)+'/ano</strong><p style="font-size:12px;color:#64748b">Sem IVA</p></div></article>').join("")+'<button type="button" id="of-enviar-proposta" class="btn-primary" style="display:flex;text-decoration:none;background:#0d9488;margin-top:12px">Enviar esta simulação à Wivolta pelo WhatsApp</button><p style="font-size:12px;color:#64748b;margin-top:8px">A simulação fica registada na Wivolta antes de abrir o WhatsApp. Depois, confirme o envio da mensagem na aplicação. Estimativa sem IVA; não representa poupança face à fatura atual.</p><p id="of-proposta-status" role="status" style="font-size:13px;margin-top:8px"></p>';const proposalButton=document.getElementById("of-enviar-proposta");if(proposalButton){proposalButton.addEventListener("click",async()=>{const status=document.getElementById("of-proposta-status");proposalButton.disabled=true;status.textContent="A registar a simulação na Wivolta…";const leadMessage="Simulação de eletricidade recebida pelo site Wivolta. Tipo de cliente: "+$("of-segmento").selectedOptions[0].text+". Consumo anual: "+kwh+" kWh. Potência: "+power+" kVA. Ciclo: "+cycle.value+". Melhor oferta apresentada: "+best.comercializador+" — "+best.plano+". Custo estimado: "+money(best.total)+"/ano, sem IVA. O cliente pediu confirmação das condições e comparação com a fatura atual.";try{const db=window.supabase.createClient("https://awhfvgzajfkxwtridqft.supabase.co","sb_publishable_lgP_OLkaHrXtc1NKJmMUww_KMH0UETf");const{error}=await db.from("wivolta_contact_requests").insert({nome:"Pedido de simulação",telefone:null,email:null,assunto:"Simulação de eletricidade",mensagem:leadMessage,origem:"simulacao-eletricidade"});if(error)throw error;status.textContent="Simulação registada com sucesso. A abrir o WhatsApp para concluir o envio…";}catch(err){status.textContent="Não foi possível guardar a simulação ("+(err.message||"erro")+"). Vou abrir o WhatsApp na mesma.";}const link="https://wa.me/351913629339?text="+encodeURIComponent(whatsappText);window.location.href=link;});}}catch(e){out.textContent="Não foi possível consultar as ofertas: "+(e.message||"erro desconhecido");}});})();
 </script>
 
         <!-- Calculadora transparente com preços introduzidos manualmente -->
@@ -194,7 +241,7 @@ footer a{color:#678c20!important}
         <section id="auto-switch" class="autoswitch-card"><h2 style="color:#fff;margin-top:8px">AutoSwitch Wivolta</h2><p style="font-size:14px;color:#ccfbf1;margin-top:4px">Acompanhamento de contratos, revisão trimestral e procura de poupança. Meta de poupança mínima: 30 €/ano, sem ignorar fidelização ou penalizações.</p><div class="as-grid"><div class="as-step"><strong style="color:#99f6e4">A cada 90 dias</strong><p style="font-size:12px;color:#ccfbf1;margin-top:4px">Revisão planeada do contrato e das ofertas.</p></div><div class="as-step"><strong style="color:#99f6e4">Alertas de prazo</strong><p style="font-size:12px;color:#ccfbf1;margin-top:4px">Sinalização de fim de desconto ou fidelização.</p></div><div class="as-step"><strong style="color:#99f6e4">Sem adesões repetidas</strong><p style="font-size:12px;color:#ccfbf1;margin-top:4px">Registo inicial e autorização; confirmação adicional só quando exigida.</p></div></div><p style="font-size:12px;color:#ccfbf1;margin-top:14px">A revisão trimestral compara ofertas de eletricidade simples e bi-horária com preços sem IVA, potência e fidelização. Poupança mínima: 30 €/ano. Gás, tri-horário e execução da mudança ainda dependem de ofertas validadas, autorização específica e confirmação humana.</p></section>
 
         <!-- 4. Pedido de acompanhamento Wivolta -->
-        <section id="adesao" class="card"><h2>Registar contrato para acompanhamento</h2><p class="subtitle">Preencha uma vez para solicitar o acompanhamento. A primeira revisão fica agendada para 90 dias após o registo; as revisões seguintes são trimestrais. Os dados incompletos ficam sinalizados para confirmação e nenhuma mudança de fornecedor é executada automaticamente.</p><form id="autoswitch-intake"><div class="form-grid"><div><label>Nome *</label><input id="as-name" required maxlength="120"></div><div><label>Telefone *</label><input id="as-phone" required type="tel" maxlength="40"></div><div><label>Email</label><input id="as-email" type="email" maxlength="160"></div><div><label>Tipo de cliente *</label><select id="as-segment"><option value="residencial">Particular</option><option value="empresarial">Empresa</option></select></div><div><label>Energia *</label><select id="as-energy"><option value="eletricidade">Eletricidade</option><option value="gas">Gás</option><option value="dual">Eletricidade e gás</option></select></div><div><label>Ciclo horário da eletricidade</label><select id="as-cycle"><option value="">Por confirmar</option><option value="simples">Simples</option><option value="bi-horario">Bi-horário</option><option value="tri-horario">Tri-horário</option></select></div><div><label>Comercializador atual</label><input id="as-provider" maxlength="120"></div><div><label>Tarifa atual</label><input id="as-plan" maxlength="120"></div><div><label>Potência contratada (kVA)</label><input id="as-power" type="number" min="0" step="0.01"></div><div id="as-price-simple-wrap"><label>Preço simples atual €/kWh (sem IVA)</label><input id="as-price" type="number" min="0" step="0.000001"></div><div id="as-price-out-wrap" style="display:none"><label>Preço fora de vazio €/kWh (sem IVA)</label><input id="as-price-out" type="number" min="0" step="0.000001"></div><div id="as-price-empty-wrap" style="display:none"><label>Preço vazio €/kWh (sem IVA)</label><input id="as-price-empty" type="number" min="0" step="0.000001"></div><div id="as-price-full-wrap" style="display:none"><label>Preço cheias €/kWh (sem IVA)</label><input id="as-price-full" type="number" min="0" step="0.000001"></div><div id="as-price-peak-wrap" style="display:none"><label>Preço ponta €/kWh (sem IVA)</label><input id="as-price-peak" type="number" min="0" step="0.000001"></div><div><label>Termo diário €/dia</label><input id="as-term" type="number" min="0" step="0.000001"></div><div><label>Consumo simples anual (kWh)</label><input id="as-simple" type="number" min="0"></div><div><label>Fora de vazio (kWh)</label><input id="as-out" type="number" min="0"></div><div><label>Vazio (kWh)</label><input id="as-empty" type="number" min="0"></div><div><label>Cheias (kWh)</label><input id="as-full" type="number" min="0"></div><div><label>Ponta (kWh)</label><input id="as-peak" type="number" min="0"></div><div><label>Consumo anual de gás (kWh)</label><input id="as-gas" type="number" min="0"></div><div id="as-gas-price-wrap" style="display:none"><label>Preço atual do gás €/kWh (sem IVA)</label><input id="as-gas-price" type="number" min="0" step="0.000001"></div><div id="as-gas-term-wrap" style="display:none"><label>Termo diário do gás €/dia (sem IVA)</label><input id="as-gas-term" type="number" min="0" step="0.000001"></div><div><label>Fim de desconto</label><input id="as-discount-end" type="date"></div><div><label>Fim de fidelização</label><input id="as-lock-end" type="date"></div></div><div class="rgpd-row"><input type="checkbox" id="as-consent" required><label for="as-consent">Autorizo a Wivolta a registar e acompanhar os dados deste contrato, comparar alternativas e contactar-me para propor uma eventual mudança. A mudança de fornecedor não será executada sem as autorizações/confirmações exigidas pelo comercializador e pela lei.</label></div><div class="rgpd-row"><input type="checkbox" id="as-privacy" required><label for="as-privacy">Confirmo que li e aceito o tratamento dos dados fornecidos para este pedido e acompanhamento, conforme informação de privacidade a disponibilizar pela Wivolta.</label></div><div style="margin:16px 0"><label>Assinatura do titular (desenhe abaixo) *</label><div class="sig-wrapper"><canvas id="as-signature-pad" style="width:100%;height:160px;display:block;touch-action:none;background:white"></canvas><div class="sig-toolbar"><span>Assine com o dedo</span><button type="button" id="as-clear-signature" class="btn-clear-sig">Limpar</button></div></div></div><button class="btn-primary" type="submit" style="background:#0d9488">Enviar pedido de acompanhamento</button><p id="as-intake-status" role="status" style="margin-top:12px;font-size:14px"></p></form></section><script>(function(){const f=document.getElementById("autoswitch-intake");if(!f)return;const canvas=document.getElementById("as-signature-pad"),ctx=canvas.getContext("2d");let drawing=false,hasSignature=false;function resize(){const rect=canvas.getBoundingClientRect(),dpr=window.devicePixelRatio||1;canvas.width=rect.width*dpr;canvas.height=160*dpr;ctx.scale(dpr,dpr);ctx.lineWidth=2;ctx.lineCap="round";ctx.strokeStyle="#111827";}resize();let last=null;function point(e){const r=canvas.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top};}canvas.addEventListener("pointerdown",e=>{drawing=true;hasSignature=true;last=point(e);canvas.setPointerCapture(e.pointerId);});canvas.addEventListener("pointermove",e=>{if(!drawing)return;const p=point(e);ctx.beginPath();ctx.moveTo(last.x,last.y);ctx.lineTo(p.x,p.y);ctx.stroke();last=p;});canvas.addEventListener("pointerup",()=>{drawing=false;last=null;});canvas.addEventListener("pointercancel",()=>{drawing=false;last=null;});document.getElementById("as-clear-signature").onclick=()=>{ctx.clearRect(0,0,canvas.width,canvas.height);hasSignature=false;};const syncRateFields=()=>{const cycle=document.getElementById("as-cycle").value,energy=document.getElementById("as-energy").value,electric=energy==="eletricidade"||energy==="dual";document.getElementById("as-price-simple-wrap").style.display=electric&&(cycle==="simples"||!cycle)?"block":"none";document.getElementById("as-price-out-wrap").style.display=electric&&cycle==="bi-horario"?"block":"none";document.getElementById("as-price-empty-wrap").style.display=electric&&(cycle==="bi-horario"||cycle==="tri-horario")?"block":"none";document.getElementById("as-price-full-wrap").style.display=electric&&cycle==="tri-horario"?"block":"none";document.getElementById("as-price-peak-wrap").style.display=electric&&cycle==="tri-horario"?"block":"none";document.getElementById("as-gas-price-wrap").style.display=energy==="gas"||energy==="dual"?"block":"none";document.getElementById("as-gas-term-wrap").style.display=energy==="gas"||energy==="dual"?"block":"none";};document.getElementById("as-cycle").addEventListener("change",syncRateFields);document.getElementById("as-energy").addEventListener("change",syncRateFields);syncRateFields();f.addEventListener("submit",async e=>{e.preventDefault();const status=document.getElementById("as-intake-status");if(!hasSignature){status.textContent="Por favor, assine no quadro antes de enviar.";return;}status.textContent="A enviar pedido…";const num=id=>{const v=document.getElementById(id).value;return v===""?null:Number(v)};const payload={nome:document.getElementById("as-name").value.trim(),telefone:document.getElementById("as-phone").value.trim(),email:document.getElementById("as-email").value.trim()||null,energia:document.getElementById("as-energy").value,segmento_cliente:document.getElementById("as-segment").value,comercializador_atual:document.getElementById("as-provider").value.trim()||null,tarifa_atual:document.getElementById("as-plan").value.trim()||null,potencia_kva:num("as-power"),preco_kwh:num("as-price"),preco_fora_vazio_atual:num("as-price-out"),preco_vazio_atual:num("as-price-empty"),preco_cheias_atual:num("as-price-full"),preco_ponta_atual:num("as-price-peak"),preco_gas_kwh:num("as-gas-price"),termo_fixo_gas_dia:num("as-gas-term"),termo_fixo_dia:num("as-term"),consumo_simples_kwh:num("as-simple"),consumo_fora_vazio_kwh:num("as-out"),consumo_vazio_kwh:num("as-empty"),consumo_cheias_kwh:num("as-full"),consumo_ponta_kwh:num("as-peak"),ciclo_horario:document.getElementById("as-cycle").value||null,consumo_gas_kwh:num("as-gas"),fim_desconto:document.getElementById("as-discount-end").value||null,fim_fidelizacao:document.getElementById("as-lock-end").value||null,consentimento_acompanhamento:true,consentimento_rgpd:true,autorizacao_texto:"Autorizo a Wivolta a registar e acompanhar os dados deste contrato, comparar alternativas e contactar-me para propor uma eventual mudança. A mudança de fornecedor não será executada sem as autorizações/confirmações exigidas pelo comercializador e pela lei.",consentimento_em:new Date().toISOString(),assinatura_data_url:canvas.toDataURL("image/png")};try{const S=window.supabase.createClient("https://awhfvgzajfkxwtridqft.supabase.co","sb_publishable_lgP_OLkaHrXtc1NKJmMUww_KMH0UETf");const{error}=await S.from("wivolta_pedidos_autoswitch").insert(payload);if(error)throw error;status.textContent="Pedido registado! A Wivolta entrará em contacto para confirmar os dados.";f.reset();}catch(err){status.textContent="Não foi possível registar o pedido: "+(err.message||"erro").toString();}});})();</script>
+        <section id="adesao" class="card"><h2>Registar contrato para acompanhamento</h2><p class="subtitle">Preencha uma vez para solicitar o acompanhamento. A primeira revisão fica agendada para 90 dias após o registo; as revisões seguintes são trimestrais. Os dados incompletos ficam sinalizados para confirmação e nenhuma mudança de fornecedor é executada automaticamente.</p><form id="autoswitch-intake"><div class="form-grid"><div><label>Nome *</label><input id="as-name" required maxlength="120"></div><div><label>Telefone *</label><input id="as-phone" required type="tel" maxlength="40"></div><div><label>Email</label><input id="as-email" type="email" maxlength="160"></div><div><label>Tipo de cliente *</label><select id="as-segment"><option value="residencial">Particular</option><option value="empresarial">Empresa</option></select></div><div><label>Energia *</label><select id="as-energy"><option value="eletricidade">Eletricidade</option><option value="gas">Gás</option><option value="dual">Eletricidade e gás</option></select></div><div><label>Tipo de serviço *</label><select id="as-mode"><option value="acompanhamento">Acompanhamento — revisão e proposta, sem mudança automática</option><option value="autoswitch">Quero aderir ao AutoSwitch — ativação após validação da procuração</option></select><p style="font-size:12px;color:#64748b;margin-top:5px">No AutoSwitch, a Wivolta só poderá executar mudanças depois de existir uma procuração autónoma, juridicamente validada e aceite pelo titular e pelos comercializadores. Este pedido ainda não concede poderes para mudar contratos.</p></div><div><label>Ciclo horário da eletricidade</label><select id="as-cycle"><option value="">Por confirmar</option><option value="simples">Simples</option><option value="bi-horario">Bi-horário</option><option value="tri-horario">Tri-horário</option></select></div><div><label>Comercializador atual</label><input id="as-provider" maxlength="120"></div><div><label>Tarifa atual</label><input id="as-plan" maxlength="120"></div><div><label>Potência contratada (kVA)</label><input id="as-power" type="number" min="0" step="0.01"></div><div id="as-price-simple-wrap"><label>Preço simples atual €/kWh (sem IVA)</label><input id="as-price" type="number" min="0" step="0.000001"></div><div id="as-price-out-wrap" style="display:none"><label>Preço fora de vazio €/kWh (sem IVA)</label><input id="as-price-out" type="number" min="0" step="0.000001"></div><div id="as-price-empty-wrap" style="display:none"><label>Preço vazio €/kWh (sem IVA)</label><input id="as-price-empty" type="number" min="0" step="0.000001"></div><div id="as-price-full-wrap" style="display:none"><label>Preço cheias €/kWh (sem IVA)</label><input id="as-price-full" type="number" min="0" step="0.000001"></div><div id="as-price-peak-wrap" style="display:none"><label>Preço ponta €/kWh (sem IVA)</label><input id="as-price-peak" type="number" min="0" step="0.000001"></div><div><label>Termo diário €/dia</label><input id="as-term" type="number" min="0" step="0.000001"></div><div><label>Consumo simples anual (kWh)</label><input id="as-simple" type="number" min="0"></div><div><label>Fora de vazio (kWh)</label><input id="as-out" type="number" min="0"></div><div><label>Vazio (kWh)</label><input id="as-empty" type="number" min="0"></div><div><label>Cheias (kWh)</label><input id="as-full" type="number" min="0"></div><div><label>Ponta (kWh)</label><input id="as-peak" type="number" min="0"></div><div><label>Consumo anual de gás (kWh)</label><input id="as-gas" type="number" min="0"></div><div id="as-gas-price-wrap" style="display:none"><label>Preço atual do gás €/kWh (sem IVA)</label><input id="as-gas-price" type="number" min="0" step="0.000001"></div><div id="as-gas-term-wrap" style="display:none"><label>Termo diário do gás €/dia (sem IVA)</label><input id="as-gas-term" type="number" min="0" step="0.000001"></div><div><label>Fim de desconto</label><input id="as-discount-end" type="date"></div><div><label>Fim de fidelização</label><input id="as-lock-end" type="date"></div></div><div class="rgpd-row"><input type="checkbox" id="as-consent" required><label for="as-consent">Autorizo a Wivolta a registar e acompanhar os dados deste contrato, comparar alternativas e contactar-me para propor uma eventual mudança. A mudança de fornecedor não será executada sem as autorizações/confirmações exigidas pelo comercializador e pela lei.</label></div><div class="rgpd-row"><input type="checkbox" id="as-privacy" required><label for="as-privacy">Confirmo que li e aceito o tratamento dos dados fornecidos para este pedido e acompanhamento, conforme informação de privacidade a disponibilizar pela Wivolta.</label></div><div class="rgpd-row" id="as-autoswitch-request-wrap" style="display:none"><input type="checkbox" id="as-autoswitch-request"><label for="as-autoswitch-request">Solicito a pré-adesão ao AutoSwitch e compreendo que este pedido não é uma procuração nem autoriza qualquer mudança de fornecedor. A ativação dependerá da assinatura de documento autónomo e da validação dos poderes de representação.</label></div><div style="margin:16px 0"><label>Assinatura do titular (desenhe abaixo) *</label><div class="sig-wrapper"><canvas id="as-signature-pad" style="width:100%;height:160px;display:block;touch-action:none;background:white"></canvas><div class="sig-toolbar"><span>Assine com o dedo</span><button type="button" id="as-clear-signature" class="btn-clear-sig">Limpar</button></div></div></div><button class="btn-primary" type="submit" style="background:#0d9488">Enviar pedido de acompanhamento</button><p id="as-intake-status" role="status" style="margin-top:12px;font-size:14px"></p></form></section><script>(function(){const f=document.getElementById("autoswitch-intake");if(!f)return;const canvas=document.getElementById("as-signature-pad"),ctx=canvas.getContext("2d");let drawing=false,hasSignature=false;function resize(){const rect=canvas.getBoundingClientRect(),dpr=window.devicePixelRatio||1;canvas.width=rect.width*dpr;canvas.height=160*dpr;ctx.scale(dpr,dpr);ctx.lineWidth=2;ctx.lineCap="round";ctx.strokeStyle="#111827";}resize();let last=null;function point(e){const r=canvas.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top};}canvas.addEventListener("pointerdown",e=>{drawing=true;hasSignature=true;last=point(e);canvas.setPointerCapture(e.pointerId);});canvas.addEventListener("pointermove",e=>{if(!drawing)return;const p=point(e);ctx.beginPath();ctx.moveTo(last.x,last.y);ctx.lineTo(p.x,p.y);ctx.stroke();last=p;});canvas.addEventListener("pointerup",()=>{drawing=false;last=null;});canvas.addEventListener("pointercancel",()=>{drawing=false;last=null;});document.getElementById("as-clear-signature").onclick=()=>{ctx.clearRect(0,0,canvas.width,canvas.height);hasSignature=false;};const syncMode=()=>{const isAuto=document.getElementById("as-mode").value==="autoswitch";document.getElementById("as-autoswitch-request-wrap").style.display=isAuto?"flex":"none";document.getElementById("as-autoswitch-request").required=isAuto;};document.getElementById("as-mode").addEventListener("change",syncMode);syncMode();const syncRateFields=()=>{const cycle=document.getElementById("as-cycle").value,energy=document.getElementById("as-energy").value,electric=energy==="eletricidade"||energy==="dual";document.getElementById("as-price-simple-wrap").style.display=electric&&(cycle==="simples"||!cycle)?"block":"none";document.getElementById("as-price-out-wrap").style.display=electric&&cycle==="bi-horario"?"block":"none";document.getElementById("as-price-empty-wrap").style.display=electric&&(cycle==="bi-horario"||cycle==="tri-horario")?"block":"none";document.getElementById("as-price-full-wrap").style.display=electric&&cycle==="tri-horario"?"block":"none";document.getElementById("as-price-peak-wrap").style.display=electric&&cycle==="tri-horario"?"block":"none";document.getElementById("as-gas-price-wrap").style.display=energy==="gas"||energy==="dual"?"block":"none";document.getElementById("as-gas-term-wrap").style.display=energy==="gas"||energy==="dual"?"block":"none";};document.getElementById("as-cycle").addEventListener("change",syncRateFields);document.getElementById("as-energy").addEventListener("change",syncRateFields);syncRateFields();f.addEventListener("submit",async e=>{e.preventDefault();const status=document.getElementById("as-intake-status");if(!hasSignature){status.textContent="Por favor, assine no quadro antes de enviar.";return;}status.textContent="A enviar pedido…";const num=id=>{const v=document.getElementById(id).value;return v===""?null:Number(v)};const payload={nome:document.getElementById("as-name").value.trim(),telefone:document.getElementById("as-phone").value.trim(),email:document.getElementById("as-email").value.trim()||null,energia:document.getElementById("as-energy").value,segmento_cliente:document.getElementById("as-segment").value,comercializador_atual:document.getElementById("as-provider").value.trim()||null,tarifa_atual:document.getElementById("as-plan").value.trim()||null,potencia_kva:num("as-power"),preco_kwh:num("as-price"),preco_fora_vazio_atual:num("as-price-out"),preco_vazio_atual:num("as-price-empty"),preco_cheias_atual:num("as-price-full"),preco_ponta_atual:num("as-price-peak"),preco_gas_kwh:num("as-gas-price"),termo_fixo_gas_dia:num("as-gas-term"),termo_fixo_dia:num("as-term"),consumo_simples_kwh:num("as-simple"),consumo_fora_vazio_kwh:num("as-out"),consumo_vazio_kwh:num("as-empty"),consumo_cheias_kwh:num("as-full"),consumo_ponta_kwh:num("as-peak"),ciclo_horario:document.getElementById("as-cycle").value||null,consumo_gas_kwh:num("as-gas"),fim_desconto:document.getElementById("as-discount-end").value||null,fim_fidelizacao:document.getElementById("as-lock-end").value||null,consentimento_acompanhamento:true,consentimento_rgpd:true,modo_servico:document.getElementById("as-mode").value,procuracao_estado:document.getElementById("as-mode").value==="autoswitch"?"por_validar":"nao_emitida",procuracao_versao:document.getElementById("as-mode").value==="autoswitch"?"rascunho-wivolta-2026-11":null,procuracao_aceite_em:null,criterios_autoswitch:{poupanca_minima_anual_eur:30,periodicidade_dias:90,excluir_fidelizacao_com_penalizacao:true,requerer_validacao_humana:true},autorizacao_texto:"Autorizo a Wivolta a registar e acompanhar os dados deste contrato, comparar alternativas e contactar-me para propor uma eventual mudança. A mudança de fornecedor não será executada sem as autorizações/confirmações exigidas pelo comercializador e pela lei.",consentimento_em:new Date().toISOString(),assinatura_data_url:canvas.toDataURL("image/png")};try{const S=window.supabase.createClient("https://awhfvgzajfkxwtridqft.supabase.co","sb_publishable_lgP_OLkaHrXtc1NKJmMUww_KMH0UETf");const{error}=await S.from("wivolta_pedidos_autoswitch").insert(payload);if(error)throw error;status.textContent=document.getElementById("as-mode").value==="autoswitch"?"Pré-adesão registada. O AutoSwitch fica pendente da procuração autónoma e validação jurídica; nenhuma mudança será executada nesta fase.":"Pedido registado! A Wivolta entrará em contacto para confirmar os dados.";f.reset();}catch(err){status.textContent="Não foi possível registar o pedido: "+(err.message||"erro").toString();}});})();</script>
         <script>
         (function(){
           const form=document.getElementById("wivolta-contact-form");
@@ -235,8 +282,8 @@ const $ = id => document.getElementById(id);
 function normCode(s){return (s||"").toUpperCase().replace(/[^A-Z0-9]/g,"");}
 function findCode(text,label){const re=new RegExp("\\b"+label+"\\b[\\s:;-]*([A-Z0-9\\s]{10,40})","i");const m=text.match(re);if(!m)return "";const pt=normCode(m[1]).match(/PT[A-Z0-9]{18}/);return pt?pt[0]:"";}
 function findNif(text){const m=text.match(/\b(?:NIF|NIPC)\b[^\d]{0,18}(\d(?:[\s.-]*\d){8})/i);return m?m[1].replace(/\D/g,""):"";}
-function findTitular(text){const lines=String(text||"").split(/\r?\n/).map(x=>x.trim()).filter(Boolean);for(let i=0;i<lines.length;i++){const m=lines[i].match(/^(?:titular(?:\s+do\s+contrato)?|nome(?:\s+do\s+cliente)?|cliente)\s*[:\-]?\s*(.{3,100})$/i);if(m)return m[1].trim();if(/^(?:titular(?:\s+do\s+contrato)?|nome(?:\s+do\s+cliente)?|cliente)\s*[:\-]?$/i.test(lines[i])&&lines[i+1]&&!/^(nif|nipc|morada|endereco|cpe|cui)\b/i.test(lines[i+1]))return lines[i+1].trim();}return "";}
-function findMorada(text){const lines=String(text||"").split(/\r?\n/).map(x=>x.trim()).filter(Boolean);for(let i=0;i<lines.length;i++){const m=lines[i].match(/^(?:morada(?:\s+de\s+fornecimento)?|local\s+de\s+consumo|endereco)\s*[:\-]?\s*(.{5,160})$/i);if(m)return m[1].trim();if(/^(?:morada(?:\s+de\s+fornecimento)?|local\s+de\s+consumo|endereco)\s*[:\-]?$/i.test(lines[i])&&lines[i+1]&&!/^(nif|nipc|cpe|cui)\b/i.test(lines[i+1]))return lines[i+1].trim();}return "";}
+function findTitular(text){const lines=String(text||"").split(/\r?\n/).map(x=>x.trim()).filter(Boolean);const label=/^(?:titular(?:\s+do\s+contrato)?|nome(?:\s+do\s+(?:cliente|titular))?|cliente)\s*[:\-]?$/i;const value=/^(?:titular(?:\s+do\s+contrato)?|nome(?:\s+do\s+(?:cliente|titular))?|cliente)\s*[:\-]?\s*(.{3,100})$/i;for(let i=0;i<lines.length;i++){if(label.test(lines[i])&&lines[i+1]&&!/^(nif|nipc|morada|endereco|cpe|cui)\b/i.test(lines[i+1]))return lines[i+1].trim();const m=lines[i].match(value);if(m)return m[1].trim();}return "";}
+function findMorada(text){const lines=String(text||"").split(/\r?\n/).map(x=>x.trim()).filter(Boolean);const heading=/^(?:mensagens?\s+uteis|contrato|eletricidade|gas|fatura|resumo|pagamento|nif|nipc|cpe|cui|local\s+de\s+fornecimento|local\s+de\s+consumo|morada)\b/i;const postalIndex=lines.findIndex(line=>/\b\d{4}-\d{3}\b/.test(line)&&!heading.test(line));if(postalIndex>=0){const postal=lines[postalIndex];const previous=lines[postalIndex-1]||"";const street=previous.match(/\b(?:rua|avenida|av\.?|travessa|estrada|largo|pra[cç]a|praceta|urbaniza[cç][aã]o|lugar|quinta|caminho|beco|alameda)\b.*$/i);const streetLine=street?street[0].trim():previous;return streetLine&&!heading.test(streetLine)&&!/^portugal$/i.test(streetLine)?streetLine+" "+postal:postal;}for(let i=0;i<lines.length;i++){const m=lines[i].match(/^(?:morada(?:\s+de\s+fornecimento)?|local\s+de\s+consumo|local\s+de\s+fornecimento|endereco)\s*[:\-]?\s*(.{5,160})$/i);if(m&&!heading.test(m[1].trim()))return m[1].trim();if(/^(?:morada(?:\s+de\s+fornecimento)?|local\s+de\s+consumo|local\s+de\s+fornecimento|endereco)\s*[:\-]?$/i.test(lines[i])&&lines[i+1]&&!heading.test(lines[i+1])&&!/^(nif|nipc|cpe|cui)\b/i.test(lines[i+1]))return lines[i+1].trim();}return "";}
 function validateNif(value){const digits=(value||"").replace(/\D/g,"");if(!/^\d{9}$/.test(digits))return false;const sum=digits.slice(0,8).split("").reduce((acc,d,i)=>acc+Number(d)*(9-i),0);const control=11-(sum%11);return Number(digits[8])===(control>=10?0:control);}
 function validateInstallCode(value,kind){const code=normCode(value);if(!/^PT\d{4}\d{12}[A-Z]{2}$/.test(code))return false;const operator=code.slice(2,6);return kind==="CPE"?operator[0]==="0":operator[0]==="1";}
 function validateCpe(value){return validateInstallCode(value,"CPE");}
@@ -268,109 +315,538 @@ function findKwhPeriod(text,label){
  }
  return "";
 }
+function parseSimpleConsumptionRows(text){
+ const lines=String(text||"").split(/\r?\n/).map(line=>line.replace(/\u00a0/g," ").trim()).filter(Boolean);
+ const seen=new Set();let total=0,count=0;
+ const parse=value=>Number(String(value||"").replace(/\.(?=\d{3}(?:[,\.]|$))/g,"").replace(",","."));
+ for(const line of lines){
+  let match=line.match(/energia\s+real\s*:\s*simples\s*\(([^)]*)\)\s*([\d.,]+)\s*k\s*w\s*h/i);
+  if(!match){match=line.match(/consumo\s+normal(?:\s+estimado)?\b.*?([\d.,]+)\s*k\s*w\s*h/i);if(match){const raw=match[1];const key="normal:"+line+"|"+raw;const value=parse(raw);if(Number.isFinite(value)&&value>=0&&!seen.has(key)){seen.add(key);total+=value;count++;}continue;}}
+  let key="",raw="";
+  if(match){key="iberdrola:"+match[1].replace(/\s+/g,"")+"|"+match[2];raw=match[2];}
+  else{
+   match=line.match(/consumo\s+eletricidade\s+simples\s+medido\s+(\d{2}[\/.-]\d{2}[\/.-]\d{4})\s+(\d{2}[\/.-]\d{2}[\/.-]\d{4})\s+([\d.,]+)\s*k\s*w\s*h/i);
+   if(match){key="medido:"+match[1]+"|"+match[2]+"|"+match[3];raw=match[3];}
+  }
+  if(!match||seen.has(key))continue;
+  const value=parse(raw);if(!Number.isFinite(value)||value<0)continue;
+  seen.add(key);total+=value;count++;
+ }
+ return count?{value:String(Number(total.toFixed(3))),count}:null;
+}
+function parseMeterReadingTable(text){
+ const lines=String(text||"").split(/\r?\n/).map(line=>line.replace(/\u00a0/g," ").trim()).filter(Boolean);
+ const totals={};let matched=0;
+ const pattern=/\b(vazio|ponta|cheias?|fora\s+(?:de\s+)?vazio)\s+(\d{2}[\/.-]\d{2}[\/.-]\d{4})\s+([\d.]+)\s+(?:real|estimado)\s+(\d{2}[\/.-]\d{2}[\/.-]\d{4})\s+([\d.]+)\s+(?:real|estimado)\s+([\d.,]+)\s*$/i;
+ for(const line of lines){
+  const match=line.match(pattern);if(!match)continue;
+  const rawLabel=normalizeOcrLine(match[1]).replace(/\s+/g," ").trim();
+  const label=rawLabel==="cheia"||rawLabel==="cheias"?"cheias":rawLabel.includes("fora")?"fora":rawLabel;
+  const raw=match[6].replace(/\.(?=\d{3}(?:[,.]|$))/g,"").replace(",",".");
+  const value=Number(raw);
+  if(!Number.isFinite(value)||value<0)continue;
+  totals[label]=(totals[label]||0)+value;matched++;
+ }
+ if(!matched)return null;
+ const keys=Object.keys(totals);
+ const tri=["vazio","ponta","cheias"].every(k=>Object.prototype.hasOwnProperty.call(totals,k));
+ const bi=Object.prototype.hasOwnProperty.call(totals,"fora")&&Object.prototype.hasOwnProperty.call(totals,"vazio")&&keys.length===2;
+ if(!tri&&!bi)return null;
+ const values={};for(const key of keys)values[key]=String(Number(totals[key].toFixed(3)));
+ return {values,tarifa:tri?"tri-horário":"bi-horário",confidence:"medium",source:"leituras-contador"};
+}
 function parseHourlyConsumptionTable(text){
  const lines=String(text||"").split(/\r?\n/).map(x=>x.replace(/\u00a0/g," ").trim()).filter(Boolean);
  const norm=s=>normalizeOcrLine(s).replace(/[^a-z0-9 ]/g," ").replace(/\s+/g," ").trim();
- const numberTokens=s=>(String(s||"").match(/\d{1,3}(?:[ .]\d{3})+(?:[,\.]\d+)?|\d+(?:[,\.]\d+)?/g)||[]).map(v=>v.replace(/[ .](?=\d{3}(?:[,\.]|$))/g,"").replace(",","."));
- const hasLabel=(s,label)=>new RegExp("(^| )"+label+"( |$)").test(s);
+ const numberTokens=s=>(String(s||"").match(/\d{1,3}(?:\.\d{3})+(?:,\d+)?|\d+(?:[,\.]\d+)?/g)||[]).map(v=>v.replace(/\.(?=\d{3}(?:[,\.]|$))/g,"").replace(",","."));
  for(let i=0;i<lines.length;i++){
-  // PDF.js e OCR podem separar os cabeçalhos das colunas por várias linhas.
-  const headerParts=lines.slice(i,Math.min(lines.length,i+3));
-  const header=norm(headerParts.join(" "));
-  const tri=hasLabel(header,"vazio")&&hasLabel(header,"cheias")&&hasLabel(header,"ponta");
-  const bi=hasLabel(header,"vazio")&&(header.includes("fora de vazio")||header.includes("fora vazio"));
+  const header=norm(lines.slice(i,Math.min(lines.length,i+3)).join(" "));
+  const headerClean=header.replace(/fora de vazio|fora vazio/g,"fora");
+  const words=headerClean.split(" ");
+  const has=(w)=>words.includes(w);
+  const tri=has("vazio")&&(has("cheia")||has("cheias"))&&has("ponta");
+  const bi=!tri&&has("fora")&&has("vazio");
   if(!tri&&!bi)continue;
-  const labels=(tri?["vazio","ponta","cheias"]:["vazio","fora"]).sort((a,b)=>header.indexOf(a)-header.indexOf(b));
-  // Localiza a linha total de consumos, admitindo cabeçalho e unidade em linhas separadas.
-  for(let j=i+1;j<Math.min(lines.length,i+10);j++){
+  const labels=tri?["vazio","ponta","cheias"]:["fora","vazio"];
+  // Só aceita uma linha explicitamente identificada como total de consumo e com
+  // exatamente um valor por período. Valores extra tornam a leitura ambígua.
+  for(let j=i+1;j<Math.min(lines.length,i+9);j++){
    const row=norm(lines[j]);
-   if(!/(total|consumo|energia)/.test(row))continue;
-   const combined=lines.slice(j,Math.min(lines.length,j+2)).join(" ");
-   if(!/k\s*w\s*h/i.test(combined))continue;
-   const all=numberTokens(lines[j]);
-   let nums=all;
-   // Se a unidade e os números estiverem em linhas distintas, recolhe os números da linha seguinte.
-   if(nums.length<labels.length&&j+1<lines.length)nums=numberTokens(lines[j+1]);
-   if(nums.length<labels.length)continue;
-   // Em linhas de total, os últimos N valores correspondem às colunas horárias; evita datas/IDs anteriores.
-   nums=nums.slice(-labels.length);
-   const values={};labels.forEach((label,k)=>values[label]=nums[k]);
-   return {values,tarifa:tri?"tri-horário":"bi-horário"};
+   if(!/(total de consumos|total consumos|consumo total)/.test(row))continue;
+   const candidateLines=[lines[j],lines[j+1]||""];
+   for(const candidate of candidateLines){
+    if(!/k\s*w\s*h/i.test(candidate)&&candidate===lines[j])continue;
+    const nums=numberTokens(candidate);
+    if(nums.length!==labels.length)continue;
+    const values={};labels.forEach((label,k)=>values[label]=nums[k]);
+    return {values,tarifa:tri?"tri-horário":"bi-horário",confidence:"medium"};
+   }
   }
  }
  return null;
 }
+function parsePtNumber(raw){
+ if(raw===null||raw===undefined)return null;
+ let cleaned=String(raw).trim().replace(/\s+/g,"");
+ if(!cleaned)return null;
+ if(cleaned.includes(",")&&cleaned.includes("."))cleaned=cleaned.replace(/\./g,"").replace(",",".");
+ else if(cleaned.includes(","))cleaned=cleaned.replace(",",".");
+ const value=Number(cleaned);
+ return Number.isFinite(value)?value:null;
+}
+function classifySection(lineText,currentSection="desconhecida"){
+ const text=normalizeOcrLine(String(lineText||""));
+ if(/acesso as redes|tarifas? de acesso|uso da rede/.test(text))return "acesso_redes";
+ if(/impostos?|taxas?|iva|audiovisual|cav|iec/.test(text)&&!/kwh/.test(text))return "impostos_taxas";
+ if(/leituras?|contador|contagem|leitura anterior|leitura atual/.test(text))return "leituras";
+ if(/comercializacao|energia ativa|fornecimento|consumos?/.test(text))return "comercializacao";
+ if(/resumo|sintese|quadro resumo|dados do consumo/.test(text))return "resumo";
+ return currentSection;
+}
+function extractStructuredConsumptions(input){
+ const lines=Array.isArray(input)?input.flatMap(entry=>typeof entry==="string"?[entry]:Array.isArray(entry?.gridRows)?entry.gridRows.map(row=>row.filter(Boolean).join(" | ")):Array.isArray(entry?.rows)?entry.rows.map(row=>row.text||""):[]):String(input||"").split(/\r?\n/);
+ let section="desconhecida";const entries=[],warnings=[];let pendingLabel="";
+ const valuePattern=/(\d{1,3}(?:[ .]\d{3})+(?:,\d+)?|\d+(?:[,.]\d+)?)\s*k\s*w\s*h/gi;
+ for(const raw of lines){
+  const line=String(raw||"").replace(/\u00a0/g," ").trim();if(!line)continue;
+  const previousSection=section;section=classifySection(line,section);
+  const rawNorm=normalizeOcrLine(line);
+  if(section!==previousSection)pendingLabel="";
+  let analysisLine=line;
+  if(/\bkwh\b/i.test(line)&&!/(?:energia|consumo)/.test(rawNorm)&&pendingLabel){analysisLine=pendingLabel+" "+line;pendingLabel="";}
+  else if(/(?:energia|consumo)/.test(rawNorm)&&! /\bkwh\b/i.test(line)&&/(?:simples|fora|vazio|ponta|cheias)/.test(rawNorm)){pendingLabel=line;}
+  else if(/(?:energia|consumo)/.test(rawNorm)&&/\bkwh\b/i.test(line)){pendingLabel="";}
+  const norm=normalizeOcrLine(analysisLine);
+  if(section==="acesso_redes"||section==="impostos_taxas"||section==="leituras")continue;
+  if(/leitura anterior|leitura atual|contador|total a pagar|potencia contratada|\beur\b|\bkva\b/.test(norm))continue;
+  const valueLine=analysisLine.replace(/\b\d+(?:[,.]\d+)?\s*(?:€|eur)\s*\/\s*kwh\b/gi," ").replace(/\b\d{1,2}[\/.-]\d{1,2}[\/.-]\d{2,4}\b/g," ").replace(/\b\d{1,2}\s+(?:jan(?:eiro)?|fev(?:ereiro)?|mar(?:ço|co)?|abr(?:il)?|mai(?:o)?|jun(?:ho)?|jul(?:ho)?|ago(?:sto)?|set(?:embro)?|out(?:ubro)?|nov(?:embro)?|dez(?:embro)?)\s+\d{2,4}\b/gi," ");
+  const matches=[...valueLine.matchAll(valuePattern)];
+  if(!matches.length)continue;
+  const period=/fora\s+de\s+vazio/.test(norm)?"fora":/\bponta\b/.test(norm)?"ponta":/\bcheias?\b/.test(norm)?"cheias":/\bvazio\b/.test(norm)?"vazio":null;
+  const isTotal=/total de consumos|total consumos|consumo total|total de energia/.test(norm);
+  const isEstimate=/estimad[oa]|estimativa/.test(norm);
+  const isMeasured=/\breal\b|\blida\b|medid[oa]|medicao/.test(norm);
+  const labelSpecific=/energia|consumo/.test(norm);
+  if(!labelSpecific&&!period&&!isTotal)continue;
+  const values=matches.map(m=>parsePtNumber(m[1])).filter(v=>v!==null&&v>=0);
+  if(values.length!==1){warnings.push("Linha com vários valores kWh sem associação inequívoca: "+line);continue;}
+  entries.push({value:values[0],period,section,kind:isTotal?"total":"parcela",measurementMode:isEstimate?"estimado":isMeasured?"medido":"nao_especificado",line:analysisLine});
+ }
+ const primary=entries.filter(e=>e.section!=="acesso_redes"&&e.section!=="impostos_taxas");
+ const grouped={vazio:[],fora:[],ponta:[],cheias:[]};
+ for(const e of primary)if(e.period&&e.kind!=="total")grouped[e.period].push(e.value);
+ const byPeriod={vazio:null,foraDeVazio:null,ponta:null,cheias:null};
+ const map={vazio:"vazio",fora:"foraDeVazio",ponta:"ponta",cheias:"cheias"};
+ for(const [key,vals] of Object.entries(grouped)){
+  const unique=[...new Set(vals)];
+  if(unique.length===1)byPeriod[map[key]]=unique[0];
+  else if(unique.length>1)warnings.push("Valores diferentes encontrados para o período "+key+"; confirmação manual necessária.");
+ }
+ const simple=primary.filter(e=>!e.period&&e.kind==="parcela");
+ const dedupedSimple=[...new Map(simple.map(e=>[e.line.replace(/\s+/g," ").trim(),e])).values()];
+ const uniqueSimple=[...new Set(dedupedSimple.map(e=>e.value))];
+ let nonPeriodSum=null;
+ if(uniqueSimple.length===1)nonPeriodSum=uniqueSimple[0];
+ else if(uniqueSimple.length>1){
+  const dated=dedupedSimple.every(e=>/\d{1,2}[\/.-]\d{1,2}[\/.-]\d{2,4}/.test(e.line));
+  const distinctDates=new Set(dedupedSimple.map(e=>(e.line.match(/\d{1,2}[\/.-]\d{1,2}[\/.-]\d{2,4}/g)||[]).join("|")));
+  const explicitCommercialRows=dedupedSimple.every(e=>e.section==="comercializacao"&&/energia|consumo/.test(normalizeOcrLine(e.line)));
+  if((dated&&distinctDates.size===dedupedSimple.length)||explicitCommercialRows)nonPeriodSum=Number(dedupedSimple.reduce((a,e)=>a+e.value,0).toFixed(3));
+  else warnings.push("Foram encontrados vários valores simples sem períodos identificáveis; não foram somados.");
+ }
+ const totals=primary.filter(e=>e.kind==="total").map(e=>e.value);
+ const explicitTotal=totals.length?totals[totals.length-1]:null;
+ const periodValues=Object.values(byPeriod).filter(v=>typeof v==="number");
+ const periodSum=periodValues.length?Number(periodValues.reduce((a,b)=>a+b,0).toFixed(3)):null;
+ const candidate=periodSum!==null?periodSum:nonPeriodSum;
+ let totalKwh=null;
+ if(candidate!==null&&explicitTotal!==null){
+  if(Math.abs(candidate-explicitTotal)<=0.5)totalKwh=explicitTotal;
+  else warnings.push("Divergência entre total explícito e soma das parcelas; consumo por confirmar.");
+ }else if(candidate!==null)totalKwh=candidate;
+ else if(explicitTotal!==null)totalKwh=explicitTotal;
+ const estimated=primary.filter(e=>e.measurementMode==="estimado");
+ if(estimated.length)warnings.push("Foram detetados valores estimados; confirme-os antes de simular.");
+ const all=lines.join("\n"),hasP=typeof byPeriod.ponta==="number",hasC=typeof byPeriod.cheias==="number",hasV=typeof byPeriod.vazio==="number",hasF=typeof byPeriod.foraDeVazio==="number";
+ let ciclo=null;
+ if(hasP&&hasC&&hasV)ciclo="tri-horário";
+ else if(hasV&&hasF)ciclo="bi-horário";
+ else if(totalKwh!==null&&!hasP&&!hasC&&!hasV&&!hasF)ciclo="simples";
+ else if(/tri-?horario/.test(normalizeOcrLine(all)))ciclo="tri-horário";
+ else if(/bi-?horario/.test(normalizeOcrLine(all)))ciclo="bi-horário";
+ else if(/tarifa simples|ciclo simples/.test(normalizeOcrLine(all)))ciclo="simples";
+ if((ciclo==="bi-horário"&&(!hasV||!hasF))||(ciclo==="tri-horário"&&(!hasP||!hasC||!hasV))){
+  warnings.push("Ciclo horário identificado, mas faltam períodos ou existem dúvidas; confirme manualmente.");
+  totalKwh=null;
+ }
+ return {ciclo,totalKwh,byPeriod,parcels:simple.map(e=>e.value),periodSum,nonPeriodSum,explicitTotal,estimatedCount:estimated.length,entries,warnings,needsManualConfirmation:warnings.length>0||totalKwh===null||ciclo===null,canCompare:false};
+}
 function parseFaturaText(text){
  const clean=String(text||"").replace(/\u00a0/g," ");
  const normalized=normalizeOcrLine(clean);
- const hasPonta=/\bponta\b/.test(normalized),hasCheias=/\bcheias\b/.test(normalized),hasVazio=/\bvazio\b/.test(normalized),hasFora=/fora[ -]de[ -]vazio/.test(normalized);
+ const hasPonta=/\bponta\b/.test(normalized),hasCheias=/\bcheias?\b/.test(normalized),hasVazio=/\bvazio\b/.test(normalized),hasFora=/fora[ -]de[ -]vazio/.test(normalized);
  const tarifa=(hasPonta&&hasCheias&&hasVazio)?"tri-horário":((hasFora||hasVazio)&&!hasPonta)?"bi-horário":"simples/por confirmar";
  let fornecedor="";for(const n of ["EDP","Endesa","Galp","Iberdrola","Repsol","MEO","Goldenergy","G9","Ibelectra","Luzboa","Plenitude","Eni"])if(new RegExp("\\b"+n+"\\b","i").test(clean)){fornecedor=n;break;}
- // Nas faturas Galp, "Energia Simples (medida)" pode surgir em duas linhas,
- // separadas pela taxa de IVA. Somamos apenas essas parcelas e ignoramos
- // a linha ISPE, que repete o total para efeitos fiscais.
- const measuredSimpleRows=[...clean.matchAll(/energia\s+simples\s*\(\s*medida\s*\)[^\n]{0,180}?((?:\d{1,3}(?:[ .]\d{3})+|\d+)(?:[,\.]\d{1,3})?)\s*k\s*w\s*h/gi)];
- const parseKwhNumber=value=>Number(String(value||"").replace(/[ .](?=\d{3}(?:[,\.]|$))/g,"").replace(",","."));
- const measuredSimpleTotal=measuredSimpleRows.reduce((sum,row)=>sum+parseKwhNumber(row[1]),0);
- const simpleMatch=measuredSimpleRows.length?null:clean.match(/(?:consumo\s+(?:total|simples|real|medido)|energia\s+ativa(?:\s+total)?|total\s+(?:de\s+)?energia)[^\n]{0,100}?((?:\d{1,3}(?:[ .]\d{3})+|\d+)(?:[,\.]\d{1,3})?)\s*k\s*w\s*h/i);
+ // Motor genérico: identifica secções e natureza dos valores, sem regras por fornecedor.
+ const structured=extractStructuredConsumptions(clean);
+ const simpleRows=parseSimpleConsumptionRows(clean);
+ const hourly=parseMeterReadingTable(clean)||parseHourlyConsumptionTable(clean);
+ const hasHourlyLabels=hasPonta||hasCheias||hasVazio||hasFora;
+ // Nunca deixar o leitor antigo contornar uma ambiguidade detetada pelo motor genérico.
+ const hasAmbiguityOrWarning=Boolean(structured?.needsManualConfirmation)||(Array.isArray(structured?.warnings)&&structured.warnings.length>0);
+ const legacyRaw=simpleRows?.value;
+ const legacyNumber=typeof legacyRaw==="number"?legacyRaw:(typeof legacyRaw==="string"&&legacyRaw.trim()!==""?Number(legacyRaw.replace(",", ".")):NaN);
+ const legacySimpleValue=Number.isFinite(legacyNumber)&&legacyNumber>0?legacyNumber:null;
+ const structuredTotal=typeof structured?.totalKwh==="number"&&Number.isFinite(structured.totalKwh)?structured.totalKwh:null;const consumoFinalKwh=structuredTotal!==null?structuredTotal:(hasAmbiguityOrWarning?null:legacySimpleValue);
+ const warnings=[
+  ...(Array.isArray(structured?.warnings)?structured.warnings:[]),
+  ...(hasAmbiguityOrWarning&&legacySimpleValue!==null?[`Leitura antiga (${legacySimpleValue} kWh) ignorada por existir ambiguidade/aviso na estrutura; confirme o consumo manualmente.`]:[])
+ ];
+ const safeSimple=consumoFinalKwh===null?"":String(consumoFinalKwh);
  const gasMatch=clean.match(/(?:consumo\s+(?:total\s+)?de\s+)?g[aá]s[^\n]{0,100}?((?:\d{1,3}(?:[ .]\d{3})+|\d+)(?:[,\.]\d{1,3})?)\s*kwh/i);
  const cleanValue=v=>String(v||"").replace(/[ ]/g,"").replace(",",".");
  const nif=findNif(clean),cpe=findCode(clean,"CPE"),cui=findCode(clean,"CUI");
- const hourly=parseHourlyConsumptionTable(clean);
- return {fornecedor,titular:findTitular(clean),morada:findMorada(clean),nif,cpe,cui,potencia:findPower(clean),tarifa:hourly?.tarifa||tarifa,simples:measuredSimpleRows.length?String(Number(measuredSimpleTotal.toFixed(3))):cleanValue(simpleMatch?.[1]),fora:hourly?.values.fora||findKwhPeriod(clean,"fora"),vazio:hourly?.values.vazio||findKwhPeriod(clean,"vazio"),cheias:hourly?.values.cheias||findKwhPeriod(clean,"cheias"),ponta:hourly?.values.ponta||findKwhPeriod(clean,"ponta"),gas:cleanValue(gasMatch?.[1]),validacao:{nif:validateNif(nif),cpe:validateCpe(cpe),cui:validateCui(cui)}};
+ const periodValue=key=>{const hourlyValue=hourly?.values?.[key];if(hourlyValue!==undefined&&hourlyValue!==null&&String(hourlyValue)!=="")return String(hourlyValue);const structuredKey=key==="fora"?"foraDeVazio":key;const structuredValue=structured?.byPeriod?.[structuredKey];return typeof structuredValue==="number"?String(structuredValue):"";};
+ return {fornecedor,titular:findTitular(clean),morada:findMorada(clean),nif,cpe,cui,potencia:findPower(clean),tarifa:hourly?.tarifa||structured.ciclo||tarifa,simples:(hourly||hasHourlyLabels)?"":safeSimple,fora:periodValue("fora"),vazio:periodValue("vazio"),cheias:periodValue("cheias"),ponta:periodValue("ponta"),gas:cleanValue(gasMatch?.[1]),warnings,validacao:{nif:validateNif(nif),cpe:validateCpe(cpe),cui:validateCui(cui)}};
 }
-function mostrarCampos(d,text){const keys={fornecedor:"ocr-fornecedor",titular:"ocr-titular",morada:"ocr-morada",nif:"ocr-nif",cpe:"ocr-cpe",cui:"ocr-cui",potencia:"ocr-potencia",tarifa:"ocr-tarifa",simples:"ocr-simples",fora:"ocr-fora",vazio:"ocr-vazio",cheias:"ocr-cheias",ponta:"ocr-ponta",gas:"ocr-gas"};for(const [k,id] of Object.entries(keys))$(id).value=d[k]||"";const status=[];if(d.nif)status.push("NIF/NIPC: "+(d.validacao.nif?"checksum OK":"checksum inválido"));if(d.cpe)status.push("CPE: "+(d.validacao.cpe?"estrutura OK":"estrutura inválida"));if(d.cui)status.push("CUI: "+(d.validacao.cui?"estrutura OK":"estrutura inválida"));$("ocr-validacao").textContent=status.length?status.join(" · ")+" (CPE/CUI sem validação de dígitos de controlo)":"Não foram detetados códigos para validar.";$("ocr-texto").value=text;$("ocr-resultados").classList.remove("hidden");}
+function mostrarCampos(d,text){if(wivoltaConfirmationGate)wivoltaConfirmationGate.resetForNewInvoice();window.wivoltaLocalInvoiceSummary=getWivoltaLocalSummary(d);initOptionalGeminiUi({localSummary:window.wivoltaLocalInvoiceSummary,extractedText:text});const keys={fornecedor:"ocr-fornecedor",titular:"ocr-titular",morada:"ocr-morada",nif:"ocr-nif",cpe:"ocr-cpe",cui:"ocr-cui",potencia:"ocr-potencia",tarifa:"ocr-tarifa",simples:"ocr-simples",fora:"ocr-fora",vazio:"ocr-vazio",cheias:"ocr-cheias",ponta:"ocr-ponta",gas:"ocr-gas"};for(const [k,id] of Object.entries(keys))$(id).value=d[k]||"";const status=[];if(d.nif)status.push("NIF/NIPC: "+(d.validacao.nif?"checksum OK":"checksum inválido"));if(d.cpe)status.push("CPE: "+(d.validacao.cpe?"estrutura OK":"estrutura inválida"));if(d.cui)status.push("CUI: "+(d.validacao.cui?"estrutura OK":"estrutura inválida"));const warningText=Array.isArray(d.warnings)&&d.warnings.length?" Avisos de leitura: "+d.warnings.join(" "):"";$("ocr-validacao").textContent=(status.length?status.join(" · ")+" (CPE/CUI sem validação de dígitos de controlo)":"Não foram detetados códigos para validar.")+warningText;$("ocr-texto").value=text;$("ocr-resultados").classList.remove("hidden");}
+document.addEventListener("DOMContentLoaded",()=>{setupWivoltaGeminiPanel();setupWivoltaConfirmationGate();});
+function shouldOfferSecondaryGeminiReading(localSummary={}){
+ const hasWarnings=Array.isArray(localSummary.warnings)&&localSummary.warnings.length>0;
+ const missingCore=localSummary.consumoKwh===null||localSummary.consumoKwh===undefined||!localSummary.ciclo||!localSummary.fornecedor;
+ return Boolean(hasWarnings||missingCore);
+}
+function getWivoltaLocalSummary(d){
+ return {
+  fornecedor:d.fornecedor||null,
+  potencia_kva:d.potencia||null,
+  ciclo_horario:(()=>{const t=String(d.tarifa||"").toLowerCase();return /tri/.test(t)?"tri-horário":/bi/.test(t)?"bi-horário":/simples/.test(t)&&!/por confirmar/.test(t)?"simples":null;})(),
+  consumo_kwh:{
+   simples_total:d.simples||null,
+   vazio:d.vazio||null,
+   fora_de_vazio:d.fora||null,
+   ponta:d.ponta||null,
+   cheias:d.cheias||null
+  },
+  total_fatura_eur:d.total_fatura_eur||null,
+  warnings:Array.isArray(d.warnings)?d.warnings:[]
+ };
+}
+function shouldOfferSecondaryGeminiReading(localSummary={}){
+ const hasWarnings=Array.isArray(localSummary.warnings)&&localSummary.warnings.length>0;
+ const c=localSummary.consumo_kwh||{};
+ const hasConsumption=[c.simples_total,c.vazio,c.fora_de_vazio,c.ponta,c.cheias].some(v=>v!==null&&v!==undefined&&String(v).trim()!=="");
+ const missingCore=!hasConsumption||!localSummary.ciclo_horario||!localSummary.fornecedor;
+ return Boolean(hasWarnings||missingCore);
+}
+function normalizeComparableNumber(value){
+ if(typeof value==="number"&&Number.isFinite(value))return Number(value.toFixed(3));
+ if(typeof value==="string"&&value.trim()!==""){
+  const cleaned=Number(value.replace(",",".").replace(/[^0-9.-]/g,""));
+  if(Number.isFinite(cleaned))return Number(cleaned.toFixed(3));
+ }
+ return null;
+}
+function normalizeComparableText(value){
+ if(typeof value!=="string")return null;
+ const normalized=value.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/\s+/g," ");
+ return normalized||null;
+}
+function compareField(key,label,localRaw,geminiRaw,kind="text"){
+ const local=kind==="number"?normalizeComparableNumber(localRaw):normalizeComparableText(localRaw);
+ const gemini=kind==="number"?normalizeComparableNumber(geminiRaw):normalizeComparableText(geminiRaw);
+ const hasLocal=local!==null,hasGemini=gemini!==null;
+ let status="missing_both",suggestedValue=null;
+ if(hasLocal&&hasGemini)status=(kind==="number"?Math.abs(local-gemini)<=.001:local===gemini)?"match":"mismatch";
+ else if(hasLocal)status="only_local";
+ else if(hasGemini)status="only_gemini";
+ if(status==="match"||status==="only_local")suggestedValue=localRaw;
+ const message=status==="match"?"Coincide nas duas leituras; confirme manualmente.":status==="mismatch"?"Divergência entre as leituras; escolha e confirme manualmente.":status==="only_local"?"Só existe na leitura local; confirme na fatura.":status==="only_gemini"?"Só foi sugerido pelo Gemini; reveja na fatura.":"Sem valor nas duas leituras; preencha manualmente.";
+ return {key,label,kind,localValue:localRaw??null,geminiValue:geminiRaw??null,status,suggestedValue,requiresManualReview:true,message};
+}
+function compareLocalAndGeminiReadings(localSummary={},geminiExtracted={}){
+ const l=localSummary.consumo_kwh||{},g=geminiExtracted.consumo_kwh||{};
+ const specs=[
+  ["fornecedor","Fornecedor",localSummary.fornecedor,geminiExtracted.fornecedor,"text"],
+  ["potencia_kva","Potência contratada (kVA)",localSummary.potencia_kva,geminiExtracted.potencia_kva,"number"],
+  ["ciclo_horario","Ciclo horário",localSummary.ciclo_horario,geminiExtracted.ciclo_horario,"text"],
+  ["consumo_simples_total","Consumo simples (kWh)",l.simples_total,g.simples_total,"number"],
+  ["consumo_vazio","Consumo vazio (kWh)",l.vazio,g.vazio,"number"],
+  ["consumo_fora_de_vazio","Consumo fora de vazio (kWh)",l.fora_de_vazio,g.fora_de_vazio,"number"],
+  ["consumo_ponta","Consumo ponta (kWh)",l.ponta,g.ponta,"number"],
+  ["consumo_cheias","Consumo cheias (kWh)",l.cheias,g.cheias,"number"],
+  ["total_fatura_eur","Total da fatura (€)",localSummary.total_fatura_eur,geminiExtracted.total_fatura_eur,"number"]
+ ];
+ const fields={};const divergences=[];const reviewNotes=[];
+ for(const [key,label,lv,gv,kind] of specs){
+  const field=compareField(key,label,lv,gv,kind);fields[key]=field;
+  if(field.status==="mismatch")divergences.push(field);
+  if(field.status!=="match")reviewNotes.push(label+": "+field.message);
+ }
+ const notes=Array.isArray(geminiExtracted.observacoes_incerteza)?geminiExtracted.observacoes_incerteza.filter(x=>typeof x==="string"&&x.trim()):[];
+ return {requiresManualConfirmation:true,canCompare:false,hasDivergences:divergences.length>0,divergenceCount:divergences.length,divergences,reviewNotes:[...reviewNotes,...notes],fields};
+}
+function renderGeminiComparison(container,comparison){
+ container.replaceChildren();
+ const heading=document.createElement("h4");heading.textContent="Leitura local vs. segunda leitura";container.appendChild(heading);
+ const table=document.createElement("table");table.style.cssText="width:100%;border-collapse:collapse;font-size:13px;margin-top:8px";
+ const header=document.createElement("tr");
+ ["Campo","Leitura local","Gemini","Resultado"].forEach(label=>{const th=document.createElement("th");th.textContent=label;th.style.cssText="text-align:left;padding:7px;border-bottom:1px solid #d1d5db";header.appendChild(th);});
+ const thead=document.createElement("thead");thead.appendChild(header);table.appendChild(thead);
+ const tbody=document.createElement("tbody");
+ for(const field of Object.values(comparison.fields)){
+  const tr=document.createElement("tr");
+  const statusLabel={match:"Coincide",mismatch:"Divergência",only_local:"Só local",only_gemini:"Só Gemini",missing_both:"Em falta"}[field.status];
+  [field.label,field.localValue??"—",field.geminiValue??"—",statusLabel].forEach(value=>{const td=document.createElement("td");td.textContent=String(value);td.style.cssText="padding:7px;border-bottom:1px solid #e5e7eb;vertical-align:top;overflow-wrap:anywhere";tr.appendChild(td);});
+  tbody.appendChild(tr);
+ }
+ table.appendChild(tbody);container.appendChild(table);
+ const note=document.createElement("p");note.textContent="Nenhum valor foi aplicado aos campos da fatura. Confirma cada dado diretamente no documento; a comparação permanece bloqueada.";note.style.cssText="font-size:12px;margin-top:10px;color:#475569";container.appendChild(note);
+ if(comparison.reviewNotes.length){const ul=document.createElement("ul");ul.style.cssText="font-size:12px;margin:8px 0 0 18px";comparison.reviewNotes.forEach(value=>{const li=document.createElement("li");li.textContent=value;ul.appendChild(li);});container.appendChild(ul);}
+}
+function createWivoltaConfirmationGate({confirmCheckboxEl,compareButtonEl,statusEl,onStateChange}={}){
+ let needsConfirmation=true,confirmedSnapshot=null;
+ const readSnapshot=()=>({
+  fornecedor:$("ocr-fornecedor")?.value||"",
+  titular:$("ocr-titular")?.value||"",
+  morada:$("ocr-morada")?.value||"",
+  potencia:$("ocr-potencia")?.value||"",
+  tarifa:$("ocr-tarifa")?.value||"",
+  simples:$("ocr-simples")?.value||"",
+  fora:$("ocr-fora")?.value||"",
+  vazio:$("ocr-vazio")?.value||"",
+  cheias:$("ocr-cheias")?.value||"",
+  ponta:$("ocr-ponta")?.value||"",
+  gas:$("ocr-gas")?.value||""
+ });
+ const sync=()=>{
+  const allowed=!needsConfirmation;
+  window.wivoltaInvoiceNeedsConfirmation=needsConfirmation;
+  window.wivoltaComparisonAllowed=allowed;
+  if(compareButtonEl){compareButtonEl.disabled=!allowed;compareButtonEl.setAttribute("aria-disabled",String(!allowed));}
+  if(statusEl)statusEl.textContent=allowed?"Dados confirmados manualmente. Comparação disponível.":"Confirme manualmente os dados da fatura antes de comparar.";
+  if(typeof onStateChange==="function")onStateChange({needsConfirmation,canCompare:allowed});
+ };
+ const resetForNewInvoice=()=>{needsConfirmation=true;confirmedSnapshot=null;if(confirmCheckboxEl)confirmCheckboxEl.checked=false;sync();};
+ const invalidateOnDataChange=(reason="Os dados da fatura foram alterados.")=>{
+  needsConfirmation=true;confirmedSnapshot=null;
+  if(confirmCheckboxEl)confirmCheckboxEl.checked=false;
+  sync();if(statusEl)statusEl.textContent=reason+" Confirme novamente antes de comparar.";
+ };
+ const confirmManually=()=>{
+  if(!confirmCheckboxEl?.checked){invalidateOnDataChange("A confirmação manual não foi assinalada.");return false;}
+  confirmedSnapshot=JSON.stringify(readSnapshot());needsConfirmation=false;sync();return true;
+ };
+ const canProceedToCompare=()=>{
+  if(needsConfirmation)return false;
+  if(confirmedSnapshot!==JSON.stringify(readSnapshot())){
+   invalidateOnDataChange("Os valores mudaram após a confirmação.");return false;
+  }
+  return true;
+ };
+ resetForNewInvoice();
+ return {resetForNewInvoice,invalidateOnDataChange,confirmManually,canProceedToCompare,isComparisonAllowed:()=>!needsConfirmation};
+}
+let wivoltaConfirmationGate=null;
+function setupWivoltaConfirmationGate(){
+ const checkbox=$("ocr-confirmar"),button=$("of-comparar"),status=$("ocr-validacao");
+ if(!checkbox||!button)return;
+ wivoltaConfirmationGate=createWivoltaConfirmationGate({confirmCheckboxEl:checkbox,compareButtonEl:button,statusEl:status});
+ checkbox.addEventListener("change",()=>{
+  if(checkbox.checked)wivoltaConfirmationGate.confirmManually();
+  else wivoltaConfirmationGate.invalidateOnDataChange("Confirmação retirada.");
+ });
+ ["ocr-fornecedor","ocr-titular","ocr-morada","ocr-potencia","ocr-tarifa","ocr-simples","ocr-fora","ocr-vazio","ocr-cheias","ocr-ponta","ocr-gas"].forEach(id=>{
+  const field=$(id);if(!field)return;
+  field.addEventListener("input",()=>wivoltaConfirmationGate.invalidateOnDataChange());
+  field.addEventListener("change",()=>wivoltaConfirmationGate.invalidateOnDataChange());
+ });
+}
+function initOptionalGeminiUi({localSummary,extractedText}){
+ const panel=$("wivolta-gemini-opt-panel"),checkbox=$("wivolta-gemini-consent-checkbox"),button=$("wivolta-btn-pedir-gemini"),statusEl=$("wivolta-gemini-status"),results=$("wivolta-gemini-results");
+ if(!panel||!checkbox||!button||!statusEl)return;
+ window.wivoltaComparisonAllowed=false;
+ window.wivoltaGeminiSecondaryResult=null;
+ const shouldShow=shouldOfferSecondaryGeminiReading(localSummary);
+ panel.style.display=shouldShow?"block":"none";
+ checkbox.checked=false;button.disabled=true;statusEl.textContent="";
+ if(results){results.style.display="none";results.replaceChildren();}
+ checkbox.onchange=()=>{button.disabled=!checkbox.checked;if(!checkbox.checked)statusEl.textContent="Autorização Gemini retirada. A leitura local continua disponível.";else statusEl.textContent="";};
+ button.onclick=async()=>{
+  if(!checkbox.checked){button.disabled=true;statusEl.textContent="É necessária autorização explícita para enviar o texto ao Gemini.";return;}
+  if(!shouldShow){statusEl.textContent="A segunda leitura não é necessária.";return;}
+  if(!String(extractedText||"").trim()){statusEl.textContent="Não existe texto extraído para enviar. Confirma os campos manualmente.";return;}
+  button.disabled=true;statusEl.textContent="A consultar a segunda leitura opcional em texto…";
+  try{
+   const filtered=typeof anonymizeInvoiceText==="function"?anonymizeInvoiceText(extractedText):String(extractedText);
+   if(!filtered.trim())throw new Error("O texto filtrado não contém dados técnicos suficientes.");
+   const response=await fetch("/api/ler-fatura-gemini",{method:"POST",cache:"no-store",headers:{"Content-Type":"application/json","Cache-Control":"no-cache"},body:JSON.stringify({consent:true,geminiConsent:true,text:filtered,localWarnings:Array.isArray(localSummary.warnings)?localSummary.warnings:[]})});
+   const payload=await response.json().catch(()=>({}));
+   if(!response.ok)throw new Error(payload.error||"Falha na segunda leitura opcional.");
+   const extracted=payload.extracted||{};
+   const comparison=compareLocalAndGeminiReadings(localSummary,extracted);
+   if(results){results.style.display="block";renderGeminiComparison(results,comparison);}
+   window.wivoltaGeminiSecondaryResult={localPreserved:localSummary,geminiExtracted:extracted,comparison,requiresManualConfirmation:true,canCompare:false};
+   window.wivoltaComparisonAllowed=false;
+   if(wivoltaConfirmationGate)wivoltaConfirmationGate.resetForNewInvoice();
+   statusEl.textContent="Segunda leitura concluída. Os resultados estão separados lado a lado; nenhum valor foi aplicado. Confirma tudo manualmente.";
+  }catch(err){statusEl.textContent=err?.message||"Não foi possível obter a segunda leitura.";button.disabled=!checkbox.checked;}
+ };
+}
 function extrairTextoPdf(page){
  return page.getTextContent().then(content=>{
+  const items=(content.items||[]).map(item=>{
+   const value=String(item.str||"").replace(/\s+/g," ").trim();
+   const transform=item.transform||[];
+   return {value,x:Number(transform[4]||0),y:Number(transform[5]||0),width:Number(item.width||0),fontSize:Math.abs(Number(transform[3]||item.height||10))};
+  }).filter(item=>item.value&&Number.isFinite(item.x)&&Number.isFinite(item.y));
+  // Ordenar numericamente primeiro evita o comparador não transitivo que
+  // juntava linhas diferentes quando os elementos chegavam fora de ordem.
+  items.sort((a,b)=>b.y-a.y||a.x-b.x);
   const rows=[];
-  for(const item of (content.items||[])){
-   const value=String(item.str||"").trim();if(!value)continue;
-   const y=Number(item.transform?.[5]||0),x=Number(item.transform?.[4]||0);
-   let row=rows.find(r=>Math.abs(r.y-y)<2.5);
-   if(!row){row={y,items:[]};rows.push(row);}
-   row.items.push({x,value});
+  for(const item of items){
+   const tolerance=Math.max(1.1,Math.min(3.2,item.fontSize*0.22));
+   let row=null,best=Infinity;
+   for(const candidate of rows){
+    const distance=Math.abs(candidate.y-item.y);
+    if(distance<=tolerance&&distance<best){row=candidate;best=distance;}
+   }
+   if(!row){row={y:item.y,items:[]};rows.push(row);}
+   row.items.push(item);
   }
-  return rows.sort((a,b)=>b.y-a.y).map(r=>r.items.sort((a,b)=>a.x-b.x).map(i=>i.value).join(" ")).join("\n");
+  return rows.sort((a,b)=>b.y-a.y).map(row=>{
+   row.items.sort((a,b)=>a.x-b.x);
+   let out="",right=-Infinity;
+   for(const item of row.items){
+    const gap=item.x-right;
+    if(out&&gap>Math.max(2,item.fontSize*0.2))out+=" ";
+    out+=item.value;
+    right=Math.max(right,item.x+item.width);
+   }
+   return out;
+  }).join("\n");
  });
 }
 async function processarFatura(event){
  const file=event.target.files?.[0];if(!file)return;
+ // Cada novo documento invalida imediatamente imagens e texto da fatura anterior.
+ window.wivoltaOcrImages=[];
+ window.wivoltaOcrText="";
+ window.wivoltaInvoiceNeedsConfirmation=true;
+ if($("ocr-confirmar"))$("ocr-confirmar").checked=false;
  const isPdf=file.type==="application/pdf"||file.name.toLowerCase().endsWith(".pdf");
- if(!window.Tesseract&&!isPdf){alert("A biblioteca OCR não carregou. Verifique a ligação à internet e tente novamente.");return;}
+ if(!window.Tesseract&&!isPdf&&!$("ocr-groq-consent")?.checked){alert("A biblioteca OCR não carregou. Autorize a análise visual Groq ou tente mais tarde.");return;}
  const status=$("ocr-status");status.style.display="flex";status.textContent="A preparar leitura local…";
  let worker=null;
  try{
-  let text="";
+  let text="",pdf=null,pdfReadError="";
+  const consumoDetetado=value=>[value?.simples,value?.fora,value?.vazio,value?.cheias,value?.ponta,value?.gas].filter(v=>String(v||"").trim()!=="").length;
   if(isPdf){
    if(!window.pdfjsLib)throw new Error("PDF.js não carregou.");
-   pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js";
-   const pdf=await pdfjsLib.getDocument({data:await file.arrayBuffer()}).promise;
-   const pages=Math.min(pdf.numPages,5);
-   for(let p=1;p<=pages;p++){status.textContent="A extrair texto original do PDF: página "+p+" de "+pages+"…";const page=await pdf.getPage(p);text+="\n"+await extrairTextoPdf(page);}
-   const consumoDetetado=value=>[value?.simples,value?.fora,value?.vazio,value?.cheias,value?.ponta,value?.gas].filter(v=>String(v||"").trim()!=="").length;
-   const textoPdfTemConsumos=text.replace(/\s/g,"").length>80&&/k\s*w\s*h/i.test(text)&&consumoDetetado(parseFaturaText(text))>0;
+   try{
+    pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js";
+    pdf=await pdfjsLib.getDocument({data:new Uint8Array(await file.arrayBuffer()),isEvalSupported:false,useSystemFonts:true}).promise;
+    const pages=Math.min(pdf.numPages,5);
+    for(let p=1;p<=pages;p++){
+     status.textContent="A extrair texto original do PDF: página "+p+" de "+pages+"…";
+     const page=await pdf.getPage(p);
+     text+="\n"+await extrairTextoPdf(page);
+    }
+   }catch(error){
+    pdfReadError=error?.message||"Falha na extração de texto do PDF.";
+    text="";
+   }
+   const parsedText=consumoDetetado(parseFaturaText(text));
+   const textoPdfTemConsumos=text.replace(/\s/g,"").length>80&&/k\s*w\s*h/i.test(text)&&parsedText>0;
    if(!textoPdfTemConsumos){
-    if(!window.Tesseract)throw new Error("Este PDF não revelou texto de consumo suficiente e a biblioteca OCR visual não está disponível. Tente novamente quando houver ligação à internet.");
-    status.textContent="O PDF não revelou consumos estruturados. A ativar OCR visual nas páginas…";
-    worker=await Tesseract.createWorker("por",1,{logger:m=>{if(m.status==="recognizing text")status.textContent="OCR: "+Math.round((m.progress||0)*100)+"%";}});
+    if(!window.Tesseract)throw new Error("O PDF não revelou consumos estruturados e a biblioteca OCR visual não está disponível.");
+    if(!pdf){
+     pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js";
+     pdf=await pdfjsLib.getDocument({data:new Uint8Array(await file.arrayBuffer()),isEvalSupported:false,useSystemFonts:true}).promise;
+    }
+    status.textContent=pdfReadError?"A extração de texto falhou. A tentar leitura visual do PDF…":"O PDF não revelou consumos estruturados. A ativar OCR visual…";
+    worker=await Tesseract.createWorker("por",1,{logger:m=>{if(m.status==="recognizing text")status.textContent="OCR local: "+Math.round((m.progress||0)*100)+"%";}});
     let ocrText="";
-    for(let p=1;p<=pages;p++){status.textContent="OCR local: página "+p+" de "+pages+"…";const page=await pdf.getPage(p),viewport=page.getViewport({scale:2.8}),canvas=document.createElement("canvas");canvas.width=viewport.width;canvas.height=viewport.height;await page.render({canvasContext:canvas.getContext("2d"),viewport}).promise;const result=await worker.recognize(canvas);ocrText+="\n"+result.data.text;}
-    if(consumoDetetado(parseFaturaText(ocrText))>consumoDetetado(parseFaturaText(text)))text=ocrText;
+    const pages=Math.min(pdf.numPages,5);
+    for(let p=1;p<=pages;p++){
+     status.textContent="OCR visual: página "+p+" de "+pages+"…";
+     const page=await pdf.getPage(p),viewport=page.getViewport({scale:3}),canvas=document.createElement("canvas");
+     canvas.width=Math.ceil(viewport.width);canvas.height=Math.ceil(viewport.height);
+     const ctx=canvas.getContext("2d",{willReadFrequently:true});
+     await page.render({canvasContext:ctx,viewport}).promise;
+     const result=await worker.recognize(canvas);
+     ocrText+="\n"+result.data.text;
+     canvas.width=1;canvas.height=1;
+    }
+    if(consumoDetetado(parseFaturaText(ocrText))>=parsedText&&ocrText.trim())text=ocrText;
    }
    if(pdf.numPages>5)text+="\n[Nota: apenas as primeiras 5 páginas foram lidas.]";
-  }else{
-   if(!window.Tesseract)throw new Error("A biblioteca OCR não carregou. Verifique a ligação à internet e tente novamente.");
+  }else if(window.Tesseract){
    status.textContent="OCR local a processar imagem…";
    worker=await Tesseract.createWorker("por",1,{logger:m=>{if(m.status==="recognizing text")status.textContent="A ler fatura… "+Math.round((m.progress||0)*100)+"%";}});
    const result=await worker.recognize(file);text=result.data.text;
   }
   if(worker){await worker.terminate();worker=null;}
-  window.wivoltaOcrText=text;const parsed=parseFaturaText(text);mostrarCampos(parsed,text);$("ocr-gemini-status").textContent="Leitura local concluída. Se quiser, autorize a análise complementar pela Gemini.";
+  if(!text.trim()&&!$("ocr-groq-consent")?.checked)throw new Error("Não foi possível extrair texto desta fatura. Autorize a análise visual Groq ou confirme os campos manualmente.");
+  window.wivoltaOcrText=text;
+  const parsed=parseFaturaText(text);mostrarCampos(parsed,text);
+  let imagePreparationWarning="";
+  try{
+   // Preparação local apenas: não envia nada à Groq nem altera o consentimento.
+   if(isPdf&&!pdf)throw new Error("O PDF não ficou disponível para preparar as páginas visuais.");
+   window.wivoltaOcrImages=await prepararImagensParaGroq(file,isPdf,pdf);
+  }catch(imageError){
+   window.wivoltaOcrImages=[];
+   imagePreparationWarning=imageError?.message||"Não foi possível preparar imagens para análise visual.";
+  }
+  $("ocr-groq-status").textContent=window.wivoltaOcrImages.length
+   ?"Imagens preparadas neste dispositivo ("+window.wivoltaOcrImages.length+" página(s)). Nada foi enviado. Para enviar à Groq, autorize e carregue no botão de análise."
+   :"Leitura local concluída. A análise visual não está disponível para este ficheiro; pode continuar a confirmar os campos manualmente.";
   const found=[parsed.simples,parsed.fora,parsed.vazio,parsed.cheias,parsed.ponta,parsed.gas].filter(Boolean).length;
-  status.textContent=found?"Leitura concluída: "+found+" campo(s) de consumo detetado(s). Confirme os valores antes de utilizar.":"Não foram detetados consumos com segurança. Consulte o texto reconhecido e confirme os campos manualmente.";
- }catch(e){if(worker)await worker.terminate();status.textContent="Falha de leitura: "+(e?.message||e);alert("Não foi possível ler esta fatura. Pode confirmar os campos manualmente.");}
+  status.textContent=(found?"Leitura concluída: "+found+" campo(s) de consumo detetado(s). Confirme os valores antes de utilizar.":"Texto extraído, mas não foram detetados consumos com segurança. Consulte o texto reconhecido e confirme os campos manualmente.")+(imagePreparationWarning?" Aviso da preparação visual: "+imagePreparationWarning:"");
+ }catch(e){
+  if(worker)await worker.terminate();
+  status.textContent="Falha de leitura: "+(e?.message||e);
+  alert("Não foi possível ler esta fatura. Pode confirmar os campos manualmente.");
+ }
 }
-function anonymizeInvoiceTextForGemini(raw){
+async function prepararImagensParaGroq(file,isPdf,pdf){
+ const images=[],maxWidth=1200,maxPages=3,maxTotal=3600000;
+ const encode=canvas=>canvas.toDataURL("image/jpeg",0.52);
+ if(isPdf&&pdf){
+  for(let p=1;p<=Math.min(pdf.numPages,maxPages);p++){
+   const page=await pdf.getPage(p),base=page.getViewport({scale:1});
+   const viewport=page.getViewport({scale:Math.min(1.35,maxWidth/base.width)});
+   const canvas=document.createElement("canvas");
+   canvas.width=Math.ceil(viewport.width);canvas.height=Math.ceil(viewport.height);
+   await page.render({canvasContext:canvas.getContext("2d"),viewport}).promise;
+   const data=encode(canvas);canvas.width=1;canvas.height=1;
+   if(images.reduce((n,x)=>n+x.length,0)+data.length>maxTotal)break;
+   images.push(data);
+  }
+ }else{
+  const dataUrl=await new Promise((resolve,reject)=>{
+   const reader=new FileReader();
+   reader.onerror=()=>reject(new Error("Não foi possível ler a imagem selecionada."));
+   reader.onload=()=>{
+    const img=new Image();
+    img.onerror=()=>reject(new Error("Formato de imagem não reconhecido pelo navegador."));
+    img.onload=()=>{
+     const scale=Math.min(1,maxWidth/img.naturalWidth),canvas=document.createElement("canvas");
+     canvas.width=Math.max(1,Math.round(img.naturalWidth*scale));canvas.height=Math.max(1,Math.round(img.naturalHeight*scale));
+     canvas.getContext("2d").drawImage(img,0,0,canvas.width,canvas.height);
+     resolve(encode(canvas));canvas.width=1;canvas.height=1;
+    };
+    img.src=String(reader.result);
+   };
+   reader.readAsDataURL(file);
+  });
+  images.push(dataUrl);
+ }
+ if(!images.length)throw new Error("Não foi possível preparar páginas da fatura para análise visual.");
+ return images;
+}
+function anonymizeInvoiceText(raw){
  const lines=String(raw||"").split(/\r?\n/);
  const safe=[];
  const privateLine=/^(?:titular|nome(?: do cliente)?|cliente|morada|endereco|local de consumo|morada de fornecimento|nif|nipc|cpe|cui|iban|telefone|telemovel|email|contacto)\b/i;
@@ -387,41 +863,48 @@ function anonymizeInvoiceTextForGemini(raw){
  }
  return safe.join("\n").slice(0,14000);
 }
-const GEMINI_CONSENT_VERSION="2026-11-24-v2";
-(function setupGeminiConsentRecord(){
- const checkbox=document.getElementById("ocr-gemini-consent");
- const record=document.getElementById("ocr-consent-record");
+const GROQ_CONSENT_VERSION="2026-11-25-v1";
+(function setupGroqConsentRecord(){
+ const checkbox=document.getElementById("ocr-groq-consent");
+ const record=document.getElementById("ocr-groq-consent-record");
  if(!checkbox||!record)return;
- const key="wivolta_gemini_consent_history";
+ const key="wivolta_groq_consent_history";
  function read(){try{return JSON.parse(localStorage.getItem(key)||"[]");}catch{return [];}}
- function write(event){try{const history=read();history.push({event,version:GEMINI_CONSENT_VERSION,at:new Date().toISOString()});localStorage.setItem(key,JSON.stringify(history.slice(-20)));}catch{}}
+ function write(event){try{const history=read();history.push({event,version:GROQ_CONSENT_VERSION,at:new Date().toISOString()});localStorage.setItem(key,JSON.stringify(history.slice(-20)));}catch{}}
  checkbox.checked=false;
  checkbox.addEventListener("change",()=>{
-  if(checkbox.checked){write("autorizacao_concedida");record.textContent="Autorização registada neste dispositivo em "+new Date().toLocaleString("pt-PT")+". Pode retirá-la desmarcando a opção.";}
-  else{write("autorizacao_retirada");record.textContent="Autorização retirada neste dispositivo em "+new Date().toLocaleString("pt-PT")+"."; }
+  if(checkbox.checked){write("autorizacao_concedida");record.textContent="Autorização Groq registada neste dispositivo em "+new Date().toLocaleString("pt-PT")+". Pode retirá-la desmarcando a opção.";}
+  else{write("autorizacao_retirada");record.textContent="Autorização Groq retirada neste dispositivo em "+new Date().toLocaleString("pt-PT")+".";}
  });
 })();
-async function analisarComGemini(){
- const consent=$("ocr-gemini-consent"),status=$("ocr-gemini-status"),button=$("ocr-gemini-button");
+async function analisarComGroq(){
+ const consent=$("ocr-groq-consent"),status=$("ocr-groq-status"),button=$("ocr-groq-button");
  const raw=window.wivoltaOcrText||$("ocr-texto").value||"";
- if(!raw.trim()){status.textContent="Primeiro selecione e leia uma fatura.";return;}
- if(!consent.checked){status.textContent="Para usar a Gemini, marque primeiro a autorização de envio do texto filtrado.";return;}
- const safeText=anonymizeInvoiceTextForGemini(raw);
- if(safeText.length<20){status.textContent="Não há texto suficiente para análise. Confirme os campos manualmente.";return;}
- button.disabled=true;button.textContent="A Gemini está a analisar…";status.textContent="A enviar apenas texto filtrado, sem a fatura original…";
+ if(!raw.trim()&&!(Array.isArray(window.wivoltaOcrImages)&&window.wivoltaOcrImages.length)){status.textContent="Primeiro selecione uma fatura.";return;}
+ if(!consent.checked){status.textContent="Para usar a Groq, marque primeiro a autorização específica para este prestador.";return;}
+ const safeText=anonymizeInvoiceText(raw);
+ const images=Array.isArray(window.wivoltaOcrImages)?window.wivoltaOcrImages:[];
+ if(safeText.length<20&&!images.length){status.textContent="Não há texto nem imagem suficiente para análise. Confirme os campos manualmente.";return;}
+ button.disabled=true;button.textContent="A Groq está a analisar…";status.textContent=images.length?"A enviar imagens da fatura e texto filtrado para Groq Vision…":"A enviar apenas texto filtrado à Groq…";
  try{
-  const response=await fetch("/api/ler-fatura",{method:"POST",cache:"no-store",headers:{"Content-Type":"application/json"},body:JSON.stringify({text:safeText})});
+  const response=await fetch("/api/ler-fatura-groq",{method:"POST",cache:"no-store",headers:{"Content-Type":"application/json"},body:JSON.stringify({text:safeText,images})});
   const data=await response.json();
-  if(!response.ok)throw new Error(data.error||"Falha na análise.");
+  if(!response.ok)throw new Error(data.error||"Falha na análise Groq.");
   const d=data.extracted||{};
   const fields={fornecedor:"ocr-fornecedor",potencia:"ocr-potencia",tarifa:"ocr-tarifa",simples:"ocr-simples",fora:"ocr-fora",vazio:"ocr-vazio",cheias:"ocr-cheias",ponta:"ocr-ponta",gas:"ocr-gas"};
-  let count=0;
-  for(const [key,id] of Object.entries(fields)){if(typeof d[key]==="string"&&d[key].trim()){ $(id).value=d[key].trim();count++;}}
+  let count=0,conflicts=[];
+  for(const [key,id] of Object.entries(fields)){
+   const ai=typeof d[key]==="string"?d[key].trim():"";
+   if(!ai)continue;
+   const local=$(id).value.trim();
+   if(!local){$(id).value=ai;count++;}
+   else if(["simples","fora","vazio","cheias","ponta","gas"].includes(key)&&Number(local.replace(",","."))!==Number(ai.replace(",","."))){conflicts.push(key);}
+  }
   const notes=d.observacoes?(" "+d.observacoes):"";
-  status.textContent="Análise Gemini concluída: "+count+" campo(s) preenchido(s). Confiança indicada: "+(d.confianca||"não indicada")+". Confirme os valores com a fatura."+notes;
-  const validation=$("ocr-validacao");if(validation)validation.textContent+=" · Leitura assistida por Gemini; confirmar todos os valores.";
- }catch(error){status.textContent="Não foi possível analisar com Gemini: "+(error.message||"erro").toString()+" A leitura local mantém-se disponível.";}
- finally{button.disabled=false;button.textContent="✨ Analisar consumos com Gemini";}
+  status.textContent="Análise Groq "+(data.mode==="vision"?"visual":"de texto")+" concluída: "+count+" campo(s) em falta preenchido(s)."+(conflicts.length?" ATENÇÃO: a IA divergiu da leitura local em "+conflicts.join(", ")+". Nenhum valor divergente foi substituído; confirme na fatura.":"") +" Confiança indicada: "+(d.confianca||"não indicada")+". Confirme os valores com a fatura."+notes;
+  const validation=$("ocr-validacao");if(validation)validation.textContent+=" · Leitura assistida por Groq; confirmar todos os valores.";
+ }catch(error){status.textContent="Não foi possível analisar com Groq: "+(error.message||"erro").toString()+" A leitura local mantém-se disponível.";}
+ finally{button.disabled=false;button.textContent="✨ Analisar consumos com Groq";}
 }
 function calculateAnnualCost(consumptionKwh, energyPrice, powerDaily, discount=0){
   const values=[consumptionKwh,energyPrice,powerDaily,discount];
@@ -458,13 +941,13 @@ function calcularCusto(){
   const potenciaLabel=potencia>0?"<p>Potência contratada (referência): "+new Intl.NumberFormat("pt-PT").format(potencia)+" kVA</p>":"";
   $("calc-result").innerHTML="<div>"+potenciaLabel+"<p>Energia anual: "+fmt(c.energy)+"</p><p>Potência anual (365 dias): "+fmt(c.power)+"</p><p>Subtotal: "+fmt(c.subtotal)+"</p><p>Desconto aplicado: −"+fmt(c.discount)+"</p><hr><p><strong>Total estimado: "+fmt(c.total)+" / ano</strong></p><p><strong>Média estimada: "+fmt(c.total/12)+" / mês</strong></p>"+aviso+"<p style=\"font-size:12px;color:#64748b\">Estimativa apenas para os valores introduzidos: não inclui impostos, taxas, outros encargos, diferenças de períodos horários ou variações de tarifa. A potência em kVA é apenas identificativa; o cálculo usa o preço diário indicado.</p></div>";
 }
-function limparLeitura(){window.wivoltaOcrText="";$("fatura-input").value="";$("ocr-texto").value="";["ocr-fornecedor","ocr-titular","ocr-morada","ocr-nif","ocr-cpe","ocr-cui","ocr-potencia","ocr-tarifa","ocr-simples","ocr-fora","ocr-vazio","ocr-cheias","ocr-ponta","ocr-gas"].forEach(id=>$(id).value="");$("ocr-resultados").classList.add("hidden");$("ocr-status").style.display="none";$("ocr-status").textContent="";$("ocr-gemini-status").textContent="A leitura local continua disponível sem autorizar o envio.";}
+function limparLeitura(){window.wivoltaOcrText="";$("fatura-input").value="";$("ocr-texto").value="";["ocr-fornecedor","ocr-titular","ocr-morada","ocr-nif","ocr-cpe","ocr-cui","ocr-potencia","ocr-tarifa","ocr-simples","ocr-fora","ocr-vazio","ocr-cheias","ocr-ponta","ocr-gas"].forEach(id=>$(id).value="");$("ocr-resultados").classList.add("hidden");$("ocr-status").style.display="none";$("ocr-status").textContent="";$("ocr-groq-status").textContent="Leitura local concluída. Pode autorizar a análise Groq se desejar.";}
 </script>
-\n<div id="wivolta-chat" class="hidden" role="dialog" aria-label="Assistente Wivolta"><div id="wivolta-chat-head"><span>Assistente Wivolta</span><button type="button" id="wivolta-chat-close" aria-label="Fechar chat" style="background:none;color:white;border:0;font-size:22px">×</button></div><div id="wivolta-chat-messages" aria-live="polite"><div class="wivolta-chat-msg bot">Olá! Posso ajudar a compreender tarifas, faturas e conceitos de energia. Não tenho acesso a preços em tempo real nem posso mudar contratos. Não partilhe dados pessoais.</div></div><form id="wivolta-chat-form"><input id="wivolta-chat-input" type="text" maxlength="4000" placeholder="Escreva a sua pergunta…" required><button id="wivolta-chat-send" type="submit">Enviar</button></form></div><button id="wivolta-chat-launch" type="button">💬 Perguntar à Wivolta</button>\n<script>
-(()=>{const box=document.getElementById("wivolta-chat"),launch=document.getElementById("wivolta-chat-launch"),close=document.getElementById("wivolta-chat-close"),form=document.getElementById("wivolta-chat-form"),input=document.getElementById("wivolta-chat-input"),msgs=document.getElementById("wivolta-chat-messages"),send=document.getElementById("wivolta-chat-send");
+\n<div id="wivolta-chat" class="hidden" role="dialog" aria-label="Ajuda Wivolta"><div id="wivolta-chat-head"><span>Ajuda Wivolta</span><button type="button" id="wivolta-chat-close" aria-label="Fechar chat" style="background:none;color:white;border:0;font-size:22px">×</button></div><div id="wivolta-chat-messages" aria-live="polite"><div class="wivolta-chat-msg bot">Olá! 👋 Sou o assistente da Wivolta. Estou aqui para te ajudar a compreender a tua fatura, analisar os teus consumos e perceber oportunidades de poupança em eletricidade e gás. Posso explicar tarifas, comparar as ofertas que estejam disponíveis na plataforma e esclarecer as condições dos contratos. O objetivo é simples: dar-te informação clara para tomares uma decisão informada, com acompanhamento ao longo do processo. Para tua segurança, não escrevas aqui o NIF, CPE, CUI, dados bancários ou outros dados pessoais.</div></div><div style="padding:8px 12px 0;font-size:11px;color:#555"><label style="display:flex;gap:7px;align-items:flex-start;font-weight:400"><input id="wivolta-chat-consent" type="checkbox" style="margin-top:2px"> Autorizo o envio da minha pergunta à Groq (prestador de IA) para gerar a resposta. Não inclua dados pessoais, NIF, CPE, CUI ou dados bancários. Posso retirar a autorização desmarcando esta opção.</label><a href="https://groq.com/privacy-policy/" target="_blank" rel="noopener">Política de privacidade da Groq</a></div><form id="wivolta-chat-form"><input id="wivolta-chat-input" type="text" maxlength="4000" placeholder="Escreva a sua pergunta…" required><button id="wivolta-chat-send" type="submit">Enviar</button></form></div><button id="wivolta-chat-launch" type="button">Ajuda</button>\n<script>
+(()=>{const consent=document.getElementById("wivolta-chat-consent"),box=document.getElementById("wivolta-chat"),launch=document.getElementById("wivolta-chat-launch"),close=document.getElementById("wivolta-chat-close"),form=document.getElementById("wivolta-chat-form"),input=document.getElementById("wivolta-chat-input"),msgs=document.getElementById("wivolta-chat-messages"),send=document.getElementById("wivolta-chat-send");
 function add(text,cls){const d=document.createElement("div");d.className="wivolta-chat-msg "+cls;d.textContent=text;msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;return d;}
 launch.addEventListener("click",()=>{box.classList.remove("hidden");input.focus();});close.addEventListener("click",()=>box.classList.add("hidden"));
-form.addEventListener("submit",async e=>{e.preventDefault();const prompt=input.value.trim();if(!prompt)return;input.value="";add(prompt,"user");send.disabled=true;send.textContent="…";const wait=add("A pensar…","bot");try{const r=await fetch("/api/gemini?v=2",{method:"POST",cache:"no-store",headers:{"Content-Type":"application/json","Cache-Control":"no-cache"},body:JSON.stringify({prompt})});const data=await r.json();wait.textContent=r.ok?(data.reply||"Resposta vazia."):(String(data.error||"Não foi possível responder.")+(data.diagnostic?"\n"+data.diagnostic:""));}catch{wait.textContent="Não foi possível ligar ao assistente. Verifique a ligação e tente novamente.";}finally{send.disabled=false;send.textContent="Enviar";msgs.scrollTop=msgs.scrollHeight;}});
+form.addEventListener("submit",async e=>{e.preventDefault();const prompt=input.value.trim();if(!prompt)return;if(!consent.checked){add("Para usar o assistente, autorize primeiro o envio da pergunta à Groq. Não inclua dados pessoais.","bot");return;}input.value="";add(prompt,"user");send.disabled=true;send.textContent="…";const wait=add("A pensar…","bot");try{const r=await fetch("/api/groq-chat",{method:"POST",cache:"no-store",headers:{"Content-Type":"application/json","Cache-Control":"no-cache"},body:JSON.stringify({prompt})});const data=await r.json();wait.textContent=r.ok?(data.reply||"Resposta vazia."):(String(data.error||"Não foi possível responder.")+(data.diagnostic?"\n"+data.diagnostic:""));}catch{wait.textContent="Não foi possível ligar ao assistente. Verifique a ligação e tente novamente.";}finally{send.disabled=false;send.textContent="Enviar";msgs.scrollTop=msgs.scrollHeight;}});
 })();
 </script>
 </body>
