@@ -20,6 +20,11 @@ const helperEnd = html.indexOf("function validateNif(value){", helperStart);
 assert.ok(helperStart >= 0 && helperEnd > helperStart, "Helpers de fatura encontrados");
 vm.runInContext(html.slice(helperStart, helperEnd), context);
 
+const powerHelperStart = html.indexOf("function findPower(text){");
+const powerHelperEnd = html.indexOf("function cleanNum(v){", powerHelperStart);
+assert.ok(powerHelperStart >= 0 && powerHelperEnd > powerHelperStart, "Helper potência encontrado");
+vm.runInContext(html.slice(powerHelperStart, powerHelperEnd), context);
+
 const simpleParserStart = html.indexOf("function parseSimpleConsumptionRows(text){");
 const meterParserStart = html.indexOf("function parseMeterReadingTable(text){");
 const parserStart = simpleParserStart >= 0 ? simpleParserStart : (meterParserStart >= 0 ? meterParserStart : html.indexOf("function parseHourlyConsumptionTable(text){"));
@@ -45,7 +50,7 @@ test("Galp real: soma apenas energia simples da comercialização, mesmo com que
 });
 
 test("Motor comum: exclui acesso às redes e impostos sem depender do fornecedor", () => {
-  const text = "Comercialização\\nEnergia Simples (medida) 200 kWh\\nEnergia Simples (medida) 171 kWh\\nAcesso às Redes\\nEnergia Simples (medida) 200 kWh\\nEnergia Simples (medida) 171 kWh\\nImpostos e Taxas\\nISPE 371 kWh";
+  const text = "Comercialização\nEnergia Simples (medida) 200 kWh\nEnergia Simples (medida) 171 kWh\nAcesso às Redes\nEnergia Simples (medida) 200 kWh\nEnergia Simples (medida) 171 kWh\nImpostos e Taxas\nISPE 371 kWh";
   const result = context.extractStructuredConsumptions(text);
   assert.equal(result.totalKwh, 371);
   assert.equal(result.ciclo, "simples");
