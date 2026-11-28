@@ -67,8 +67,10 @@ assert.equal(simple.simples, "1200");
 const galp = parse([
   "Galp",
   "Tarifa 6.9 kVA Social Simples Sem Ciclo",
+  "Comercialização",
   "Energia Simples (medida) 200 kWh 0,10330000 €/kWh",
   "Energia Simples (medida) 171 kWh 0,10330000 €/kWh",
+  "Impostos e Taxas",
   "ISPE 371 kWh 0,00000000 €/kWh"
 ].join("\n"));
 assert.equal(galp.fornecedor, "Galp");
