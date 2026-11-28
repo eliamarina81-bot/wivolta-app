@@ -11,6 +11,7 @@ assert.ok(inline, "OCR parser must exist in index.html");
 const elements = new Map();
 const context = {
   document: {
+    addEventListener() {},
     getElementById: id => {
       if (!elements.has(id)) elements.set(id, { value: "", textContent: "", innerHTML: "", checked: false, addEventListener() {}, classList: { remove() {} } });
       return elements.get(id);
