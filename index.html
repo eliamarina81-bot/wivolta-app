@@ -393,8 +393,6 @@ function classifySection(lineText,currentSection="desconhecida"){
 }
 function extractStructuredConsumptions(input){
  const lines=Array.isArray(input)?input.flatMap(entry=>typeof entry==="string"?[entry]:Array.isArray(entry?.gridRows)?entry.gridRows.map(row=>row.filter(Boolean).join(" | ")):Array.isArray(entry?.rows)?entry.rows.map(row=>row.text||""):[]):String(input||"").split(/\r?\n/);
- let section="desconhecida";const entries=[],warnings=[];
- const valuePattern=/(\d{1,3}(?:[ .]\d{3})+(?:,\d+)?|\d+(?:[,.]\d+)?)\s*k\s*w\s*h/gi;
  let section="desconhecida";const entries=[],warnings=[];let pendingLabel="";
  const valuePattern=/(\d{1,3}(?:[ .]\d{3})+(?:,\d+)?|\d+(?:[,.]\d+)?)\s*k\s*w\s*h/gi;
  for(const raw of lines){
